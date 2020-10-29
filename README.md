@@ -31,3 +31,4 @@
 - [ ] Instead of requesting details for a single active client. Perform one request and the server responds with new details for all active clients. Only if an update has occured since the last time the specific client has asked...
 - [ ] Pass a timestamp in the packet since you cannot rely on order in UDP. This prevents overwriting a newer position with an older position
 
+#### **Basic Scripting Implementation Info:**
