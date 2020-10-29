@@ -13,14 +13,12 @@ public class MouseController implements MouseMotionListener
     private boolean isRecentering;
 
     private RenderWindow rw;
-    private OrbitCameraController oc;
     private Viewport vp;
 
-    public MouseController(RenderWindow renWin, OrbitCameraController oc)
+    public MouseController(RenderWindow renWin)
     {
         this.rw = renWin;
         this.vp = rw.getViewport(1);
-        this.oc = oc;
 
         int left = rw.getLocationLeft();
         int top = rw.getLocationTop();
@@ -90,12 +88,12 @@ public class MouseController implements MouseMotionListener
 
     private void yaw(float value)
     {
-        oc.mouseAzimuthAction(-value);
+        //oc.mouseAzimuthAction(-value);
     }
 
     private void pitch(float value)
     {
-        oc.mouseElevationAction(-value);
+        //oc.mouseElevationAction(-value);
     }
 
     @Override

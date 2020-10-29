@@ -6,11 +6,11 @@ import net.java.games.input.Event;
 
 public class MoveMouseRadiusAction extends AbstractInputAction 
 {
-    private OrbitCameraController oc;
+    //private OrbitCameraController oc;
 
     public MoveMouseRadiusAction(OrbitCameraController oc) 
     {
-        this.oc = oc;
+        //this.oc = oc;
     }
 
     // Do mouse stuff here
@@ -18,6 +18,6 @@ public class MoveMouseRadiusAction extends AbstractInputAction
     {
         
         System.out.println("mouse radius: " + e.getValue());
-        oc.mouseRadiusAction(time, -e.getValue());
+        //oc.mouseRadiusAction(time, -e.getValue());
     }
 }
