@@ -268,7 +268,18 @@ public class MyGame extends VariableFrameRateGame
                         // If gamepad, attach inputs...
                         else if (controllerList.get(index).getType() == Controller.Type.GAMEPAD) 
                         {
-
+                        	if (controllerList.get(index).getName().contains("Wireless Controller")) {
+                				im.associateAction(controllerList.get(index), 
+                								net.java.games.input.Component.Identifier.Axis.Y, moveFwdAction, 
+                								InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                				im.associateAction(controllerList.get(index), 
+                								net.java.games.input.Component.Identifier.Axis.X, moveRightAction, 
+        										InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                				im.associateAction(controllerList.get(index), 
+                								net.java.games.input.Component.Identifier.Axis.Z, moveYawAction, 
+        										InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                			}
+                        	else {
                                 im.associateAction(controllerList.get(index),
                                                 net.java.games.input.Component.Identifier.Axis.Z, moveYawAction,
                                                 InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
@@ -278,10 +289,10 @@ public class MyGame extends VariableFrameRateGame
                                 im.associateAction(controllerList.get(index),
                                                 net.java.games.input.Component.Identifier.Axis.X, moveRightAction,
                                                 InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);                                
-
+                        	}
                                 //Setup orbit camera controller inputs
                                 playerOneOrbitCameraController.setupInputs(im, controllerList.get(index));
-
+                        	
                         }
 
                         //If mouse, attach inputs...
