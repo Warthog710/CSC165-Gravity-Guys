@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 import net.java.games.input.Controller;
 import ray.rage.*;
@@ -31,6 +32,12 @@ public class MyGame extends VariableFrameRateGame
         GhostAvatars ghosts;
         GL4RenderSystem rs;
         int elapsTimeSec;   
+
+
+        //Suppress Nashorn deprecation notice
+        //Ideally use GraalVM... But this would require packing the source with this code (all 300MB of it)... Yeah... no...
+        @SuppressWarnings("removal")
+        private NashornScriptEngineFactory scriptEngine;
 
         private NetworkedClient networkedClient;
         private String serverAddress;
