@@ -1,13 +1,13 @@
 # CSC165-Final-Project
 
-###How to compile/run:
+### How to compile/run:
 
 * ***runGame.bat*** compiles and runs the game. Default parameters are passed inside this file. Most likely you will have to change these to properly interact with the server. For example, the first parameter "server IP" will need to be set to the IP the server prints when it starts.
 
 * ***runServer.bat*** compiles and runs the server. A default port number (89) is passed. If you wish to change this. Change the parameter that is passed inside the batch file.
 
 
-####**Basic Networking Implementation Info:**
+#### **Basic Networking Implementation Info:**
 **Client Features:**
 - [x] Client can join server
 - [x] Client can send updates to the server update its position (currently only avatar position)
