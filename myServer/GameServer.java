@@ -20,7 +20,7 @@ public class GameServer extends GameConnectionServer<UUID>
     {
         super(localPort, ProtocolType.UDP);
         this.clientInfo = new HashMap<>();
-        System.out.println("Game Server Created at " +  InetAddress.getLocalHost().getHostAddress().trim() + " and port " + localPort);
+        System.out.println("Game Server Created at " +  InetAddress.getLocalHost().getHostAddress().trim() + ":" + localPort);
 
         //Put that information in a file
     }

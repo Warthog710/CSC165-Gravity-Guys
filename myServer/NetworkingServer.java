@@ -19,10 +19,8 @@ public class NetworkingServer
 
     public static void main(String[] args)
     {
-        System.out.println("Game Server Running...");
         if (args.length > 0)
         {
-            System.out.println(args[0]);
             new NetworkingServer(Integer.parseInt(args[0]));
         }
     }    
