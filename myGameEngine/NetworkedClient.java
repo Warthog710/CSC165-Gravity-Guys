@@ -174,6 +174,10 @@ public class NetworkedClient extends GameConnectionClient
 
     private void processCREATE(String[] msgTokens)
     {
+        //Fixes a weird networking bug where multiple ghosts with the same ID were being added...
+        if (ghosts.activeGhosts.contains(UUID.fromString(msgTokens[1])))
+            return;
+
         Vector3f ghostPos = (Vector3f) Vector3f.createFrom(Float.parseFloat(msgTokens[2]),
         Float.parseFloat(msgTokens[3]), Float.parseFloat(msgTokens[4]));
   
