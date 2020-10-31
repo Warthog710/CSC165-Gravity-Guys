@@ -2,7 +2,7 @@
 var JavaPackages = new JavaImporter
 (
     Packages.ray.rml.Vector3f,
-    java.awt.Color
+    Packages.java.awt.Color
 );
 
 with (JavaPackages)
