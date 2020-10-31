@@ -39,8 +39,6 @@ public class GhostAvatars
 
         //Add to active ghosts
         activeGhosts.add(ghostID);
-
-        System.out.println("Created ghost avatar " + ghostID);
     }
     
     //Removes a ghost from the world
