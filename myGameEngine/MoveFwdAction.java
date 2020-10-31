@@ -8,11 +8,13 @@ public class MoveFwdAction extends AbstractInputAction
 {
     private SceneNode target;
     private NetworkedClient nc;
+    private ScriptManager scriptMan;
 
-    public MoveFwdAction(SceneNode target, NetworkedClient nc) 
+    public MoveFwdAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan) 
     {
         this.target = target;
         this.nc = nc;
+        this.scriptMan = scriptMan;
     }
 
     // Move forward or backwards 5.0f every 1000ms or 1 second (assuming axis value = 1)
@@ -22,15 +24,11 @@ public class MoveFwdAction extends AbstractInputAction
         if (e.getValue() > -.2 && e.getValue() < .2)
             return;
 
-        //Move forward .005f units every 1ms
-        target.moveForward(-(time * e.getValue()) / 200);
+        //Get movement multiplier
+        float movementMult = Float.parseFloat(scriptMan.getValue("movementInfo.js", "forwardMovementMultiplier").toString());
 
-        //Check if dolphin left the world plane...
-        if (Math.abs(target.getLocalPosition().x()) > 50 || Math.abs(target.getLocalPosition().z()) > 50)
-        {
-            //Don't make the move
-            target.moveForward((time * e.getValue()) / 200);
-        }
+        //Move forward .005f units every 1ms
+        target.moveForward(-(time * e.getValue()) * movementMult / 200);
 
         //Tell the networked client that an update is required
         nc.updatePositionOnServer = true;

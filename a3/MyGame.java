@@ -5,7 +5,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 import net.java.games.input.Controller;
 import ray.rage.*;
@@ -14,6 +13,7 @@ import ray.rage.rendersystem.*;
 import ray.rage.rendersystem.Renderable.*;
 import ray.rage.scene.*;
 import ray.rage.scene.Camera.Frustum.*;
+import ray.rml.Vector3f;
 import ray.rage.rendersystem.gl4.GL4RenderSystem;
 import ray.input.*;
 import ray.input.action.*;
@@ -31,36 +31,20 @@ public class MyGame extends VariableFrameRateGame
         float elapsTime = 0.0f;
         GhostAvatars ghosts;
         GL4RenderSystem rs;
-        int elapsTimeSec;   
-
-
-        //Suppress Nashorn deprecation notice
-        //Ideally use GraalVM... But this would require packing the source with this code (all 300MB of it)... Yeah... no...
-        @SuppressWarnings("removal")
-        private NashornScriptEngineFactory scriptEngine;
+        int elapsTimeSec;
 
         private NetworkedClient networkedClient;
         private String serverAddress;
         private InputManager im;
         private int serverPort;
+        private ScriptManager scriptMan;
 
         private Action moveRightAction, moveFwdAction, moveYawAction;
 
-        public MyGame(String serverAddress, int serverPort) 
-        {
-                super();
-
-                //Setup server info
-                this.serverAddress = serverAddress;
-                this.serverPort = serverPort;
-        }
-
-        //TODO: If no parameters are passed... errors occur... Fail gracefully? Or assume no server exists and continue on
-
         public static void main(String[] args) 
         {
-                //Read command line arguments & save them
-                Game game = new MyGame(args[0], Integer.parseInt(args[1]));
+                //? Server parameters are now saved in gameVariables.js
+                Game game = new MyGame();
 
                 try 
                 {
@@ -78,9 +62,8 @@ public class MyGame extends VariableFrameRateGame
                 }
         }
 
-
         @Override
-        public void shutdown()
+        public void shutdown() 
         {
                 //TODO: This is only called if "ESC" is used to exit the game... Need this to work even if the window is closed manually...
                 networkedClient.sendBYE();
@@ -104,26 +87,30 @@ public class MyGame extends VariableFrameRateGame
         @Override
         protected void setupCameras(SceneManager sm, RenderWindow rw) 
         {
-                // Create camera for player one
+                //Create camera for player one
                 Camera cameraP1 = sm.createCamera("playerOneCamera", Projection.PERSPECTIVE);
                 rw.getViewport(0).setCamera(cameraP1);
                 cameraP1.setMode('n');
 
-                // Attach player 1 camera to root scene node
+                //Attach player 1 camera to root scene node
                 SceneNode cNodeP1 = sm.getRootSceneNode().createChildSceneNode("playerOneCameraNode");
                 cNodeP1.attachObject(cameraP1);
         }
 
         @Override
         protected void setupScene(Engine eng, SceneManager sm) throws IOException 
-        {
+        { 
+                //Setup script manager and load initial script files    
+                scriptMan = new ScriptManager();
+                scriptMan.loadScript("gameVariables.js");
+                scriptMan.loadScript("movementInfo.js");              
+
                 //Place player avatar
                 Entity dolphin1E = sm.createEntity("playerOneDolphin", "dolphinHighPoly.obj");
                 dolphin1E.setPrimitive(Primitive.TRIANGLES);
                 SceneNode dolphin1N = sm.getRootSceneNode().createChildSceneNode(dolphin1E.getName() + "Node");
                 dolphin1N.attachObject(dolphin1E);
-                dolphin1N.moveLeft(1.5f);
-                dolphin1N.moveUp(.31f);
+                dolphin1N.setLocalPosition((Vector3f)scriptMan.getValue("gameVariables.js", "avatarPos"));
 
                 //Place groundplane
                 ManualObject groundPlane = new GroundPlaneObject(sm, eng).makeObject("groundPlane");
@@ -132,7 +119,7 @@ public class MyGame extends VariableFrameRateGame
                 gpNode.attachObject(groundPlane);
 
                 //Set up ambient light
-                sm.getAmbientLight().setIntensity(new Color(.3f, .3f, .3f));
+                sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("gameVariables.js", "ambColor"));
 
                 //Set up Skybox
                 SkyBox sk = sm.createSkyBox("skybox");
@@ -160,6 +147,8 @@ public class MyGame extends VariableFrameRateGame
                 ghosts = new GhostAvatars(sm);
 
                 //Setup networking
+                serverAddress = (String)scriptMan.getValue("gameVariables.js", "serverAddress");
+                serverPort = (Integer)scriptMan.getValue("gameVariables.js", "serverPort");
                 setupNetworking();
 
                 //Configure controller(s)
@@ -169,7 +158,7 @@ public class MyGame extends VariableFrameRateGame
         protected void setupOrbitCamera(SceneManager sm) 
         {
                 playerOneOrbitCameraController = new OrbitCameraController(sm.getSceneNode("playerOneCameraNode"),
-                                sm.getSceneNode("playerOneDolphinNode"), im);
+                                sm.getSceneNode("playerOneDolphinNode"), im, scriptMan);
         }
 
         protected void setupNetworking()
@@ -195,7 +184,7 @@ public class MyGame extends VariableFrameRateGame
                 //Else, send a join msg to the server
                 else
                 {
-                        //Send name of the node that is joining
+                        //Send name of the node that is joining & will be tracked...
                         networkedClient.sendJOIN("playerOneDolphinNode");
                 }
         }
@@ -220,7 +209,8 @@ public class MyGame extends VariableFrameRateGame
 
 
                 // Set hud
-                rs.setHUD("Dolphin Position: " + playerOnePos, 15, 15);
+                rs.setHUD("Dolphin Position: " + playerOnePos, (Integer) scriptMan.getValue("gameVariables.js", "hudX"),
+                                (Integer) scriptMan.getValue("gameVariables.js", "hudY"));
 
                 // Process inputs
                 im.update(elapsTime - lastUpdateTime);
@@ -228,6 +218,7 @@ public class MyGame extends VariableFrameRateGame
                 // Update orbit camera controllers
                 playerOneOrbitCameraController.updateCameraPosition();
 
+                //TODO: Integrate all calls to the network in one method call
                 //Update network info
                 networkedClient.processPackets();
 
@@ -255,9 +246,9 @@ public class MyGame extends VariableFrameRateGame
                 List<Controller> controllerList = im.getControllers();
 
                 //Setup actions
-                moveYawAction = new MoveYawAction(playerOneOrbitCameraController, sm.getSceneNode("playerOneDolphinNode"));
-                moveRightAction = new MoveRightAction(sm.getSceneNode("playerOneDolphinNode"), networkedClient);
-                moveFwdAction = new MoveFwdAction(sm.getSceneNode("playerOneDolphinNode"), networkedClient);
+                moveYawAction = new MoveYawAction(playerOneOrbitCameraController, sm.getSceneNode("playerOneDolphinNode"), scriptMan);
+                moveRightAction = new MoveRightAction(sm.getSceneNode("playerOneDolphinNode"), networkedClient, scriptMan);
+                moveFwdAction = new MoveFwdAction(sm.getSceneNode("playerOneDolphinNode"), networkedClient, scriptMan);
 
                 // Iterate over all input devices
                 for (int index = 0; index < controllerList.size(); index++) 

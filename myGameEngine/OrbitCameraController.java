@@ -16,17 +16,22 @@ public class OrbitCameraController
     private float radius;
     private float currentPitch;
     private boolean isPitched;
+    private ScriptManager scriptMan;
 
 
     private Action orbitAroundAction, orbitElevationAction, orbitRadiusAction;
 
-    public OrbitCameraController(SceneNode cameraN, SceneNode target, InputManager im)
+    public OrbitCameraController(SceneNode cameraN, SceneNode target, InputManager im, ScriptManager scriptMan)
     {
+        //Grab the script manager
+        this.scriptMan = scriptMan;
+
+        //Set initial values
         this.cameraN = cameraN;
         this.target = target;
-        this.azimuth = 180.0f;
-        this.elevation = 20.0f;
-        this.radius = 2.0f;
+        this.azimuth = Float.parseFloat(this.scriptMan.getValue("movementInfo.js", "orbitStartingAzimuth").toString());
+        this.elevation = Float.parseFloat(this.scriptMan.getValue("movementInfo.js", "orbitStartingElevation").toString());
+        this.radius = Float.parseFloat(this.scriptMan.getValue("movementInfo.js", "orbitStartingRadius").toString());
         this.currentPitch = 0.0f;
         this.isPitched = false;
 
@@ -76,11 +81,14 @@ public class OrbitCameraController
         {
             float rotateAmount = 0.0f;
 
-            // Deadzone
+            //Deadzone
             if (evt.getValue() > -.2 && evt.getValue() < .2)
                 return;
 
-            rotateAmount = evt.getValue() *.072f * time;
+            //Get azimuth speed
+            float azimuthSpeed = Float.parseFloat(scriptMan.getValue("movementInfo.js", "cameraAzimuthSpeed").toString());
+
+            rotateAmount = evt.getValue() * azimuthSpeed * time;
 
             azimuth += rotateAmount;
             azimuth = azimuth % 360;
@@ -96,10 +104,13 @@ public class OrbitCameraController
             if (evt.getValue() > -.2 && evt.getValue() < .2)
                 return;
 
+            //Get elevation speed
+            float elevationSpeed = Float.parseFloat(scriptMan.getValue("movementInfo.js", "cameraElevationSpeed").toString());
+
             //If camera is not pitched, move the elevation
             if (!isPitched)
             {
-                float elevationAmount = evt.getValue() *.072f * time;
+                float elevationAmount = evt.getValue() * elevationSpeed * time;
 
                 //If move would make the dolphin go above 90 degrees, don't make the move
                 if ((elevation - elevationAmount) > 90)
@@ -122,7 +133,7 @@ public class OrbitCameraController
             //Else the camera must be pitched... adjust that
             else
             {
-                float pitchAmount = -evt.getValue() * .072f * time;
+                float pitchAmount = -evt.getValue() * elevationSpeed * time;
 
                 //If pitch would be less than 1 degree reset pitch state and pitch
                 if ((currentPitch - pitchAmount) < 1)
@@ -148,24 +159,32 @@ public class OrbitCameraController
 
     private class OrbitRadiusAction extends AbstractInputAction
     {
-        public void performAction(float time, net.java.games.input.Event evt)
+        private float ZOOM_MAX;
+        private float ZOOM_MIN;
+
+        public OrbitRadiusAction()
         {
             //Floats for zoom max and zoom min. The camera will never go beyond these
-            float ZOOM_MAX = 10.0f;
-            float ZOOM_MIN = 1.0f;
+            ZOOM_MAX = Float.parseFloat(scriptMan.getValue("movementInfo.js", "zoomMax").toString());
+            ZOOM_MIN = Float.parseFloat(scriptMan.getValue("movementInfo.js", "zoomMin").toString());
+        }
 
+        public void performAction(float time, net.java.games.input.Event evt)
+        {
             float radiusAmount = 0.0f;
+
+            float radiusSpeed = Float.parseFloat(scriptMan.getValue("movementInfo.js", "cameraRadiusSpeed").toString());
 
             //POV hat forward button is pressed
             if (evt.getValue() == .25)
             {
-                radiusAmount = -.004f * time;
+                radiusAmount = -radiusSpeed * time;
             }
 
             //POV hat backward button is pressed
             else if (evt.getValue() == .75)
             {
-                radiusAmount = .004f * time;
+                radiusAmount = radiusSpeed * time;
             }
 
             //If zoom would be beyond less than zero or greater than max... don't do it
