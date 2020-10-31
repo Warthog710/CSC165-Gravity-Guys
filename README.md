@@ -2,7 +2,7 @@
 
 ### How to compile/run:
 
-* ***runGame.bat*** compiles and runs the game. Default parameters are passed inside this file. Most likely you will have to change these to properly interact with the server. For example, the first parameter "server IP" will need to be set to the IP the server prints when it starts.
+* ***runGame.bat*** compiles and runs the game. No server parameters are passed as these are now read from the "gameVariables.js" script. If you wish to update these values, change the *serverAddress* & *serverPort* variables.
 
 * ***runServer.bat*** compiles and runs the server. A default port number (89) is passed. If you wish to change this. Change the parameter that is passed inside the batch file.
 
@@ -33,3 +33,7 @@
 - [ ] Have game server print out public IP
 
 #### **Basic Scripting Implementation Info:**
+* All scripting operations are managed by the  *ScriptManager* class. This class can be passed a script file name (Ex: "test.js") and it will load the file into its local script engine (do this in setup scene). The variables in this file can be called using the *getValue(fileName, variableName)* method. When called, the script manager automatically checks for an updated value before returning.
+* **Note:** the ScriptManager assumes all scripts are located in the *scripts* folder!
+* **Note 2:** Deprecation warnings for *Nashorn* have been hidden. Ideally GraalVM would be used but this would require packing its source with our game... Not Ideal.
+* **IMPORTANT:** Moving forward please try to incorporate game constants into script files. You are free and welcome to make new script files!
