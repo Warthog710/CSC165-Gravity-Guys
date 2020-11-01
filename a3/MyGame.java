@@ -13,6 +13,8 @@ import ray.rage.rendersystem.*;
 import ray.rage.rendersystem.Renderable.*;
 import ray.rage.scene.*;
 import ray.rage.scene.Camera.Frustum.*;
+import ray.rml.Vector3;
+import ray.rml.Vector3f;
 import ray.rage.rendersystem.gl4.GL4RenderSystem;
 import ray.input.*;
 import ray.input.action.*;
@@ -123,9 +125,19 @@ public class MyGame extends VariableFrameRateGame
                 groundPlane.setPrimitive(Primitive.TRIANGLES);
                 SceneNode gpNode = sm.getRootSceneNode().createChildSceneNode("groundPlaneNode");
                 gpNode.attachObject(groundPlane);
-
+                
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity(new Color(.3f, .3f, .3f));
+                //Set up point light
+                Light plight = sm.createLight("pLight", Light.Type.POINT);
+        		plight.setAmbient(new Color(.4f, .4f, .4f));
+                plight.setDiffuse(new Color(.7f, .7f, .7f));
+        		plight.setSpecular(new Color(1.0f, 1.0f, 1.0f));
+                plight.setRange(30f);
+        		
+        		SceneNode plightNode = sm.getRootSceneNode().createChildSceneNode("plightNode");
+                plightNode.attachObject(plight);
+                plightNode.moveUp(8.0f);
 
                 //Set up Skybox
                 SkyBox sk = sm.createSkyBox("skybox");
@@ -142,7 +154,19 @@ public class MyGame extends VariableFrameRateGame
                 sk.setTexture(eng.getTextureManager().getAssetByPath("../skyboxes/blueSky/bottom.jpg"),
                                 SkyBox.Face.BOTTOM);
                 sm.setActiveSkyBox(sk);
-
+                
+                //Set up terrain
+                Tessellation tessE = sm.createTessellation("tessE", 6);
+                tessE.setSubdivisions(8f);
+                SceneNode tessN = sm.getRootSceneNode().createChildSceneNode("tessN");
+                tessN.attachObject(tessE);
+                // to move it, note that X and Z must BOTH be positive OR negative
+                tessN.translate(Vector3f.createFrom(10.0f, 0.0f, 10.0f));
+                tessN.scale(10, 60, 10);
+                tessE.setHeightMap(eng, "height.png");
+                tessE.setTexture(eng, "ground.png");
+                tessE.setNormalMap(eng, "normal.png");
+                
                 //Create input manager
                 im = new GenericInputManager();
 
@@ -151,7 +175,8 @@ public class MyGame extends VariableFrameRateGame
 
                 //Setup ghosts
                 ghosts = new GhostAvatars(sm);
-
+                
+                updateVerticalPosition();
                 //Setup networking
                 setupNetworking();
 
@@ -249,8 +274,8 @@ public class MyGame extends VariableFrameRateGame
 
                 //Setup actions
                 moveYawAction = new MoveYawAction(playerOneOrbitCameraController, sm.getSceneNode("playerOneDolphinNode"));
-                moveRightAction = new MoveRightAction(sm.getSceneNode("playerOneDolphinNode"), networkedClient);
-                moveFwdAction = new MoveFwdAction(sm.getSceneNode("playerOneDolphinNode"), networkedClient);
+                moveRightAction = new MoveRightAction(sm.getSceneNode("playerOneDolphinNode"), networkedClient, this);
+                moveFwdAction = new MoveFwdAction(sm.getSceneNode("playerOneDolphinNode"), networkedClient, this);
 
                 // Iterate over all input devices
                 for (int index = 0; index < controllerList.size(); index++) 
@@ -302,5 +327,29 @@ public class MyGame extends VariableFrameRateGame
 
                         }
                 }
+        }
+        public void updateVerticalPosition() {
+        	SceneNode dolphinN = this.getEngine().getSceneManager().getSceneNode("playerOneDolphinNode");
+        	SceneNode tessN = this.getEngine().getSceneManager().getSceneNode("tessN");
+        	Tessellation tessE = ((Tessellation) tessN.getAttachedObject("tessE"));
+        	// Figure out Avatar's position relative to plane
+        	Vector3 worldAvatarPosition = dolphinN.getWorldPosition();
+        	// ensure the update only happens when the dolphin is over the terrain node
+        	if (Math.abs(tessN.getWorldPosition().x() - worldAvatarPosition.x()) < tessN.getWorldScale().x()/2 &&
+        		Math.abs(tessN.getWorldPosition().z() - worldAvatarPosition.z()) < tessN.getWorldScale().z()/2 &&
+        		tessN.getWorldPosition().y() >= tessN.getWorldPosition().y()) {
+        		Vector3 localAvatarPosition = dolphinN.getLocalPosition();
+            	// use avatar World coordinates to get coordinates for height
+            	Vector3 newAvatarPosition = Vector3f.createFrom(
+            	// Keep the X coordinate
+            	localAvatarPosition.x(),
+            	// The Y coordinate is the varying height
+            	tessE.getWorldHeight(worldAvatarPosition.x(), worldAvatarPosition.z()),
+            	//Keep the Z coordinate
+            	localAvatarPosition.z()
+            	);
+            	// use avatar Local coordinates to set position, including height
+            	dolphinN.setLocalPosition(newAvatarPosition);
+        	}
         }
 }

@@ -64,9 +64,7 @@ public class OrbitCameraController
         //If the controller passed is a gamepad
         if (controller.getType() == Controller.Type.GAMEPAD)
         {
-        	System.out.println(controller.getName());
         	if (controller.getName().contains("Wireless Controller")) {
-        		System.out.println("test");
         		//TODO: Assign proper PS4 controls for orbitAroundAction
 				im.associateAction(controller, net.java.games.input.Component.Identifier.Button._4, orbitAroundAction,
 						InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);

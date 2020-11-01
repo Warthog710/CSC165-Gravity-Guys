@@ -2,17 +2,20 @@ package myGameEngine;
 
 import ray.input.action.AbstractInputAction;
 import ray.rage.scene.*;
+import a3.MyGame;
 import net.java.games.input.Event;
 
 public class MoveFwdAction extends AbstractInputAction 
 {
     private SceneNode target;
     private NetworkedClient nc;
+    private MyGame game;
 
-    public MoveFwdAction(SceneNode target, NetworkedClient nc) 
+    public MoveFwdAction(SceneNode target, NetworkedClient nc, MyGame game) 
     {
         this.target = target;
         this.nc = nc;
+        this.game = game;
     }
 
     // Move forward or backwards 5.0f every 1000ms or 1 second (assuming axis value = 1)
@@ -24,7 +27,8 @@ public class MoveFwdAction extends AbstractInputAction
 
         //Move forward .005f units every 1ms
         target.moveForward(-(time * e.getValue()) / 200);
-
+        game.updateVerticalPosition();
+        
         //Check if dolphin left the world plane...
         if (Math.abs(target.getLocalPosition().x()) > 50 || Math.abs(target.getLocalPosition().z()) > 50)
         {
