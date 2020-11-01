@@ -10,7 +10,7 @@ public class MoveFwdAction extends AbstractInputAction
     private SceneNode target;
     private NetworkedClient nc;
     private ScriptManager scriptMan;
-    private MyGame = game;
+    private MyGame game;
 
     public MoveFwdAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, MyGame game) 
     {
