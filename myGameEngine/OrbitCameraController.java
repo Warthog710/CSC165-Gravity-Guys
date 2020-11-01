@@ -69,9 +69,22 @@ public class OrbitCameraController
         //If the controller passed is a gamepad
         if (controller.getType() == Controller.Type.GAMEPAD)
         {
-            im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.RX, orbitAroundAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN); 
-            im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.RY, orbitElevationAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-            im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.POV, orbitRadiusAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+        	if (controller.getName().contains("Wireless Controller")) {
+        		//TODO: Assign proper PS4 controls for orbitAroundAction
+				im.associateAction(controller, net.java.games.input.Component.Identifier.Button._4, orbitAroundAction,
+						InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				im.associateAction(controller, net.java.games.input.Component.Identifier.Button._5, orbitAroundAction,
+						InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.RZ, orbitElevationAction,
+						InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+				im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.POV, orbitRadiusAction,
+						InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+			}
+        	else {
+	            im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.RX, orbitAroundAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN); 
+	            im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.RY, orbitElevationAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+	            im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.POV, orbitRadiusAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+        	}
         }
     }
     
