@@ -2,6 +2,8 @@ package myServer;
 
 import java.util.UUID;
 
+//This class is ran in a thread alongside the server. It periodicaly detects and removes clients
+//that have exceeded the maximum time out. Currently 30sec
 public class DeadClient implements Runnable
 {
     private GameServer myGameServer;
@@ -21,7 +23,7 @@ public class DeadClient implements Runnable
             for (UUID id : myGameServer.clientInfo.keySet())
             {
                 //Remove a client if its been inactive for 1min
-                if (cTime - myGameServer.clientInfo.get(id).lastKeepAlive >= 60000)
+                if ((cTime - myGameServer.clientInfo.get(id).lastKeepAlive) >= 30000)
                 {
                     //Forcibly say bye
                     System.out.println("Forcibly removed inactive client " + id);

@@ -66,7 +66,7 @@ public class GameServer extends GameConnectionServer<UUID>
             if (msgTokens[0].compareTo("WANTDETAILSFOR") == 0)
             {
                 //Send back details for the requested client
-                processWANTDETAILSFOR(UUID.fromString(msgTokens[1]), UUID.fromString(msgTokens[2]));
+                processWANTDETAILSFOR(UUID.fromString(msgTokens[1]), UUID.fromString(msgTokens[2]), Long.parseLong(msgTokens[3]));
             }
 
             //Check for UPDATEFOR msg
@@ -137,15 +137,19 @@ public class GameServer extends GameConnectionServer<UUID>
 
     //Processes a WANTDETAILSFOR and sends info back about the wanted client
     //! Just position information at the moment.
-    private void processWANTDETAILSFOR(UUID clientID, UUID wantID)
+    private void processWANTDETAILSFOR(UUID clientID, UUID wantID, long lastUpdateTime)
     {
         try
         {
             //If the requested client exists
             if (clientInfo.containsKey(wantID))
             {
-                String msg = new String("DETAILSFOR," + wantID.toString() + clientInfo.get(wantID).pos);
-                sendPacket(msg, clientID);
+                //Only send a packet if an update has actually occured
+                if (clientInfo.get(wantID).lastUpdate > lastUpdateTime)
+                {
+                    String msg = new String("DETAILSFOR," + wantID.toString() + clientInfo.get(wantID).pos);
+                    sendPacket(msg, clientID);
+                }
             }
         }
         catch (IOException e)
@@ -160,11 +164,17 @@ public class GameServer extends GameConnectionServer<UUID>
     {
         String pos = "," + msgTokens[2] + "," + msgTokens[3] + "," + msgTokens[4];
         UUID updateFor = UUID.fromString(msgTokens[1]);
+        Long updateTime = Long.parseLong(msgTokens[5]);
 
-        //If the client exists
+        //If the client exists update it
         if (clientInfo.containsKey(updateFor))
         {
-            clientInfo.get(updateFor).pos = pos;
+            //Only update the client if the currently held location is out of date
+            if (updateTime > clientInfo.get(updateFor).lastUpdate)
+            {
+                clientInfo.get(updateFor).pos = pos;
+                clientInfo.get(updateFor).lastUpdate = System.currentTimeMillis();
+            }
         }
     }
 

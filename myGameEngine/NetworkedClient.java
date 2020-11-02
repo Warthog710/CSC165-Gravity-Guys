@@ -2,6 +2,7 @@ package myGameEngine;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.UUID;
 
 import a3.MyGame;
@@ -16,6 +17,7 @@ public class NetworkedClient extends GameConnectionClient
     private MyGame myGame;
     private UUID id;
     private float timeSinceLastKeepAlive;
+    private HashMap<UUID, Long> lastUpdate;
 
     //Public boolean to determine whether we are connected to a server
     public boolean isConnected;
@@ -33,7 +35,8 @@ public class NetworkedClient extends GameConnectionClient
         this.ghosts = ghosts;
         this.id = UUID.randomUUID();   
         this.isConnected = false; 
-        this.timeSinceLastKeepAlive = 0.0f;    
+        this.timeSinceLastKeepAlive = 0.0f;  
+        this.lastUpdate = new HashMap<>();  
     }
 
     //Overloaded version of processpackets implements additional functionality
@@ -155,9 +158,10 @@ public class NetworkedClient extends GameConnectionClient
 
         try
         {
-            for (UUID wantID : ghosts.activeGhosts)
+            for (UUID wantID : lastUpdate.keySet())
             {
-                String msg = new String("WANTDETAILSFOR," + id.toString() + "," + wantID.toString());            
+                //Send last update time. Server only returns an update if something has happened
+                String msg = new String("WANTDETAILSFOR," + id.toString() + "," + wantID.toString() + "," + lastUpdate.get(wantID));            
                 sendPacket(msg);
             }
         }
@@ -186,6 +190,7 @@ public class NetworkedClient extends GameConnectionClient
             msg += "," + sm.getSceneNode(nodeName).getLocalPosition().x();
             msg += "," + sm.getSceneNode(nodeName).getLocalPosition().y();
             msg += "," + sm.getSceneNode(nodeName).getLocalPosition().z();
+            msg += "," + System.currentTimeMillis();
 
             sendPacket(msg);
         }
@@ -252,6 +257,9 @@ public class NetworkedClient extends GameConnectionClient
         {
             e.printStackTrace();
         }  
+
+        //Record ghost with new update time
+        lastUpdate.put(UUID.fromString(msgTokens[1]), System.currentTimeMillis());
     }
 
     //! Only processes position information at the moment
@@ -264,14 +272,22 @@ public class NetworkedClient extends GameConnectionClient
 
         //If the ghost exists... update it
         if (ghosts.activeGhosts.contains(detailsFor))
-        {
             ghosts.updateGhostPosition(detailsFor, ghostPos);
-        }
+
+        //Update last update time
+        if (lastUpdate.containsKey(detailsFor))
+            lastUpdate.put(detailsFor, System.currentTimeMillis());
     }
 
     private void processBYE(UUID leavingID)
     {
-        ghosts.removeGhost(leavingID);
+        //If the ghost exists remove the ghost
+        if (ghosts.activeGhosts.contains(leavingID))
+            ghosts.removeGhost(leavingID);
+
+        //Also remove if it exists from the update tracker
+        if (lastUpdate.containsKey(leavingID))
+            lastUpdate.remove(leavingID);
     }
 
     private void processFORCEDBYE()
@@ -280,5 +296,8 @@ public class NetworkedClient extends GameConnectionClient
         {
             ghosts.removeGhost(ghosts.activeGhosts.get(count));
         }
+
+        //Empty last update
+        lastUpdate.clear();
     }
 }
