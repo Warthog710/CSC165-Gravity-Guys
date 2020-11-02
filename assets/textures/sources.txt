@@ -1,0 +1,11 @@
+craterHeightMap.png                 Created using the online tool https://terrain.party/
+craterNormal.png                    Created using the open-source tool hosted at https://cpetry.github.io/NormalMap-Online/
+default.png                         Packaged with RAGE
+hexagons.jpeg                       Packaged with RAGE
+rock.jpg                            Downloaded from https://cc0textures.com/view?id=Rock032 under CC0
+water.jpg                           Downloaded from https://3dtextures.me/2018/11/29/water-002/ under CC0 
+waterHeight.png                     Downloaded from https://3dtextures.me/2018/11/29/water-002/ under CC0 
+waterNormal.jpg                     Downloaded from https://3dtextures.me/2018/11/29/water-002/ under CC0 
+water2.jpg                          Downloaded from https://3dtextures.me/2017/12/28/water-001/ under CC0
+waterHeight2.png                    Downloaded from https://3dtextures.me/2017/12/28/water-001/ under CC0
+waterNormal2.jpg                    Downloaded from https://3dtextures.me/2017/12/28/water-001/ under CC0

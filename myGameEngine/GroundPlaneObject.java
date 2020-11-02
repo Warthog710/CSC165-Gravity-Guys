@@ -57,7 +57,7 @@ public class GroundPlaneObject
         groundPlaneSec.setTextureCoordsBuffer(texBuf);
         groundPlaneSec.setNormalsBuffer(normBuf);
         groundPlaneSec.setIndexBuffer(indexBuf);
-        Texture tex = engine.getTextureManager().getAssetByPath("oceanWater.jpg");
+        Texture tex = engine.getTextureManager().getAssetByPath("default.png");
         TextureState texState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
         texState.setTexture(tex);
         FrontFaceState faceState = (FrontFaceState) sm.getRenderSystem().createRenderState(RenderState.Type.FRONT_FACE);
