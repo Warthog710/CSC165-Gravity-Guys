@@ -6,6 +6,7 @@
 
 * ***runServer.bat*** compiles and runs the server. A default port number (89) is passed. If you wish to change this. Change the parameter that is passed inside the batch file.
 
+**IMPORTANT:** Please list sources for textures in source.txt files in the associated directory (if none exists please make one) this will make citing assets at the end much further. Please see the one I made for some textures if you are unsure about formatting.
 
 #### **Basic Networking Implementation Info:**
 **Client Features:**
@@ -33,7 +34,7 @@
 - [ ] Have game server print out public IP
 
 #### **Basic Scripting Implementation Info:**
-* All scripting operations are managed by the  *ScriptManager* class. This class can be passed a script file name (Ex: "test.js") and it will load the file into its local script engine (do this in setup scene). The variables in this file can be called using the *getValue(fileName, variableName)* method. When called, the script manager automatically checks for an updated value before returning.
+* All scripting operations are managed by the  *ScriptManager* class. This class can be passed a script file name (Ex: "test.js") and it will load the file into its local script engine (do this in setup scene). The variables in this file can be called using the *getValue(variableName)* method. When called, the script manager returns an object that will need to be cast to what you are expecting. To check for updates, call *checkUpdates(fileName)*. It returns true if the file was updated (after performing the update) or false if no update was detected.
 * **Note:** the ScriptManager assumes all scripts are located in the *scripts* folder!
 * **Note 2:** Deprecation warnings for *Nashorn* have been hidden. Ideally GraalVM would be used but this would require packing its source with our game... Not Ideal.
 * **IMPORTANT:** Moving forward please try to incorporate game constants into script files. You are free and welcome to make new script files!
