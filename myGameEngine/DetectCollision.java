@@ -6,7 +6,7 @@ import ray.rage.scene.Node;
 import ray.rage.scene.SceneManager;
 import ray.rml.*;
 
-//This class is able to detect collision on a perfect sphere ONLY!!!
+//! This class is able to detect collision on a perfect sphere ONLY!!!
 public class DetectCollision 
 {
     public static Node planetCollisions(SceneManager sm, Vector3f newPos) 

@@ -11,6 +11,7 @@ public class MoveRightAction extends AbstractInputAction
     private NetworkedClient nc;
     private ScriptManager scriptMan;
     private MyGame game;
+    private float movementMult;
 
     public MoveRightAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, MyGame game) 
     {
@@ -18,6 +19,7 @@ public class MoveRightAction extends AbstractInputAction
         this.nc = nc;
         this.scriptMan = scriptMan;
         this.game = game;
+        this.movementMult = Float.parseFloat(scriptMan.getValue("horizontalMovementMultiplier").toString());
     }
 
     // Move left or right 5.0f every 1000ms or 1 second (assuming axis value = 1)
@@ -27,11 +29,14 @@ public class MoveRightAction extends AbstractInputAction
         if (e.getValue() > -.2 && e.getValue() < .2)
             return;
 
-        //Get movement multiplier
-        float movementMult = Float.parseFloat(scriptMan.getValue("movementInfo.js", "horizontalMovementMultiplier").toString());
+        //Updates horizontal speed, if a script update occured
+        if (scriptMan.scriptUpdate("movementInfo.js"))
+            movementMult = Float.parseFloat(scriptMan.getValue("horizontalMovementMultiplier").toString()); 
 
         //Move right .005f units every 1ms
         target.moveRight(-(time * e.getValue()) * movementMult / 200);
+
+        //Update avatar vertical position
         game.updateVerticalPosition();
 
         //Tell the networked client that an update is required

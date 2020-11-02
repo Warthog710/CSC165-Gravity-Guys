@@ -9,7 +9,6 @@ import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 //Suppresses removal warning for Nashorn
 @SuppressWarnings("removal")
-
 public class ScriptManager 
 {
     private ScriptEngine engine;
@@ -43,15 +42,21 @@ public class ScriptManager
         }
     }
 
-    //Returns a generic object. You will need to cast to the variable type you expect
-    public Object getValue(String fileName, String variable)
+    //Puts a variable in the engine.
+    public void putObjectInEngine(String name, Object obj)
     {
-        //Check for update and return requested value
-        checkForUpdate(fileName);
+        this.engine.put(name, obj);
+    }
+
+    //Returns a generic object. You will need to cast to what you expect
+    public Object getValue(String variable)
+    {
+        //Return requested value
         return engine.get(variable);
     }
 
-    private void checkForUpdate(String fileName)
+    //Updates a script and returns true if an update occured, else false is returned.
+    public boolean scriptUpdate(String fileName)
     {
         try
         {
@@ -66,11 +71,15 @@ public class ScriptManager
 
                 //Record the new modification time
                 scriptMod.replace(fileName, fp.lastModified());
+                return true;
             }
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
+
+        //No update... return false
+        return false;
     }    
 }

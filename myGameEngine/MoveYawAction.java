@@ -10,12 +10,14 @@ public class MoveYawAction extends AbstractInputAction
     private OrbitCameraController oc;
     private ScriptManager scriptMan;
     private SceneNode target;
+    private float avatarYawSpeed;
 
     public MoveYawAction(OrbitCameraController oc, SceneNode target, ScriptManager scriptMan) 
     {
         this.oc = oc;
         this.scriptMan = scriptMan;
         this.target = target;
+        this.avatarYawSpeed = Float.parseFloat(scriptMan.getValue("avatarYawSpeed").toString());  
     }
 
     // A full rotation takes 5 sec
@@ -25,8 +27,9 @@ public class MoveYawAction extends AbstractInputAction
         if (e.getValue() > -.2 && e.getValue() < .2)
             return;
 
-        //Get yaw speed
-        float avatarYawSpeed = Float.parseFloat(scriptMan.getValue("movementInfo.js", "avatarYawSpeed").toString());     
+        //Updates yaw speed, if a script update occured
+        if (scriptMan.scriptUpdate("movementInfo.js"))
+            avatarYawSpeed = Float.parseFloat(scriptMan.getValue("avatarYawSpeed").toString());   
 
         //Global Yaw
         Vector3 worldUp = Vector3f.createFrom(0.0f, 1.0f, 0.0f);

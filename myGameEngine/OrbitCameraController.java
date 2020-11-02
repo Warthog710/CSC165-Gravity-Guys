@@ -18,7 +18,6 @@ public class OrbitCameraController
     private boolean isPitched;
     private ScriptManager scriptMan;
 
-
     private Action orbitAroundAction, orbitElevationAction, orbitRadiusAction;
 
     public OrbitCameraController(SceneNode cameraN, SceneNode target, InputManager im, ScriptManager scriptMan)
@@ -29,9 +28,9 @@ public class OrbitCameraController
         //Set initial values
         this.cameraN = cameraN;
         this.target = target;
-        this.azimuth = Float.parseFloat(this.scriptMan.getValue("movementInfo.js", "orbitStartingAzimuth").toString());
-        this.elevation = Float.parseFloat(this.scriptMan.getValue("movementInfo.js", "orbitStartingElevation").toString());
-        this.radius = Float.parseFloat(this.scriptMan.getValue("movementInfo.js", "orbitStartingRadius").toString());
+        this.azimuth = Float.parseFloat(this.scriptMan.getValue("orbitStartingAzimuth").toString());
+        this.elevation = Float.parseFloat(this.scriptMan.getValue("orbitStartingElevation").toString());
+        this.radius = Float.parseFloat(this.scriptMan.getValue("orbitStartingRadius").toString());
         this.currentPitch = 0.0f;
         this.isPitched = false;
 
@@ -90,6 +89,13 @@ public class OrbitCameraController
     
     private class OrbitAroundAction extends AbstractInputAction
     {
+        private float azimuthSpeed;
+
+        public OrbitAroundAction()
+        {
+            azimuthSpeed = Float.parseFloat(scriptMan.getValue("cameraAzimuthSpeed").toString());
+        }
+
         public void performAction(float time, net.java.games.input.Event evt)
         {
             float rotateAmount = 0.0f;
@@ -98,8 +104,10 @@ public class OrbitCameraController
             if (evt.getValue() > -.2 && evt.getValue() < .2)
                 return;
 
-            //Get azimuth speed
-            float azimuthSpeed = Float.parseFloat(scriptMan.getValue("movementInfo.js", "cameraAzimuthSpeed").toString());
+            //Updates azimuth speed, if a script update occured
+            if (scriptMan.scriptUpdate("movementInfo.js"))
+                azimuthSpeed = Float.parseFloat(scriptMan.getValue("cameraAzimuthSpeed").toString());
+
 
             rotateAmount = evt.getValue() * azimuthSpeed * time;
 
@@ -111,14 +119,22 @@ public class OrbitCameraController
 
     private class OrbitElevationAction extends AbstractInputAction
     {
+        private float elevationSpeed;
+
+        public OrbitElevationAction()
+        {
+            elevationSpeed = Float.parseFloat(scriptMan.getValue("cameraElevationSpeed").toString());
+        }
+
         public void performAction(float time, net.java.games.input.Event evt)
         {
             //Deazone
             if (evt.getValue() > -.2 && evt.getValue() < .2)
                 return;
 
-            //Get elevation speed
-            float elevationSpeed = Float.parseFloat(scriptMan.getValue("movementInfo.js", "cameraElevationSpeed").toString());
+            //Updates elevation speed, if a script update occured
+            if (scriptMan.scriptUpdate("movementInfo.js"))
+                elevationSpeed = Float.parseFloat(scriptMan.getValue("cameraElevationSpeed").toString());
 
             //If camera is not pitched, move the elevation
             if (!isPitched)
@@ -174,19 +190,27 @@ public class OrbitCameraController
     {
         private float ZOOM_MAX;
         private float ZOOM_MIN;
+        private float radiusSpeed;
 
         public OrbitRadiusAction()
         {
             //Floats for zoom max and zoom min. The camera will never go beyond these
-            ZOOM_MAX = Float.parseFloat(scriptMan.getValue("movementInfo.js", "zoomMax").toString());
-            ZOOM_MIN = Float.parseFloat(scriptMan.getValue("movementInfo.js", "zoomMin").toString());
+            ZOOM_MAX = Float.parseFloat(scriptMan.getValue("zoomMax").toString());
+            ZOOM_MIN = Float.parseFloat(scriptMan.getValue("zoomMin").toString());
+            radiusSpeed = Float.parseFloat(scriptMan.getValue("cameraRadiusSpeed").toString());
         }
 
         public void performAction(float time, net.java.games.input.Event evt)
         {
             float radiusAmount = 0.0f;
 
-            float radiusSpeed = Float.parseFloat(scriptMan.getValue("movementInfo.js", "cameraRadiusSpeed").toString());
+            //Updates radius speed & min/max if an update occured
+            if (scriptMan.scriptUpdate("movementInfo.js"))
+            {
+                ZOOM_MAX = Float.parseFloat(scriptMan.getValue("zoomMax").toString());
+                ZOOM_MIN = Float.parseFloat(scriptMan.getValue("zoomMin").toString());
+                radiusSpeed = Float.parseFloat(scriptMan.getValue("cameraRadiusSpeed").toString());
+            }
 
             //POV hat forward button is pressed
             if (evt.getValue() == .25)
