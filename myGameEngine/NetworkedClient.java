@@ -11,25 +11,63 @@ import ray.rml.Vector3f;
 
 public class NetworkedClient extends GameConnectionClient 
 {
+    private ScriptManager scriptMan;
     private GhostAvatars ghosts;
     private MyGame myGame;
     private UUID id;
+    private float timeSinceLastKeepAlive;
 
     //Public boolean to determine whether we are connected to a server
     public boolean isConnected;
 
     //These variables are set to determine what updates need to be sent to the server
-    boolean updatePositionOnServer = false;  
+    protected boolean updatePositionOnServer = false;  
 
     //Creates a UDP client
-    public NetworkedClient(InetAddress remoteAddr, int remotePort, GhostAvatars ghosts, MyGame myGame) throws IOException 
+    public NetworkedClient(InetAddress remoteAddr, int remotePort, GhostAvatars ghosts, ScriptManager scriptMan, MyGame myGame) throws IOException 
     {
         super(remoteAddr, remotePort, ProtocolType.UDP);
 
+        this.scriptMan = scriptMan;
         this.myGame = myGame;
         this.ghosts = ghosts;
         this.id = UUID.randomUUID();   
-        this.isConnected = false;     
+        this.isConnected = false; 
+        this.timeSinceLastKeepAlive = 0.0f;    
+    }
+
+    //Overloaded version of processpackets implements additional functionality
+    public void processPackets(float timeElapsed) 
+    {
+        //If the client is connected. Ask for updates and send updates if necessary
+        if (isConnected)
+        {
+            //Ask for details from the server
+            sendWANTDETAILSFOR();
+                
+            //Send an update to the server (only will send if an update has actually occured)
+            sendUPDATEFOR(scriptMan.getValue("avatarName").toString() + "Node");
+        }
+        //Else, try to connect to a server (allows the game to connect to a server even if it starts after...)
+        else
+        {
+            sendJOIN(scriptMan.getValue("avatarName").toString() + "Node");
+        }
+        
+        //Process packets that have arrived
+        processPackets();       
+        
+        //If a certain amount of time has happened... send a keep alive message
+        timeSinceLastKeepAlive += timeElapsed;
+        
+        //Every 10 seconds send a keepAlive if connected
+        if (timeSinceLastKeepAlive > 10000f && isConnected)
+        {
+            sendKeepAlive();
+        
+            //Reset timer
+            timeSinceLastKeepAlive = 0.0f;
+        }
     }
 
     @Override
@@ -73,6 +111,12 @@ public class NetworkedClient extends GameConnectionClient
             if (msgTokens[0].compareTo("BYE") == 0)
             {
                 processBYE(UUID.fromString(msgTokens[1]));
+            }
+
+            //Server forcibly removed this client... Just in case
+            if (msgTokens[0].compareTo("FORCEDBYE") == 0)
+            {
+                processFORCEDBYE();
             }
         }
     } 
@@ -172,6 +216,24 @@ public class NetworkedClient extends GameConnectionClient
         }        
     }
 
+    private void sendKeepAlive()
+    {
+        //If I'm not connected to a server... don't try it
+        if (!isConnected)
+            return;
+        
+        //Send a keep alive
+        try
+        {
+            String msg = new String("KEEPALIVE," + id.toString());
+            sendPacket(msg);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private void processCREATE(String[] msgTokens)
     {
         //Fixes a weird networking bug where multiple ghosts with the same ID were being added...
@@ -181,7 +243,7 @@ public class NetworkedClient extends GameConnectionClient
         Vector3f ghostPos = (Vector3f) Vector3f.createFrom(Float.parseFloat(msgTokens[2]),
         Float.parseFloat(msgTokens[3]), Float.parseFloat(msgTokens[4]));
   
-        //Attemp to create a new ghost
+        //Attempt to create a new ghost
         try
         {
             ghosts.addGhost(UUID.fromString(msgTokens[1]), ghostPos); 
@@ -210,5 +272,13 @@ public class NetworkedClient extends GameConnectionClient
     private void processBYE(UUID leavingID)
     {
         ghosts.removeGhost(leavingID);
+    }
+
+    private void processFORCEDBYE()
+    {
+        for (int count = 0; count < ghosts.activeGhosts.size(); count++)
+        {
+            ghosts.removeGhost(ghosts.activeGhosts.get(count));
+        }
     }
 }

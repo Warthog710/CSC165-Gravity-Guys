@@ -5,24 +5,31 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.UUID;
 
 import ray.networking.server.GameConnectionServer;
 import ray.networking.server.IClientInfo;
 
-//TODO: Handle condition that a client exits without saying goodbye... Timeout?
-
 //This game server uses UDP
 public class GameServer extends GameConnectionServer<UUID>
 {
-    HashMap<UUID, ClientInfo> clientInfo;
+    protected volatile Map<UUID, ClientInfo> clientInfo;
+    protected volatile boolean threadRunning;
+    private Thread detectDeadClient;
+
+    //Shutdown hook for hopefully closing the server properly... I think...
+    private Runtime current;
 
     //Call super to create a UDP server
     public GameServer(int localPort) throws IOException 
     {
         super(localPort, ProtocolType.UDP);
-        this.clientInfo = new HashMap<>();
+
+        //Synchronized thread safe map
+        this.clientInfo = Collections.synchronizedMap(new HashMap<UUID, ClientInfo>());
 
         //Get public IP using a web service
         URL myIp = new URL("http://checkip.amazonaws.com");
@@ -33,6 +40,16 @@ public class GameServer extends GameConnectionServer<UUID>
         System.out.println("Game server created...");
         System.out.println("Public: " + IP + ":" + localPort);
         System.out.println("Local: " +  InetAddress.getLocalHost().getHostAddress().trim() + ":" + localPort);
+
+        //Create a thread to detect clients that need to be removed
+        threadRunning = true;
+        Runnable runnable = new DeadClient(this);
+        detectDeadClient = new Thread(runnable);
+        detectDeadClient.start();
+
+        //Intilize shutdown hook
+        current = Runtime.getRuntime();
+        current.addShutdownHook(new Shutdown());
     }
 
     @Override
@@ -57,6 +74,12 @@ public class GameServer extends GameConnectionServer<UUID>
             {
                 //Update details for the client passed
                 processUPDATEFOR(msgTokens);
+            }
+
+            //Check for KEEPALIVE msg
+            if (msgTokens[0].compareTo("KEEPALIVE") == 0)
+            {
+                processKEEPALIVE(msgTokens);
             }
 
             //Check for JOIN msg
@@ -156,6 +179,9 @@ public class GameServer extends GameConnectionServer<UUID>
                 //Remove client from clientInfo
                 clientInfo.remove(leavingID);
 
+                //Remove from server
+                removeClient(leavingID);
+
                 //Forward BYE msg to all other clients
                 forwardPacketToAll(msg, leavingID);
             }
@@ -164,6 +190,31 @@ public class GameServer extends GameConnectionServer<UUID>
         {
             e.printStackTrace();
         }
+    }
+
+    //Called by the thread to forcibly make a client leave
+    protected void processForcedBYE(UUID leavingID)
+    {
+        //Send forced bye in case client is still listening...
+        try
+        {
+            sendPacket("FORCEDBYE", leavingID);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        //Inform other clients of the change
+        String msg = new String("BYE," + leavingID.toString());
+        processBYE(msg, leavingID);
+    }
+
+    //Tells the server to keep a client active (client sends this msg every 10 seconds)
+    private void processKEEPALIVE(String[] msgTokens)
+    {
+        //Update time of last keep alive
+        clientInfo.get(UUID.fromString(msgTokens[1])).lastKeepAlive = System.currentTimeMillis();
     }
     
     private void sendCreateMessages(UUID clientID, String position)
@@ -209,5 +260,16 @@ public class GameServer extends GameConnectionServer<UUID>
         {
             e.printStackTrace();
         }
+    }
+
+    private class Shutdown extends Thread
+    {
+        public void run()
+        {
+            threadRunning = false;
+            detectDeadClient.interrupt();
+            System.out.println("Server shutting down...");
+        }
+
     }
 }

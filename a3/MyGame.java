@@ -192,24 +192,15 @@ public class MyGame extends VariableFrameRateGame
                 {
                         networkedClient = new NetworkedClient(
                                 InetAddress.getByName(scriptMan.getValue("serverAddress").toString()),
-                                Integer.parseInt(scriptMan.getValue("serverPort").toString()), ghosts, this);
+                                Integer.parseInt(scriptMan.getValue("serverPort").toString()), ghosts, scriptMan, this);
                 }
                 catch (Exception e)
                 {
                         e.printStackTrace();
                 }
 
-                //Verify client was setup correctly
-                if (networkedClient == null)
-                {
-                        System.out.println("Missing network host...");
-                }
-                //Else, send a join msg to the server
-                else
-                {
-                        //Send name of the node that is joining & will be tracked...
-                        networkedClient.sendJOIN(scriptMan.getValue("avatarName").toString() + "Node");
-                }
+                //Send a join msg
+                networkedClient.sendJOIN(scriptMan.getValue("avatarName").toString() + "Node");
         }
 
         @Override
@@ -245,27 +236,11 @@ public class MyGame extends VariableFrameRateGame
                 //Process inputs
                 im.update(elapsTime - lastUpdateTime);
 
+                //Update network info
+                networkedClient.processPackets(elapsTime - lastUpdateTime);
+
                 //Update orbit camera controllers
                 orbitCamera.updateCameraPosition();
-
-                //TODO: Integrate all calls to the network in one method call
-                //Update network info
-                networkedClient.processPackets();
-
-                //If I'm connected to a server
-                if (networkedClient.isConnected)
-                {
-                        //Ask for details from the server
-                        networkedClient.sendWANTDETAILSFOR();
-
-                        //Send an update to the server (only will send if an update has actually occured)
-                        networkedClient.sendUPDATEFOR(scriptMan.getValue("avatarName").toString() + "Node");
-                }
-                //Else, try to connect to a server (allows the game to connect to a server even if it starts after...)
-                else
-                {
-                        networkedClient.sendJOIN(scriptMan.getValue("avatarName").toString() + "Node");
-                }
 
                 // Record last update in MS
                 lastUpdateTime = elapsTime;
