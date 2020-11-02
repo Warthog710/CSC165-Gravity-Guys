@@ -23,10 +23,15 @@ with (JavaPackages)
     var terrainTessScale = Vector3f.createFrom(50, 400, 40);
     var waterTessScale = Vector3f.createFrom(27, 10, 20);
     var waterPos = Vector3f.createFrom(0, 1.7, 0);
+	
+	//Level values (2x vector3f)
+	var levelScale = Vector3f.createFrom(1, 1, 1);
+	var levelPos = Vector3f.createFrom(0, 0, 30);
 
     //! DO NOT CHANGE DURING RUNTIME
     var terrainName = "terrainTess"
     var waterName = "waterTess"
     var avatarName = "playerAvatar"
+	var levelName = "levelOne"
 }
 

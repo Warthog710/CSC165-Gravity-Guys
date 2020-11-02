@@ -119,7 +119,7 @@ public class MyGame extends VariableFrameRateGame
 
                 //Set up point light
                 Light plight = (Light)scriptMan.getValue("pLight");        		
-        	SceneNode plightNode = sm.getRootSceneNode().createChildSceneNode(scriptMan.getValue("lightName").toString());
+                SceneNode plightNode = sm.getRootSceneNode().createChildSceneNode(scriptMan.getValue("lightName").toString());
                 plightNode.attachObject(plight);
                 plightNode.setLocalPosition((Vector3f)scriptMan.getValue("pLightPos"));
 
@@ -152,6 +152,12 @@ public class MyGame extends VariableFrameRateGame
                 waterTessNode.attachObject(waterE);
                 waterTessNode.scale((Vector3f)scriptMan.getValue("waterTessScale"));
                 waterTessNode.setLocalPosition((Vector3f)scriptMan.getValue("waterPos"));
+                
+                //Load level one
+                LevelOne level = new LevelOne(sm);
+                SceneNode level1N = level.loadLevelObjects();
+                level1N.scale((Vector3f)scriptMan.getValue("levelScale"));
+                level1N.setLocalPosition((Vector3f)scriptMan.getValue("levelPos"));
                 
                 //Create input manager
                 im = new GenericInputManager();
@@ -354,6 +360,7 @@ public class MyGame extends VariableFrameRateGame
                 String avatarName = scriptMan.getValue("avatarName").toString();
                 String terrainName = scriptMan.getValue("terrainName").toString();
                 String waterName = scriptMan.getValue("waterName").toString();
+                String levelName = scriptMan.getValue("levelName").toString();
 
                 //Update avatar pos
                 sm.getSceneNode(avatarName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
@@ -373,6 +380,10 @@ public class MyGame extends VariableFrameRateGame
                 tessE.setSubdivisions(tessSubdivisions);
                 waterE.setQuality(tessQuality);
                 waterE.setSubdivisions(tessSubdivisions);
+                
+                //Update level one
+                sm.getSceneNode(levelName + "Node").setLocalScale((Vector3f)scriptMan.getValue("levelScale"));
+                sm.getSceneNode(levelName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("levelPos"));
         }
 
         private void setupSkybox(Engine eng) throws IOException
