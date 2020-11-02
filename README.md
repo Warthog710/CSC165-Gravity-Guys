@@ -37,3 +37,4 @@
 * **Note:** the ScriptManager assumes all scripts are located in the *scripts* folder!
 * **Note 2:** Deprecation warnings for *Nashorn* have been hidden. Ideally GraalVM would be used but this would require packing its source with our game... Not Ideal.
 * **IMPORTANT:** Moving forward please try to incorporate game constants into script files. You are free and welcome to make new script files!
+test
