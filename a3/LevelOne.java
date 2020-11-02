@@ -1,7 +1,6 @@
 package a3;
 
 import java.io.IOException;
-
 import myGameEngine.ScriptManager;
 import ray.rage.rendersystem.Renderable.Primitive;
 import ray.rage.scene.Entity;
