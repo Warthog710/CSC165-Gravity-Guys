@@ -15,7 +15,7 @@
 - [x] Client can ask WANTSDETAILSFOR to getall currenntly active clients information (currently only avatar position)
 - [x] Client can say BYE and leave the server
 - [x] Client can join a server even if the server is not active during startup (server polling)
-- [x] Client reads serverIP and serverPort number from the gameVariables script
+- [x] Client reads serverIP and serverPort number from the gameVariables script 
 
 **Server Features:**
 - [x] Server holds the info of all clients inside of a Hashmap
