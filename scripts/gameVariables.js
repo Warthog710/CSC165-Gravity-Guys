@@ -42,14 +42,14 @@ with (JavaPackages)
 	
 
     //! DO NOT CHANGE DURING RUNTIME
-    var terrainName = "terrainTess"
-    var waterName = "waterTess"
-    var avatarName = "playerAvatar"
-	var levelName = "levelOne"
-	var startPlatName = "startingPlatform"
-	var plat1Name = "platform1"
-	var plat2Name = "platform2"
-	var wishbonePlatName = "wishbonePlatform"
-	var wedgePlatName = "wedgePlatform"
+    var terrainName = "terrainTess";
+    var waterName = "waterTess";
+    var avatarName = "playerAvatar";
+	var levelName = "levelOne";
+	var startPlatName = "startingPlatform";
+	var plat1Name = "platform1";
+	var plat2Name = "platform2";
+	var wishbonePlatName = "wishbonePlatform";
+	var wedgePlatName = "wedgePlatform";
 }
 
