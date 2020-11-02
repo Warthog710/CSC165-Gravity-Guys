@@ -1,7 +1,10 @@
 package myServer;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -20,9 +23,16 @@ public class GameServer extends GameConnectionServer<UUID>
     {
         super(localPort, ProtocolType.UDP);
         this.clientInfo = new HashMap<>();
-        System.out.println("Game Server Created at " +  InetAddress.getLocalHost().getHostAddress().trim() + ":" + localPort);
 
-        //Put that information in a file
+        //Get public IP using a web service
+        URL myIp = new URL("http://checkip.amazonaws.com");
+        BufferedReader in = new BufferedReader(new InputStreamReader(myIp.openStream()));
+        String IP = in.readLine();
+
+        //Print startup info
+        System.out.println("Game server created...");
+        System.out.println("Public: " + IP + ":" + localPort);
+        System.out.println("Local: " +  InetAddress.getLocalHost().getHostAddress().trim() + ":" + localPort);
     }
 
     @Override
