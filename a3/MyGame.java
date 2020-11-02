@@ -154,7 +154,7 @@ public class MyGame extends VariableFrameRateGame
                 waterTessNode.setLocalPosition((Vector3f)scriptMan.getValue("waterPos"));
                 
                 //Load level one
-                LevelOne level = new LevelOne(sm);
+                LevelOne level = new LevelOne(sm, scriptMan);
                 SceneNode level1N = level.loadLevelObjects();
                 level1N.scale((Vector3f)scriptMan.getValue("levelScale"));
                 level1N.setLocalPosition((Vector3f)scriptMan.getValue("levelPos"));
@@ -361,6 +361,12 @@ public class MyGame extends VariableFrameRateGame
                 String terrainName = scriptMan.getValue("terrainName").toString();
                 String waterName = scriptMan.getValue("waterName").toString();
                 String levelName = scriptMan.getValue("levelName").toString();
+                
+                String startPlatName = scriptMan.getValue("startPlatName").toString();
+                String plat1Name = scriptMan.getValue("plat1Name").toString();
+                String plat2Name = scriptMan.getValue("plat2Name").toString();
+                String wishbonePlatName = scriptMan.getValue("wishbonePlatName").toString();
+                String wedgePlatName = scriptMan.getValue("wedgePlatName").toString();
 
                 //Update avatar pos
                 sm.getSceneNode(avatarName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
@@ -384,6 +390,16 @@ public class MyGame extends VariableFrameRateGame
                 //Update level one
                 sm.getSceneNode(levelName + "Node").setLocalScale((Vector3f)scriptMan.getValue("levelScale"));
                 sm.getSceneNode(levelName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("levelPos"));
+                sm.getSceneNode(startPlatName + "Node").setLocalScale((Vector3f)scriptMan.getValue("startPlatScale"));
+                sm.getSceneNode(startPlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("startPlatPos"));
+                sm.getSceneNode(plat1Name + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat1Scale"));
+                sm.getSceneNode(plat1Name + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat1Pos"));
+                sm.getSceneNode(plat2Name + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat2Scale"));
+                sm.getSceneNode(plat2Name + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat2Pos"));
+                sm.getSceneNode(wishbonePlatName + "Node").setLocalScale((Vector3f)scriptMan.getValue("wishbonePlatScale"));
+                sm.getSceneNode(wishbonePlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("wishbonePlatPos"));
+                sm.getSceneNode(wedgePlatName + "Node").setLocalScale((Vector3f)scriptMan.getValue("wedgePlatScale"));
+                sm.getSceneNode(wedgePlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));
         }
 
         private void setupSkybox(Engine eng) throws IOException
