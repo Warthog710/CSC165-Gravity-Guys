@@ -58,17 +58,13 @@ public class MyGame extends VariableFrameRateGame
 
         public MyGame()
         {
+                //Call parent constructor
+                super();
+
                 //Setup script manager and load initial script files    
                 scriptMan = new ScriptManager();  
                 scriptMan.loadScript("gameVariables.js");
                 scriptMan.loadScript("movementInfo.js");
-        }
-
-        @Override
-        public void shutdown() 
-        {
-                //TODO: This is only called if "ESC" is used to exit the game... Need this to work even if the window is closed manually...
-                networkedClient.sendBYE();
         }
 
         @Override
@@ -83,7 +79,6 @@ public class MyGame extends VariableFrameRateGame
                 //Creates a fixed window... this is quicker for testing
                 rs.createRenderWindow(new DisplayMode(1400, 900, 24, 60), false);
                 rs.getRenderWindow().setTitle("Final Project (NAME TBD)");
-
         }
 
         @Override
@@ -175,6 +170,9 @@ public class MyGame extends VariableFrameRateGame
 
                 //Configure controller(s)
                 setupInputs(sm.getCamera(scriptMan.getValue("cameraName").toString()), sm, eng.getRenderSystem().getRenderWindow());
+
+                //Setup shutdown hook
+                Runtime.getRuntime().addShutdownHook(new NetworkShutdownHook(networkedClient));
         }
 
         protected void setupOrbitCamera(SceneManager sm) 
