@@ -12,7 +12,7 @@ var JavaPackages = new JavaImporter
 with (JavaPackages)
 {
     //Create point light
-    var lightName = "pLight1"
+    var lightName = "pLight1";
     var pLightPos = Vector3f.createFrom(0, 8, 0);
     var pLight = sm.createLight("pLight1", Light.Type.POINT);
     pLight.setAmbient(new Color(.1, .1, .1));
