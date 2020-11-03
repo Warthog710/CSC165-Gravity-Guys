@@ -9,11 +9,13 @@ public class ClientInfo
     protected String pos;
     protected long lastKeepAlive;
     protected long lastUpdate;
+    protected String rotation;
 
-    protected ClientInfo(UUID clientID, String pos)
+    protected ClientInfo(UUID clientID, String pos, String rotation)
     {
         this.clientID = clientID;
         this.pos = pos;
+        this.rotation = rotation;
         this.lastKeepAlive = System.currentTimeMillis();
         this.lastUpdate = System.currentTimeMillis();
     }

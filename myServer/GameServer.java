@@ -115,14 +115,17 @@ public class GameServer extends GameConnectionServer<UUID>
                 addClient(client, clientID);
         
                 String pos = "," + msgTokens[2] + "," + msgTokens[3] + "," + msgTokens[4];
+                String rotation = "," + msgTokens[5] + "," + msgTokens[6] + "," + msgTokens[7] + "," + msgTokens[8]
+                + "," + msgTokens[9] + "," + msgTokens[10] + "," + msgTokens[11] + "," + msgTokens[12] + ","
+                + msgTokens[13];
         
                 //Add the client to the HashMap
-                clientInfo.put(clientID, new ClientInfo(clientID, pos));
+                clientInfo.put(clientID, new ClientInfo(clientID, pos, rotation));
         
                 //If we have more than 1 client... Inform them of the new client
                 if (getClients().size() > 1)
                 {
-                    sendCreateMessages(clientID, pos);
+                    sendCreateMessages(clientID, pos, rotation);
                 }
 
                 //Log join
@@ -147,7 +150,7 @@ public class GameServer extends GameConnectionServer<UUID>
                 //Only send a packet if an update has actually occured
                 if (clientInfo.get(wantID).lastUpdate > lastUpdateTime)
                 {
-                    String msg = new String("DETAILSFOR," + wantID.toString() + clientInfo.get(wantID).pos);
+                    String msg = new String("DETAILSFOR," + wantID.toString() + clientInfo.get(wantID).pos + clientInfo.get(wantID).rotation);
                     sendPacket(msg, clientID);
                 }
             }
@@ -162,7 +165,64 @@ public class GameServer extends GameConnectionServer<UUID>
     //! Just position information at the moment
     private void processUPDATEFOR(String[] msgTokens)
     {
-        String pos = "," + msgTokens[2] + "," + msgTokens[3] + "," + msgTokens[4];
+        UUID updatefor = UUID.fromString(msgTokens[2]);
+        long updateTime = Long.parseLong(msgTokens[msgTokens.length - 1]);
+
+        //If msg contains POS
+        if (msgTokens[1].compareTo("POS") == 0)
+        {
+            //If the client exists update it
+            if (clientInfo.containsKey(updatefor))
+            {
+                //Only if the update is not out of date
+                if (updateTime > clientInfo.get(updatefor).lastUpdate)
+                {
+                    String pos = "," + msgTokens[3] + "," + msgTokens[4] + "," + msgTokens[5];
+                    clientInfo.get(updatefor).pos = pos;
+                    clientInfo.get(updatefor).lastUpdate = System.currentTimeMillis();
+                }
+            }
+        }
+
+        else if (msgTokens[1].compareTo("ORIENT") == 0)
+        {
+            //If the client exists update it
+            if (clientInfo.containsKey(updatefor))
+            {
+                //Only if the update is not out of date
+                if (updateTime > clientInfo.get(updatefor).lastUpdate)
+                {
+                    String rotation = "," + msgTokens[3] + "," + msgTokens[4] + "," + msgTokens[5] + "," + msgTokens[6] + ","
+                            + msgTokens[7] + "," + msgTokens[8] + "," + msgTokens[9] + "," + msgTokens[10] + ","
+                            + msgTokens[11];
+
+                    clientInfo.get(updatefor).rotation = rotation;
+                    clientInfo.get(updatefor).lastUpdate = System.currentTimeMillis();
+                }
+            }
+        }
+        else
+        {
+            //If the client exists update it
+            if (clientInfo.containsKey(updatefor))
+            {
+                //Only if the update is not out of date
+                if (updateTime > clientInfo.get(updatefor).lastUpdate)
+                {
+                    String pos = "," + msgTokens[3] + "," + msgTokens[4] + "," + msgTokens[5];
+
+                    String rotation = "," + msgTokens[6] + "," + msgTokens[7] + "," + msgTokens[8] + "," + msgTokens[9]
+                            + "," + msgTokens[10] + "," + msgTokens[11] + "," + msgTokens[12] + "," + msgTokens[13] + ","
+                            + msgTokens[14];
+
+                    clientInfo.get(updatefor).pos = pos;
+                    clientInfo.get(updatefor).rotation = rotation;
+                    clientInfo.get(updatefor).lastUpdate = System.currentTimeMillis();
+                }
+            }
+        }
+
+        /*String pos = "," + msgTokens[2] + "," + msgTokens[3] + "," + msgTokens[4];
         UUID updateFor = UUID.fromString(msgTokens[1]);
         Long updateTime = Long.parseLong(msgTokens[5]);
 
@@ -175,7 +235,7 @@ public class GameServer extends GameConnectionServer<UUID>
                 clientInfo.get(updateFor).pos = pos;
                 clientInfo.get(updateFor).lastUpdate = System.currentTimeMillis();
             }
-        }
+        }*/
     }
 
     //Process a BYE msg
@@ -227,13 +287,15 @@ public class GameServer extends GameConnectionServer<UUID>
         clientInfo.get(UUID.fromString(msgTokens[1])).lastKeepAlive = System.currentTimeMillis();
     }
     
-    private void sendCreateMessages(UUID clientID, String position)
+    private void sendCreateMessages(UUID clientID, String position, String rotation)
     {
         //Send a create msg to all clients other than the client that joined
         try
         {
             String msg = new String("CREATE," + clientID.toString());
-            msg += position;
+            msg += position + rotation;
+
+            System.out.println(msg);
 
             forwardPacketToAll(msg, clientID);
         }
@@ -259,7 +321,7 @@ public class GameServer extends GameConnectionServer<UUID>
                 {
                     //Send a create msg
                     String msg = new String("CREATE," + ci.clientID.toString());
-                    msg += ci.pos;
+                    msg += ci.pos + ci.rotation;
 
                     sendPacket(msg, clientID);
                 }

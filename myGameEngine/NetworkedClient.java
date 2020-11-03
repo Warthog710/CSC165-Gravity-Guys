@@ -8,6 +8,7 @@ import java.util.UUID;
 import a3.MyGame;
 import ray.networking.client.GameConnectionClient;
 import ray.rage.scene.SceneManager;
+import ray.rml.Matrix3f;
 import ray.rml.Vector3f;
 
 public class NetworkedClient extends GameConnectionClient 
@@ -24,6 +25,7 @@ public class NetworkedClient extends GameConnectionClient
 
     //These variables are set to determine what updates need to be sent to the server
     protected boolean updatePositionOnServer = false;  
+    protected boolean updateOrientationOnServer = false;
 
     //Creates a UDP client
     public NetworkedClient(InetAddress remoteAddr, int remotePort, GhostAvatars ghosts, ScriptManager scriptMan, MyGame myGame) throws IOException 
@@ -139,7 +141,15 @@ public class NetworkedClient extends GameConnectionClient
             String msg = new String("JOIN," + id.toString());
             msg += "," + sm.getSceneNode(nodeName).getLocalPosition().x();
             msg += "," + sm.getSceneNode(nodeName).getLocalPosition().y();
-            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().z();
+            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().z() + ",";
+
+            
+            //Pack rotation matrix
+            float[] temp = sm.getSceneNode(nodeName).getLocalRotation().toFloatArray();
+            for (int count = 0; count < sm.getSceneNode(nodeName).getLocalRotation().toFloatArray().length; count++)
+                    msg += temp[count] + ",";
+
+            msg += System.currentTimeMillis();
 
             sendPacket(msg);
         }
@@ -178,20 +188,62 @@ public class NetworkedClient extends GameConnectionClient
             return;
 
         //If no movement has taken place... don't send an update
-        if (!updatePositionOnServer)
+        if (!updatePositionOnServer && !updateOrientationOnServer)
             return;
 
         SceneManager sm = myGame.getEngine().getSceneManager();
+        String msg;
 
-        //Attempt to send an update
-        try
+        //if just no movement send just orientation
+        if (!updatePositionOnServer)
         {
-            String msg = new String("UPDATEFOR," + id.toString());
+            msg = new String("UPDATEFOR," + "ORIENT," + id.toString() + ",");
+
+            //Pack rotation matrix
+            float[] temp = sm.getSceneNode(nodeName).getLocalRotation().toFloatArray();
+            for (int count = 0; count < sm.getSceneNode(nodeName).getLocalRotation().toFloatArray().length; count++)
+                msg += temp[count] + ",";
+
+            msg += System.currentTimeMillis();
+
+            updateOrientationOnServer = false;;
+        }
+
+        else if (!updateOrientationOnServer)
+        {
+            //Build msg
+            msg = new String("UPDATEFOR," + "POS," + id.toString());
             msg += "," + sm.getSceneNode(nodeName).getLocalPosition().x();
             msg += "," + sm.getSceneNode(nodeName).getLocalPosition().y();
             msg += "," + sm.getSceneNode(nodeName).getLocalPosition().z();
             msg += "," + System.currentTimeMillis();
 
+            updatePositionOnServer = false;
+        }
+
+        else
+        {
+            //Build msg
+            msg = new String("UPDATEFOR," + "BOTH," + id.toString());
+            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().x();
+            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().y();
+            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().z();
+            msg += ",";
+
+            //Pack rotation matrix
+            float[] temp = sm.getSceneNode(nodeName).getLocalRotation().toFloatArray();
+            for (int count = 0; count < sm.getSceneNode(nodeName).getLocalRotation().toFloatArray().length; count++)
+                msg += temp[count] + ",";
+            
+            msg += System.currentTimeMillis();
+
+            updatePositionOnServer = false;
+            updateOrientationOnServer = false;
+        }
+
+        //Attempt to send the update
+        try
+        {
             sendPacket(msg);
         }
         catch (IOException e)
@@ -247,11 +299,19 @@ public class NetworkedClient extends GameConnectionClient
 
         Vector3f ghostPos = (Vector3f) Vector3f.createFrom(Float.parseFloat(msgTokens[2]),
         Float.parseFloat(msgTokens[3]), Float.parseFloat(msgTokens[4]));
+
+        float[] temp = new float[9];
+
+        //Iterate through msg and get the rotation matrix float array
+        for (int count = 0; count < 9; count++)
+            temp[count] = Float.parseFloat(msgTokens[count + 5]);
+
+        Matrix3f rotation = (Matrix3f)Matrix3f.createFrom(temp);  
   
         //Attempt to create a new ghost
         try
         {
-            ghosts.addGhost(UUID.fromString(msgTokens[1]), ghostPos); 
+            ghosts.addGhost(UUID.fromString(msgTokens[1]), ghostPos, rotation); 
         }
         catch (IOException e)
         {
@@ -262,17 +322,25 @@ public class NetworkedClient extends GameConnectionClient
         lastUpdate.put(UUID.fromString(msgTokens[1]), System.currentTimeMillis());
     }
 
-    //! Only processes position information at the moment
+    //? Processes both position and rotation
     private void processDETAILSFOR(String[] msgTokens)
     {
         Vector3f ghostPos = (Vector3f) Vector3f.createFrom(Float.parseFloat(msgTokens[2]),
         Float.parseFloat(msgTokens[3]), Float.parseFloat(msgTokens[4]));
 
+        float[] temp = new float[9];
+
+        //Iterate through msg and get the rotation matrix float array
+        for (int count = 0; count < 9; count++)
+            temp[count] = Float.parseFloat(msgTokens[count + 5]);
+
+        Matrix3f rotation = (Matrix3f)Matrix3f.createFrom(temp);            
+
         UUID detailsFor = UUID.fromString(msgTokens[1]);
 
         //If the ghost exists... update it
         if (ghosts.activeGhosts.contains(detailsFor))
-            ghosts.updateGhostPosition(detailsFor, ghostPos);
+            ghosts.updateGhostPosition(detailsFor, ghostPos, rotation);
 
         //Update last update time
         if (lastUpdate.containsKey(detailsFor))

@@ -240,7 +240,7 @@ public class MyGame extends VariableFrameRateGame
                 //Update orbit camera controllers
                 orbitCamera.updateCameraPosition();
 
-                // Record last update in MS
+                //Record last update in MS
                 lastUpdateTime = elapsTime;
         }
 
@@ -250,7 +250,7 @@ public class MyGame extends VariableFrameRateGame
                 String target = scriptMan.getValue("avatarName").toString() + "Node";
 
                 //Setup actions
-                moveYawAction = new MoveYawAction(orbitCamera, sm.getSceneNode(target), scriptMan);
+                moveYawAction = new MoveYawAction(orbitCamera, sm.getSceneNode(target), scriptMan, networkedClient);
                 moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, this);
                 moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, this);
 

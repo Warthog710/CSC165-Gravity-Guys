@@ -8,6 +8,7 @@ import ray.rage.rendersystem.Renderable.Primitive;
 import ray.rage.scene.Entity;
 import ray.rage.scene.SceneManager;
 import ray.rage.scene.SceneNode;
+import ray.rml.Matrix3f;
 import ray.rml.Vector3f;
 
 public class GhostAvatars
@@ -23,7 +24,7 @@ public class GhostAvatars
     }
 
     //Creates a ghost avatar... eventually have them choose an avatar and pass it...
-    public void addGhost(UUID ghostID, Vector3f pos) throws IOException
+    public void addGhost(UUID ghostID, Vector3f pos, Matrix3f rotation) throws IOException
     {
         //Create entity (cube for now)
         Entity ghostE = sm.createEntity("ghostEntity" + ghostID.toString(), "cube.obj");
@@ -34,8 +35,9 @@ public class GhostAvatars
         ghostN.attachObject(ghostE);
         ghostN.setLocalScale(0.5f, 0.5f, 0.5f);
 
-        //Set position
+        //Set position & rotation
         ghostN.setLocalPosition(pos);
+        ghostN.setLocalRotation(rotation);
 
         //Add to active ghosts
         activeGhosts.add(ghostID);
@@ -53,8 +55,9 @@ public class GhostAvatars
         System.out.println("Deleted ghost avatar " + ghostID);
     }
 
-    public void updateGhostPosition(UUID ghostID, Vector3f pos)
+    public void updateGhostPosition(UUID ghostID, Vector3f pos, Matrix3f rotation)
     {
         sm.getSceneNode("ghostNode" + ghostID.toString()).setLocalPosition(pos);
+        sm.getSceneNode("ghostNode" + ghostID.toString()).setLocalRotation(rotation);
     }
 }
