@@ -147,8 +147,10 @@ public class GameServer extends GameConnectionServer<UUID>
             //If the requested client exists
             if (clientInfo.containsKey(wantID))
             {
+                //! This is causing a bug??? HUH?
+                //TODO: Fix me!
                 //Only send a packet if an update has actually occured
-                if (clientInfo.get(wantID).lastUpdate > lastUpdateTime)
+                //if (clientInfo.get(wantID).lastUpdate > lastUpdateTime)
                 {
                     String msg = new String("DETAILSFOR," + wantID.toString() + clientInfo.get(wantID).pos + clientInfo.get(wantID).rotation);
                     sendPacket(msg, clientID);
@@ -284,7 +286,9 @@ public class GameServer extends GameConnectionServer<UUID>
     private void processKEEPALIVE(String[] msgTokens)
     {
         //Update time of last keep alive
-        clientInfo.get(UUID.fromString(msgTokens[1])).lastKeepAlive = System.currentTimeMillis();
+        if (clientInfo.containsKey(UUID.fromString(msgTokens[1])))
+            clientInfo.get(UUID.fromString(msgTokens[1])).lastKeepAlive = System.currentTimeMillis();
+
     }
     
     private void sendCreateMessages(UUID clientID, String position, String rotation)
