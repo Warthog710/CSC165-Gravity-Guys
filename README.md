@@ -9,29 +9,7 @@
 **IMPORTANT:** Please list sources for textures in source.txt files in the associated directory (if none exists please make one) this will make citing assets at the end much further. Please see the one I made for some textures if you are unsure about formatting.
 
 #### **Basic Networking Implementation Info:**
-**Client Features:**
-- [x] Client can join server
-- [x] Client can send updates to the server update its position (currently only avatar position)
-- [x] Client can ask WANTSDETAILSFOR to getall currenntly active clients information (currently only avatar position)
-- [x] Client can say BYE and leave the server
-- [x] Client can join a server even if the server is not active during startup (server polling)
-- [x] Client reads serverIP and serverPort number from the gameVariables script 
-
-**Server Features:**
-- [x] Server holds the info of all clients inside of a Hashmap
-- [x] Server sends CREATE messages to all other clients when a new client joins
-- [x] Server sends BYE message to all other clients when a client leaves
-- [x] Server informs a newly joined client that connection was sucessfull with a CONFIRM response
-- [x] Server informs a newly joined client of all other clients information through a series of CREATE messages
-- [x] Server sends a DETAILSFOR msg in response to a WANTSDETAILSFOR if the user the client existed exists
-
-**TODO:**
-- [ ] A client only sends BYE if the "ESC" key is used to exit the game. This needs to be called in all cases.
-- [ ] If a client fails to say bye, the server is stuck with that client... Implement a timeout?
-- [ ] Instead of requesting details for a single active client. Perform one request and the server responds with new details for all active clients. Only if an update has occured since the last time the specific client has asked...
-- [ ] Pass a timestamp in the packet since you cannot rely on order in UDP. This prevents overwriting a newer position with an older position
-- [ ] Merge all calls to NetworkedClient in MyGame.update() to a single call... This will clean up the code a bit.
-- [ ] Have game server print out public IP
+* Client server info is recorded in the *gameVariables.js* script file. To connect to a different server change these values. Currently N clients are supported. The server faciliates updates between these clients by sending updates when requested. It currently supports both position and rotation.
 
 #### **Basic Scripting Implementation Info:**
 * All scripting operations are managed by the  *ScriptManager* class. This class can be passed a script file name (Ex: "test.js") and it will load the file into its local script engine (do this in setup scene). The variables in this file can be called using the *getValue(variableName)* method. When called, the script manager returns an object that will need to be cast to what you are expecting. To check for updates, call *checkUpdates(fileName)*. It returns true if the file was updated (after performing the update) or false if no update was detected.
