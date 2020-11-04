@@ -17,6 +17,7 @@ import ray.rage.scene.Camera.Frustum.*;
 import ray.rml.Vector3;
 import ray.rml.Vector3f;
 import ray.rage.rendersystem.gl4.GL4RenderSystem;
+import ray.rage.rendersystem.states.TextureState;
 import ray.input.*;
 import ray.input.action.*;
 
@@ -128,25 +129,17 @@ public class MyGame extends VariableFrameRateGame
                 //Set up terrain
                 Tessellation tessE = sm.createTessellation(scriptMan.getValue("terrainName").toString(), tessQuality);
                 tessE.setSubdivisions(tessSubdivisions);
-                tessE.setHeightMap(eng, "craterHeightMap.png");
+                tessE.setHeightMap(eng, "tileableHeightMap.png");
+                tessE.setNormalMap(eng, "tileableNormal.png");
                 tessE.setTexture(eng, "rock.jpg");
-                tessE.setNormalMap(eng, "craterNormal.png");
+                tessE.getTextureState().setWrapMode(TextureState.WrapMode.REPEAT);
+                tessE.setHeightMapTiling(Integer.parseInt(scriptMan.getValue("heightTiling").toString()));
+                tessE.setNormalMapTiling(Integer.parseInt(scriptMan.getValue("normalTiling").toString()));
+                tessE.setTextureTiling(Integer.parseInt(scriptMan.getValue("textureTiling").toString()));
 
                 SceneNode tessN = sm.getRootSceneNode().createChildSceneNode(tessE.getName() + "Node");
                 tessN.attachObject(tessE);
                 tessN.scale((Vector3f)scriptMan.getValue("terrainTessScale"));
-
-                //Let their be water! (I KNOW!!!)
-                Tessellation waterE = sm.createTessellation(scriptMan.getValue("waterName").toString(), tessQuality);
-                waterE.setSubdivisions(tessSubdivisions);
-                waterE.setHeightMap(eng, "waterHeight.png");
-                waterE.setTexture(eng, "water.jpg");
-                waterE.setNormalMap(eng, "waterNormal.jpg");
-                
-                SceneNode waterTessNode = sm.getRootSceneNode().createChildSceneNode(waterE.getName() + "Node");
-                waterTessNode.attachObject(waterE);
-                waterTessNode.scale((Vector3f)scriptMan.getValue("waterTessScale"));
-                waterTessNode.setLocalPosition((Vector3f)scriptMan.getValue("waterPos"));
                 
                 //Load level one
                 LevelOne level = new LevelOne(sm, scriptMan);
@@ -330,9 +323,7 @@ public class MyGame extends VariableFrameRateGame
 
         private void updateGameVariables(SceneManager sm)
         {
-                String avatarName = scriptMan.getValue("avatarName").toString();
                 String terrainName = scriptMan.getValue("terrainName").toString();
-                String waterName = scriptMan.getValue("waterName").toString();
                 String levelName = scriptMan.getValue("levelName").toString();
                 
                 String startPlatName = scriptMan.getValue("startPlatName").toString();
@@ -341,24 +332,18 @@ public class MyGame extends VariableFrameRateGame
                 String wishbonePlatName = scriptMan.getValue("wishbonePlatName").toString();
                 String wedgePlatName = scriptMan.getValue("wedgePlatName").toString();
 
-                //Update avatar pos
-                sm.getSceneNode(avatarName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
-                updateVerticalPosition();
-
                 //Update Tesselation
                 sm.getSceneNode(terrainName + "Node").setLocalScale((Vector3f)scriptMan.getValue("terrainTessScale"));
-                sm.getSceneNode(waterName + "Node").setLocalScale((Vector3f)scriptMan.getValue("waterTessScale"));
-                sm.getSceneNode(waterName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("waterPos"));
 
                 Tessellation tessE = (Tessellation)sm.getSceneNode(terrainName + "Node").getAttachedObject(terrainName);
-                Tessellation waterE = (Tessellation)sm.getSceneNode(waterName + "Node").getAttachedObject(waterName);
                 int tessQuality = Integer.parseInt(scriptMan.getValue("tessQuality").toString());
                 float tessSubdivisions = Float.parseFloat(scriptMan.getValue("tessSubdivisions").toString());
 
                 tessE.setQuality(tessQuality);
                 tessE.setSubdivisions(tessSubdivisions);
-                waterE.setQuality(tessQuality);
-                waterE.setSubdivisions(tessSubdivisions);
+                tessE.setHeightMapTiling(Integer.parseInt(scriptMan.getValue("heightTiling").toString()));
+                tessE.setNormalMapTiling(Integer.parseInt(scriptMan.getValue("normalTiling").toString()));
+                tessE.setTextureTiling(Integer.parseInt(scriptMan.getValue("textureTiling").toString()));
                 
                 //Update level one
                 sm.getSceneNode(levelName + "Node").setLocalScale((Vector3f)scriptMan.getValue("levelScale"));
