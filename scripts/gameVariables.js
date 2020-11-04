@@ -20,13 +20,14 @@ with (JavaPackages)
     //Tesselation values (int, float, 3x vector3f)
     var tessQuality = 9;
     var tessSubdivisions = 8.0;
-    var terrainTessScale = Vector3f.createFrom(50, 400, 40);
-    var waterTessScale = Vector3f.createFrom(27, 10, 20);
-    var waterPos = Vector3f.createFrom(0, 1.7, 0);
+	var terrainTessScale = Vector3f.createFrom(200, 600, 200);
+	var heightTiling = 4;
+	var normalTiling = 4;
+	var textureTiling = 4;
 	
 	//Level values (2x vector3f)
 	var levelScale = Vector3f.createFrom(1, 1, 1);
-	var levelPos = Vector3f.createFrom(0, 0, 30);
+	var levelPos = Vector3f.createFrom(0, 20, 0);
 	
 	//Level object values
 	var startPlatScale = Vector3f.createFrom(1.5, 1, 2);
