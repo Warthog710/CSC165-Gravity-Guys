@@ -18,7 +18,7 @@ with (JavaPackages)
     var hudY = 15;
 
     //Tesselation values (int, float, 3x vector3f)
-    var tessQuality = 9;
+    var tessQuality = 7;
     var tessSubdivisions = 8.0;
 	var terrainTessScale = Vector3f.createFrom(200, 600, 200);
 	var heightTiling = 4;

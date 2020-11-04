@@ -28,6 +28,9 @@ public class DeadClient implements Runnable
                     //Forcibly say bye
                     System.out.println("Forcibly removed inactive client " + id);
                     myGameServer.processForcedBYE(id);
+
+                    //! Breaking after forcibly removing a client solves the concurrent modifcaiton error for a for each loop
+                    break;
                 }
             }
 

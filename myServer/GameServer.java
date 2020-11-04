@@ -223,21 +223,6 @@ public class GameServer extends GameConnectionServer<UUID>
                 }
             }
         }
-
-        /*String pos = "," + msgTokens[2] + "," + msgTokens[3] + "," + msgTokens[4];
-        UUID updateFor = UUID.fromString(msgTokens[1]);
-        Long updateTime = Long.parseLong(msgTokens[5]);
-
-        //If the client exists update it
-        if (clientInfo.containsKey(updateFor))
-        {
-            //Only update the client if the currently held location is out of date
-            if (updateTime > clientInfo.get(updateFor).lastUpdate)
-            {
-                clientInfo.get(updateFor).pos = pos;
-                clientInfo.get(updateFor).lastUpdate = System.currentTimeMillis();
-            }
-        }*/
     }
 
     //Process a BYE msg
@@ -298,9 +283,7 @@ public class GameServer extends GameConnectionServer<UUID>
         {
             String msg = new String("CREATE," + clientID.toString());
             msg += position + rotation;
-
-            System.out.println(msg);
-
+            
             forwardPacketToAll(msg, clientID);
         }
         catch(IOException e)

@@ -79,50 +79,65 @@ public class NetworkedClient extends GameConnectionClient
     protected void processPacket(Object myMsg)
     {
         String msg = (String) myMsg;
-        //System.out.println("Received msg: " + msg);
-        String[] msgTokens = msg.split(",");
 
-        //If the the msg list contains something...
-        if (msgTokens.length > 0)
+        //! Its possible to receive a null packet??? Handle this...
+        try
         {
-            //Check for DETAILSFOR msg
-            if (msgTokens[0].compareTo("DETAILSFOR") == 0)
-            {
-                processDETAILSFOR(msgTokens);
-            }
+            //System.out.println("Received msg: " + msg);
 
-            //Check for CREATE msg
-            if (msgTokens[0].compareTo("CREATE") == 0)
-            {
-                processCREATE(msgTokens);                       
-            }
+            String[] msgTokens = msg.split(",");
 
-            //Check for CONFIRM msg
-            if (msgTokens[0].compareTo("CONFIRM") == 0)
+
+
+            //If the the msg list contains something...
+            if (msgTokens.length > 0)
             {
-                //Server responded and client creation was successful
-                //Only do this if I'm not already connected
-                //NOTE: It is currently possible to recieve multiple confirm message...
-                //NOTE: This is because the game continously attempts to join a server...
-                //NOTE: Lets just ignore the others for now... ¯\_(ツ)_/¯
-                if (!isConnected)
+                //Check for DETAILSFOR msg
+                if (msgTokens[0].compareTo("DETAILSFOR") == 0)
                 {
-                    System.out.println("\nConfirm received... Connection successful");
-                    isConnected = true;
+                    processDETAILSFOR(msgTokens);
+                }
+
+                //Check for CREATE msg
+                if (msgTokens[0].compareTo("CREATE") == 0)
+                {
+                    processCREATE(msgTokens);                       
+                }
+
+                //Check for CONFIRM msg
+                if (msgTokens[0].compareTo("CONFIRM") == 0)
+                {
+                    //Server responded and client creation was successful
+                    //Only do this if I'm not already connected
+                    //NOTE: It is currently possible to recieve multiple confirm message...
+                    //NOTE: This is because the game continously attempts to join a server...
+                    //NOTE: Lets just ignore the others for now... ¯\_(ツ)_/¯
+                    if (!isConnected)
+                    {
+                        System.out.println("\nConfirm received... Connection successful");
+                        isConnected = true;
+                    }
+                }
+
+                //Check for BYE msg
+                if (msgTokens[0].compareTo("BYE") == 0)
+                {
+                    processBYE(UUID.fromString(msgTokens[1]));
+                }
+
+                //Server forcibly removed this client... Just in case
+                if (msgTokens[0].compareTo("FORCEDBYE") == 0)
+                {
+                    processFORCEDBYE();
                 }
             }
+        }
 
-            //Check for BYE msg
-            if (msgTokens[0].compareTo("BYE") == 0)
-            {
-                processBYE(UUID.fromString(msgTokens[1]));
-            }
-
-            //Server forcibly removed this client... Just in case
-            if (msgTokens[0].compareTo("FORCEDBYE") == 0)
-            {
-                processFORCEDBYE();
-            }
+        //! Handles a null packet
+        catch (NullPointerException e)
+        {
+            //Don't process this null packet
+            return;
         }
     } 
     
