@@ -78,7 +78,9 @@ public class MyGame extends VariableFrameRateGame
                 //dsd.isFullScreenModeSelected());
 
                 //Creates a fixed window... this is quicker for testing
-                rs.createRenderWindow(new DisplayMode(1400, 900, 24, 60), false);
+                rs.createRenderWindow(new DisplayMode(Integer.parseInt(scriptMan.getValue("windowWidth").toString()),
+                                Integer.parseInt(scriptMan.getValue("windowHeight").toString()), 24, 60), false);
+                                
                 rs.getRenderWindow().setTitle("Final Project (NAME TBD)");
         }
 

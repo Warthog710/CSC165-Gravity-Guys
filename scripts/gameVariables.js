@@ -7,10 +7,15 @@ var JavaPackages = new JavaImporter
 with (JavaPackages)
 {
     //Player avatar information
-    var avatarPos = Vector3f.createFrom(0, 0, 0);
+	var avatarPos = Vector3f.createFrom(0, 0, 0);
+	
+	//Default window size... Used only if the dialog box is not implemented
+	var windowWidth = 848;
+	var windowHeight = 477;
 
     //Server info (string, int)
-    var serverAddress = "172.17.50.17";
+	//var serverAddress = "172.17.50.17";
+	var serverAddress = "104.220.12.125";
     var serverPort = 89;
 
     //Hud position (int, int)
@@ -18,7 +23,7 @@ with (JavaPackages)
     var hudY = 15;
 
     //Tesselation values (int, float, 3x vector3f)
-    var tessQuality = 7;
+    var tessQuality = 5;
     var tessSubdivisions = 8.0;
 	var terrainTessScale = Vector3f.createFrom(200, 600, 200);
 	var heightTiling = 4;
