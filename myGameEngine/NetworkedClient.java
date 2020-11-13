@@ -39,6 +39,12 @@ public class NetworkedClient extends GameConnectionClient
         this.isConnected = false; 
         this.timeSinceLastKeepAlive = 0.0f;  
         this.lastUpdate = new HashMap<>();  
+
+        //Send a join
+        sendJOIN(scriptMan.getValue("avatarName").toString() + "Node");
+
+        //Setup shutdown hook
+        Runtime.getRuntime().addShutdownHook(new NetworkShutdownHook());
     }
 
     //Overloaded version of processpackets implements additional functionality
@@ -382,5 +388,15 @@ public class NetworkedClient extends GameConnectionClient
 
         //Empty last update
         lastUpdate.clear();
+    }
+
+    //Shutdown hook ensures that "BYE" is sent to the server (most of the time...)
+    private class NetworkShutdownHook extends Thread
+    {    
+        //Executes a bye to the server
+        public void run()
+        {
+            sendBYE();
+        }     
     }
 }

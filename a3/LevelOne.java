@@ -1,7 +1,10 @@
 package a3;
 
 import java.io.IOException;
+
+import myGameEngine.PhysicsManager;
 import myGameEngine.ScriptManager;
+import ray.rage.Engine;
 import ray.rage.rendersystem.Renderable.Primitive;
 import ray.rage.scene.Entity;
 import ray.rage.scene.SceneManager;
@@ -11,19 +14,27 @@ import ray.rml.Vector3f;
 
 public class LevelOne {
 
+    private Engine eng;
 	private SceneManager sm;
-	private ScriptManager scriptMan;
+    private ScriptManager scriptMan;
+    private PhysicsManager physMan;
 	
-	public LevelOne(SceneManager sm, ScriptManager scriptMan) {
-		this.sm = sm;
-		this.scriptMan = scriptMan;
+    public LevelOne(Engine eng, ScriptManager scriptMan, PhysicsManager physMan) 
+    {
+        this.eng = eng;
+		this.sm = eng.getSceneManager();
+        this.scriptMan = scriptMan;
+        this.physMan = physMan;
 	}
 	
 	//Loads all the level objects and returns the node group containing them
-	public SceneNode loadLevelObjects() throws IOException {
+    public SceneNode loadLevelObjects() throws IOException 
+    {
 		//Set up level objects
-        SceneNode levelN = sm.getRootSceneNode().createChildSceneNode("levelOneNode");
-        
+        SceneNode levelN = sm.getRootSceneNode().createChildSceneNode("levelOneNode");  
+        levelN.scale((Vector3f)scriptMan.getValue("levelScale"));
+        levelN.setLocalPosition((Vector3f)scriptMan.getValue("levelPos"));
+
         Entity startPlatE = sm.createEntity("startingPlatform", "groundPlatform.obj");
         startPlatE.setPrimitive(Primitive.TRIANGLES);
         SceneNode startPlatN = levelN.createChildSceneNode(startPlatE.getName() + "Node");
@@ -31,7 +42,7 @@ public class LevelOne {
         startPlatN.rotate(Degreef.createFrom(90), Vector3f.createFrom(0.0f, 1.0f, 0.0f));
         startPlatN.scale((Vector3f)scriptMan.getValue("startPlatScale"));
         startPlatN.setLocalPosition((Vector3f)scriptMan.getValue("startPlatPos"));
-        
+
         Entity plat1E = sm.createEntity("platform1", "groundPlatform.obj");
         plat1E.setPrimitive(Primitive.TRIANGLES);
         SceneNode plat1N = levelN.createChildSceneNode(plat1E.getName() + "Node");
@@ -59,9 +70,8 @@ public class LevelOne {
         SceneNode wedgePlatN = levelN.createChildSceneNode(wedgePlatE.getName() + "Node");
         wedgePlatN.attachObject(wedgePlatE);
         wedgePlatN.scale((Vector3f)scriptMan.getValue("wedgePlatScale"));
-        wedgePlatN.setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));
+        wedgePlatN.setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));   
         
         return levelN;
-	}
-	
+    }
 }

@@ -29,12 +29,14 @@ public class MyGame extends VariableFrameRateGame
 
         //Game Variables
         private NetworkedClient networkedClient;
+        private PhysicsManager physMan;
         private InputManager im;
         private ScriptManager scriptMan;
         private OrbitCameraController orbitCamera;
         private GhostAvatars ghosts;
         private float lastUpdateTime = 0.0f, elapsTime = 0.0f;
         private Action moveRightAction, moveFwdAction, moveYawAction;
+        private boolean runPhysics;
 
         public static void main(String[] args) 
         {
@@ -66,6 +68,10 @@ public class MyGame extends VariableFrameRateGame
                 scriptMan = new ScriptManager();  
                 scriptMan.loadScript("gameVariables.js");
                 scriptMan.loadScript("movementInfo.js");
+
+                //Setup physiscs manager
+                physMan = new PhysicsManager(-8f, scriptMan);
+                runPhysics = (boolean)scriptMan.getValue("runPhysSim");
         }
 
         @Override
@@ -78,7 +84,9 @@ public class MyGame extends VariableFrameRateGame
                 //dsd.isFullScreenModeSelected());
 
                 //Creates a fixed window... this is quicker for testing
-                rs.createRenderWindow(new DisplayMode(1400, 900, 24, 60), false);
+                rs.createRenderWindow(new DisplayMode(Integer.parseInt(scriptMan.getValue("windowWidth").toString()),
+                                Integer.parseInt(scriptMan.getValue("windowHeight").toString()), 24, 60), false);
+                                
                 rs.getRenderWindow().setTitle("Final Project (NAME TBD)");
         }
 
@@ -103,13 +111,13 @@ public class MyGame extends VariableFrameRateGame
                 scriptMan.loadScript("lights.js");
 
                 //Place player avatar
-                Entity dolphinE = sm.createEntity(scriptMan.getValue("avatarName").toString(), "dolphinHighPoly.obj");
-                dolphinE.setPrimitive(Primitive.TRIANGLES);
+                Entity avatarE = sm.createEntity(scriptMan.getValue("avatarName").toString(), "dolphinHighPoly.obj");
+                avatarE.setPrimitive(Primitive.TRIANGLES);
 
-                SceneNode dolphinN = sm.getRootSceneNode().createChildSceneNode(dolphinE.getName() + "Node");
-                dolphinN.attachObject(dolphinE);
-                dolphinN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
-                
+                SceneNode avatarN = sm.getRootSceneNode().createChildSceneNode(avatarE.getName() + "Node");
+                avatarN.attachObject(avatarE);
+                avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));              
+          
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));
 
@@ -142,11 +150,9 @@ public class MyGame extends VariableFrameRateGame
                 tessN.scale((Vector3f)scriptMan.getValue("terrainTessScale"));
                 
                 //Load level one
-                LevelOne level = new LevelOne(sm, scriptMan);
-                SceneNode level1N = level.loadLevelObjects();
-                level1N.scale((Vector3f)scriptMan.getValue("levelScale"));
-                level1N.setLocalPosition((Vector3f)scriptMan.getValue("levelPos"));
-                
+                LevelOne level = new LevelOne(eng, scriptMan, physMan);
+                level.loadLevelObjects();
+
                 //Create input manager
                 im = new GenericInputManager();
 
@@ -163,9 +169,6 @@ public class MyGame extends VariableFrameRateGame
 
                 //Configure controller(s)
                 setupInputs(sm.getCamera(scriptMan.getValue("cameraName").toString()), sm, eng.getRenderSystem().getRenderWindow());
-
-                //Setup shutdown hook
-                Runtime.getRuntime().addShutdownHook(new NetworkShutdownHook(networkedClient));
         }
 
         protected void setupOrbitCamera(SceneManager sm) 
@@ -189,9 +192,6 @@ public class MyGame extends VariableFrameRateGame
                 {
                         e.printStackTrace();
                 }
-
-                //Send a join msg
-                networkedClient.sendJOIN(scriptMan.getValue("avatarName").toString() + "Node");
         }
 
         @Override
@@ -227,6 +227,13 @@ public class MyGame extends VariableFrameRateGame
                 //Process inputs
                 im.update(elapsTime - lastUpdateTime);
 
+                //Process physiscs world and update objects
+                if (runPhysics)
+                {
+                        physMan.getEPhysicsEngine().update(elapsTime - lastUpdateTime);
+                        physMan.updatePhysicsObjects(engine.getSceneManager());
+                }
+
                 //Update network info
                 networkedClient.processPackets(elapsTime - lastUpdateTime);
 
@@ -244,8 +251,8 @@ public class MyGame extends VariableFrameRateGame
 
                 //Setup actions
                 moveYawAction = new MoveYawAction(orbitCamera, sm.getSceneNode(target), scriptMan, networkedClient);
-                moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, this);
-                moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, this);
+                moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan, this);
+                moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan, this);
 
                 // Iterate over all input devices
                 for (int index = 0; index < controllerList.size(); index++) 
@@ -307,6 +314,10 @@ public class MyGame extends VariableFrameRateGame
         	SceneNode avatarN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
         	SceneNode tessN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("terrainName").toString() + "Node");
                 Tessellation tessE = (Tessellation)tessN.getAttachedObject(scriptMan.getValue("terrainName").toString());
+
+                //Only execute if the avatar is close to ground zero
+                if (avatarN.getLocalPosition().y() > 2.0f)
+                        return;
                 
         	//Figure out Avatar's position relative to plane
                 Vector3 worldAvatarPosition = avatarN.getWorldPosition();               
@@ -323,6 +334,7 @@ public class MyGame extends VariableFrameRateGame
 
         private void updateGameVariables(SceneManager sm)
         {
+                System.out.println("Updating variables...");
                 String terrainName = scriptMan.getValue("terrainName").toString();
                 String levelName = scriptMan.getValue("levelName").toString();
                 
@@ -331,6 +343,13 @@ public class MyGame extends VariableFrameRateGame
                 String plat2Name = scriptMan.getValue("plat2Name").toString();
                 String wishbonePlatName = scriptMan.getValue("wishbonePlatName").toString();
                 String wedgePlatName = scriptMan.getValue("wedgePlatName").toString();
+                String startPhysicsPlane = scriptMan.getValue("startPhysicsPlane").toString();
+                //String plat1PhysicsPlane = scriptMan.getValue("plat1PhysicsPlane").toString();
+                //String plat2PhysicsPlane = scriptMan.getValue("plat2PhysicsPlane").toString();
+
+                //Update player position if "updateAvatarPos is true"
+                if ((Boolean)scriptMan.getValue("updateAvatarPos"))
+                        sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node").setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
 
                 //Update Tesselation
                 sm.getSceneNode(terrainName + "Node").setLocalScale((Vector3f)scriptMan.getValue("terrainTessScale"));
@@ -358,6 +377,27 @@ public class MyGame extends VariableFrameRateGame
                 sm.getSceneNode(wishbonePlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("wishbonePlatPos"));
                 sm.getSceneNode(wedgePlatName + "Node").setLocalScale((Vector3f)scriptMan.getValue("wedgePlatScale"));
                 sm.getSceneNode(wedgePlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));
+
+                //Update level one physics ground planes
+                sm.getSceneNode(startPhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("startPhysicsPlanePos"));
+                sm.getSceneNode(startPhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("startPhysicsPlaneScale"));
+                sm.getSceneNode(startPhysicsPlane + "Node").getAttachedObject(startPhysicsPlane).setVisible((boolean)scriptMan.getValue("startPhysicsPlaneVis"));
+                physMan.updatePhysicsTransforms(sm.getSceneNode(startPhysicsPlane + "Node"));
+
+                //sm.getSceneNode(plat1PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat1PhysicsPlanePos"));
+                //sm.getSceneNode(plat1PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat1PhysicsPlaneScale"));
+                //sm.getSceneNode(plat1PhysicsPlane + "Node").getAttachedObject(plat1PhysicsPlane).setVisible((boolean)scriptMan.getValue("plat1PhysicsPlaneVis"));
+                //physMan.updatePhysicsTransforms(sm.getSceneNode(plat1PhysicsPlane + "Node"));
+
+
+                //sm.getSceneNode(plat2PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat2PhysicsPlanePos"));
+                //sm.getSceneNode(plat2PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat2PhysicsPlaneScale"));
+                //sm.getSceneNode(plat2PhysicsPlane + "Node").getAttachedObject(plat2PhysicsPlane).setVisible((boolean)scriptMan.getValue("plat2PhysicsPlaneVis"));
+                //physMan.updatePhysicsTransforms(sm.getSceneNode(plat2PhysicsPlane + "Node"));
+
+
+                //Update physics
+                runPhysics = (boolean)scriptMan.getValue("runPhysSim");
         }
 
         private void setupSkybox(Engine eng) throws IOException
