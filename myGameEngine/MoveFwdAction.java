@@ -10,15 +10,17 @@ public class MoveFwdAction extends AbstractInputAction
     private SceneNode target;
     private NetworkedClient nc;
     private ScriptManager scriptMan;
+    private PhysicsManager physMan;
     private MyGame game;
     private float movementMult;
 
-    public MoveFwdAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, MyGame game) 
+    public MoveFwdAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, PhysicsManager physMan, MyGame game) 
     {
         this.target = target;
         this.nc = nc;
         this.scriptMan = scriptMan;
         this.game = game;
+        this.physMan = physMan;
         this.movementMult = Float.parseFloat(scriptMan.getValue("forwardMovementMultiplier").toString());
     }
 
@@ -36,10 +38,12 @@ public class MoveFwdAction extends AbstractInputAction
         //Move forward .005f units every 1ms
         target.moveForward(-(time * e.getValue()) * movementMult / 200);
 
-        //Update avatar vertical position
-        game.updateVerticalPosition();
+        //Update physics world
+        physMan.updatePhysicsTransforms(target);
 
-        //Tell the networked client that an update is required
+        //Update height
+        game.updateVerticalPosition();
+        
         nc.updatePositionOnServer = true;
     }
 }

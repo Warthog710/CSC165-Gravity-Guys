@@ -6,16 +6,17 @@ var JavaPackages = new JavaImporter
 
 with (JavaPackages)
 {
-    //Player avatar information
+	//Player avatar information
+	var updateAvatarPos = true;
 	var avatarPos = Vector3f.createFrom(0, 0, 0);
 	
 	//Default window size... Used only if the dialog box is not implemented
-	var windowWidth = 848;
-	var windowHeight = 477;
+	var windowWidth = 1400;
+	var windowHeight = 900;
 
     //Server info (string, int)
 	//var serverAddress = "172.17.50.17";
-	var serverAddress = "104.220.12.125";
+	var serverAddress = "172.17.50.17";
     var serverPort = 89;
 
     //Hud position (int, int)
@@ -23,9 +24,9 @@ with (JavaPackages)
     var hudY = 15;
 
     //Tesselation values (int, float, 3x vector3f)
-    var tessQuality = 5;
+    var tessQuality = 7;
     var tessSubdivisions = 8.0;
-	var terrainTessScale = Vector3f.createFrom(200, 600, 200);
+	var terrainTessScale = Vector3f.createFrom(50, 100, 50);
 	var heightTiling = 4;
 	var normalTiling = 4;
 	var textureTiling = 4;
@@ -45,6 +46,9 @@ with (JavaPackages)
 	var plat2Pos = Vector3f.createFrom(5.98, 0, 13.93);
 	var wishbonePlatPos = Vector3f.createFrom(0, -0.7, 30.8);
 	var wedgePlatPos = Vector3f.createFrom(0, 0, 46.5);
+
+	//Physiscs information
+	var runPhysSim = true;
 	
 
     //! DO NOT CHANGE DURING RUNTIME

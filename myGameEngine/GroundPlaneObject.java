@@ -31,8 +31,8 @@ public class GroundPlaneObject
 
         float[] vertices = new float[] 
         { 
-            -50f, 0f, -50f, 50f, 0f, 50f, 50f, 0f, -50f,
-            -50f, 0f, -50f, -50f, 0f, 50f, 50f, 0f, 50f
+            0f, 0f, 0f, 1f, 0f, 1f, 1f, 0f, 0f,
+            0f, 0f, 0f, 0f, 0f, 1f, 1f, 0f, 1f
         };
 
         float[] texcoords = new float[] 
@@ -44,8 +44,8 @@ public class GroundPlaneObject
 
         float[] normals = new float[] 
         {
-            -50f, 1f, -50f, 50f, 1f, 50f, 50f, 1f, -50f,
-            -50f, 1f, -50f, -50f, 1f, 50f, 50f, 1f, 50f
+            0f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 0f,
+            0f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 1f
         };
 
         int[] indices = new int[] { 0,1,2,3,4,5};
