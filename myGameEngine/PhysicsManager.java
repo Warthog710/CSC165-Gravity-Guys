@@ -38,13 +38,15 @@ public class PhysicsManager
 
     public void createCubePhysicsObject(SceneNode node, float mass, float bounciness, float friction, float damping)
     {
-        double[] temp = toDoubleArray(node.getWorldTransform().toFloatArray());
+        double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
+
+        
         float[] size = node.getLocalScale().toFloatArray();
 
         //Cube primitive is 2f
-        size[0] = 2f * size[0];
-        size[1] = .05f;
-        size[2] = 2f * size[2];
+        //size[0] = 2f * size[0];
+        //size[1] = 2f * size[1];
+        //size[2] = 2f * size[2];
   
         PhysicsObject physObj = physicsEng.addBoxObject(physicsEng.nextUID(), mass, temp, size);
         physObj.setBounciness(bounciness);
@@ -80,7 +82,7 @@ public class PhysicsManager
         }
     }
 
-    public PhysicsEngine getEPhysicsEngine()
+    public PhysicsEngine getPhysicsEngine()
     {
         return physicsEng;
 
@@ -105,7 +107,7 @@ public class PhysicsManager
         return dArray;          
     }
 
-    public float[] toFloatArray(double[] dArray)
+    private float[] toFloatArray(double[] dArray)
     {
         if (dArray == null)
             return null;

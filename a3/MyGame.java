@@ -69,7 +69,7 @@ public class MyGame extends VariableFrameRateGame
                 scriptMan.loadScript("gameVariables.js");
                 scriptMan.loadScript("movementInfo.js");
 
-                //Setup physiscs manager
+                //Setup physics manager
                 physMan = new PhysicsManager(-8f, scriptMan);
                 runPhysics = (boolean)scriptMan.getValue("runPhysSim");
         }
@@ -116,7 +116,18 @@ public class MyGame extends VariableFrameRateGame
 
                 SceneNode avatarN = sm.getRootSceneNode().createChildSceneNode(avatarE.getName() + "Node");
                 avatarN.attachObject(avatarE);
-                avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));              
+                avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));   
+                physMan.createSpherePhysicsObject(avatarN, 1f, 1f, 1f, .9f);     
+                
+                //! Temp physics cube
+                Entity cubeE = sm.createEntity("cube", "cube.obj");
+                cubeE.setPrimitive(Primitive.TRIANGLES);
+
+                SceneNode cubeN = sm.getRootSceneNode().createChildSceneNode(cubeE.getName() + "Node");
+                cubeN.attachObject(cubeE);
+                cubeN.setLocalScale(1f, 1f, 1f);
+                physMan.createCubePhysicsObject(cubeN, 0f, 1f, 1f, .9f);
+
           
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));
@@ -230,7 +241,7 @@ public class MyGame extends VariableFrameRateGame
                 //Process physiscs world and update objects
                 if (runPhysics)
                 {
-                        physMan.getEPhysicsEngine().update(elapsTime - lastUpdateTime);
+                        physMan.getPhysicsEngine().update(elapsTime - lastUpdateTime);
                         physMan.updatePhysicsObjects(engine.getSceneManager());
                 }
 
@@ -379,10 +390,10 @@ public class MyGame extends VariableFrameRateGame
                 sm.getSceneNode(wedgePlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));
 
                 //Update level one physics ground planes
-                sm.getSceneNode(startPhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("startPhysicsPlanePos"));
-                sm.getSceneNode(startPhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("startPhysicsPlaneScale"));
-                sm.getSceneNode(startPhysicsPlane + "Node").getAttachedObject(startPhysicsPlane).setVisible((boolean)scriptMan.getValue("startPhysicsPlaneVis"));
-                physMan.updatePhysicsTransforms(sm.getSceneNode(startPhysicsPlane + "Node"));
+                //sm.getSceneNode(startPhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("startPhysicsPlanePos"));
+                //sm.getSceneNode(startPhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("startPhysicsPlaneScale"));
+                //sm.getSceneNode(startPhysicsPlane + "Node").getAttachedObject(startPhysicsPlane).setVisible((boolean)scriptMan.getValue("startPhysicsPlaneVis"));
+                //physMan.updatePhysicsTransforms(sm.getSceneNode(startPhysicsPlane + "Node"));
 
                 //sm.getSceneNode(plat1PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat1PhysicsPlanePos"));
                 //sm.getSceneNode(plat1PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat1PhysicsPlaneScale"));
