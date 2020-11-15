@@ -7,6 +7,7 @@ import ray.rage.scene.SceneManager;
 import ray.rage.scene.SceneNode;
 import ray.rml.Matrix4;
 import ray.rml.Matrix4f;
+import ray.rml.Vector3;
 import ray.rml.Vector3f;
 
 public class PhysicsManager 
@@ -28,8 +29,8 @@ public class PhysicsManager
     public void createSpherePhysicsObject(SceneNode node, float mass, float bounciness, float friction, float damping)
     {
         double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
-
-        PhysicsObject physObj = physicsEng.addSphereObject(physicsEng.nextUID(), mass, temp, 2.0f);
+        
+        PhysicsObject physObj = physicsEng.addSphereObject(physicsEng.nextUID(), mass, temp, 1.0f);
         physObj.setBounciness(bounciness);
         physObj.setFriction(friction);
         physObj.setDamping(damping, damping);
@@ -38,17 +39,19 @@ public class PhysicsManager
 
     public void createCubePhysicsObject(SceneNode node, float mass, float bounciness, float friction, float damping)
     {
-        double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
-
+    	double[] originalTransform = toDoubleArray(node.getLocalTransform().toFloatArray());
+        
+        double[] newTransform = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+        		0.0, 0.0, 1.0, 0.0, originalTransform[12], originalTransform[13], originalTransform[14], 1.0};
         
         float[] size = node.getLocalScale().toFloatArray();
-
+        
         //Cube primitive is 2f
-        //size[0] = 2f * size[0];
-        //size[1] = 2f * size[1];
-        //size[2] = 2f * size[2];
+        size[0] = 2f * size[0];
+        size[1] = 2f * size[1];
+        size[2] = 2f * size[2];
   
-        PhysicsObject physObj = physicsEng.addBoxObject(physicsEng.nextUID(), mass, temp, size);
+        PhysicsObject physObj = physicsEng.addBoxObject(physicsEng.nextUID(), mass, newTransform, size);
         physObj.setBounciness(bounciness);
         physObj.setFriction(friction);
         physObj.setDamping(damping, damping);

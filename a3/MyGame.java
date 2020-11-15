@@ -20,7 +20,8 @@ import ray.rage.rendersystem.gl4.GL4RenderSystem;
 import ray.rage.rendersystem.states.TextureState;
 import ray.input.*;
 import ray.input.action.*;
-
+import ray.physics.PhysicsEngine;
+import ray.physics.PhysicsEngineFactory;
 import myGameEngine.*;
 
 public class MyGame extends VariableFrameRateGame 
@@ -125,7 +126,9 @@ public class MyGame extends VariableFrameRateGame
 
                 SceneNode cubeN = sm.getRootSceneNode().createChildSceneNode(cubeE.getName() + "Node");
                 cubeN.attachObject(cubeE);
-                cubeN.setLocalScale(1f, 1f, 1f);
+                
+                cubeN.setLocalPosition(0f, 0f, 0f);
+                cubeN.setLocalScale(5f, 2f, 3.5f);
                 physMan.createCubePhysicsObject(cubeN, 0f, 1f, 1f, .9f);
 
           
@@ -322,25 +325,25 @@ public class MyGame extends VariableFrameRateGame
         //? Added an offset of .4f to the dolphin to move it up a bit
         public void updateVerticalPosition() 
         {
-        	SceneNode avatarN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
-        	SceneNode tessN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("terrainName").toString() + "Node");
-                Tessellation tessE = (Tessellation)tessN.getAttachedObject(scriptMan.getValue("terrainName").toString());
-
-                //Only execute if the avatar is close to ground zero
-                if (avatarN.getLocalPosition().y() > 2.0f)
-                        return;
-                
-        	//Figure out Avatar's position relative to plane
-                Vector3 worldAvatarPosition = avatarN.getWorldPosition();               
-                Vector3 localAvatarPosition = avatarN.getLocalPosition();
-                
-            	//Use avatar World coordinates to get coordinates for height
-                Vector3 newAvatarPosition = Vector3f.createFrom(localAvatarPosition.x(),
-                                tessE.getWorldHeight(worldAvatarPosition.x(), worldAvatarPosition.z()) + 0.4f,
-                                localAvatarPosition.z());
-                    
-            	//Use avatar Local coordinates to set position, including height
-            	avatarN.setLocalPosition(newAvatarPosition);
+//        	SceneNode avatarN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
+//        	SceneNode tessN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("terrainName").toString() + "Node");
+//                Tessellation tessE = (Tessellation)tessN.getAttachedObject(scriptMan.getValue("terrainName").toString());
+//
+//                //Only execute if the avatar is close to ground zero
+//                if (avatarN.getLocalPosition().y() > 2.0f)
+//                        return;
+//                
+//        	//Figure out Avatar's position relative to plane
+//                Vector3 worldAvatarPosition = avatarN.getWorldPosition();               
+//                Vector3 localAvatarPosition = avatarN.getLocalPosition();
+//                
+//            	//Use avatar World coordinates to get coordinates for height
+//                Vector3 newAvatarPosition = Vector3f.createFrom(localAvatarPosition.x(),
+//                                tessE.getWorldHeight(worldAvatarPosition.x(), worldAvatarPosition.z()) + 0.4f,
+//                                localAvatarPosition.z());
+//                    
+//            	//Use avatar Local coordinates to set position, including height
+//            	avatarN.setLocalPosition(newAvatarPosition);
         }
 
         private void updateGameVariables(SceneManager sm)
