@@ -12,16 +12,15 @@ import ray.rage.scene.SceneNode;
 import ray.rml.Degreef;
 import ray.rml.Vector3f;
 
-public class LevelOne {
+public class LevelOne 
+{
 
-    private Engine eng;
 	private SceneManager sm;
     private ScriptManager scriptMan;
     private PhysicsManager physMan;
 	
     public LevelOne(Engine eng, ScriptManager scriptMan, PhysicsManager physMan) 
     {
-        this.eng = eng;
 		this.sm = eng.getSceneManager();
         this.scriptMan = scriptMan;
         this.physMan = physMan;
@@ -42,6 +41,7 @@ public class LevelOne {
         startPlatN.rotate(Degreef.createFrom(90), Vector3f.createFrom(0.0f, 1.0f, 0.0f));
         startPlatN.scale((Vector3f)scriptMan.getValue("startPlatScale"));
         startPlatN.setLocalPosition((Vector3f)scriptMan.getValue("startPlatPos"));
+        createPhysicsPlane("startPhysicsPlane");
 
         Entity plat1E = sm.createEntity("platform1", "groundPlatform.obj");
         plat1E.setPrimitive(Primitive.TRIANGLES);
@@ -49,6 +49,7 @@ public class LevelOne {
         plat1N.attachObject(plat1E);
         plat1N.scale((Vector3f)scriptMan.getValue("plat1Scale"));
         plat1N.setLocalPosition((Vector3f)scriptMan.getValue("plat1Pos"));
+        createPhysicsPlane("plat1PhysicsPlane");
         
         Entity plat2E = sm.createEntity("platform2", "groundPlatform.obj");
         plat2E.setPrimitive(Primitive.TRIANGLES);
@@ -56,6 +57,7 @@ public class LevelOne {
         plat2N.attachObject(plat2E);
         plat2N.scale((Vector3f)scriptMan.getValue("plat2Scale"));
         plat2N.setLocalPosition((Vector3f)scriptMan.getValue("plat2Pos"));
+        createPhysicsPlane("plat2PhysicsPlane");
         
         Entity wishbonePlatE = sm.createEntity("wishbonePlatform", "wishbone.obj");
         wishbonePlatE.setPrimitive(Primitive.TRIANGLES);
@@ -70,8 +72,34 @@ public class LevelOne {
         SceneNode wedgePlatN = levelN.createChildSceneNode(wedgePlatE.getName() + "Node");
         wedgePlatN.attachObject(wedgePlatE);
         wedgePlatN.scale((Vector3f)scriptMan.getValue("wedgePlatScale"));
-        wedgePlatN.setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));   
+        wedgePlatN.setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));
+        createPhysicsPlaneWithRotationAboutX("wedgePhysicsPlane");   
         
         return levelN;
+    }
+
+    private void createPhysicsPlane(String name) throws IOException
+    {
+        Entity physicsPlane = sm.createEntity(name, "cube.obj");
+        physicsPlane.setPrimitive(Primitive.TRIANGLES);
+        SceneNode physicsPlaneNode = sm.getRootSceneNode().createChildSceneNode(name + "Node");
+        physicsPlaneNode.attachObject(physicsPlane);
+        physicsPlaneNode.setLocalPosition((Vector3f)scriptMan.getValue(name + "Pos"));
+        physicsPlaneNode.setLocalScale((Vector3f)scriptMan.getValue(name + "Scale"));
+        physicsPlane.setVisible((boolean)scriptMan.getValue(name + "Vis"));
+        physMan.createCubePhysicsObject(physicsPlaneNode, 0f, 1f, 1f, .9f);
+    }
+
+    private void createPhysicsPlaneWithRotationAboutX(String name) throws IOException
+    {
+        Entity physicsPlane = sm.createEntity(name, "cube.obj");
+        physicsPlane.setPrimitive(Primitive.TRIANGLES);
+        SceneNode physicsPlaneNode = sm.getRootSceneNode().createChildSceneNode(name + "Node");
+        physicsPlaneNode.attachObject(physicsPlane);
+        physicsPlaneNode.setLocalPosition((Vector3f)scriptMan.getValue(name + "Pos"));
+        physicsPlaneNode.setLocalScale((Vector3f)scriptMan.getValue(name + "Scale"));
+        physicsPlane.setVisible((boolean)scriptMan.getValue(name + "Vis"));
+        physMan.createCubePhysicsObjectWithRotationAboutX(physicsPlaneNode, 0f, 1f, 1f, .9f, (Degreef) scriptMan
+                .getValue(name + "RotX"));
     }
 }

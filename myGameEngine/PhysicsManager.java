@@ -5,9 +5,9 @@ import ray.physics.PhysicsEngineFactory;
 import ray.physics.PhysicsObject;
 import ray.rage.scene.SceneManager;
 import ray.rage.scene.SceneNode;
+import ray.rml.Degreef;
 import ray.rml.Matrix4;
 import ray.rml.Matrix4f;
-import ray.rml.Vector3;
 import ray.rml.Vector3f;
 
 public class PhysicsManager 
@@ -56,6 +56,31 @@ public class PhysicsManager
         physObj.setFriction(friction);
         physObj.setDamping(damping, damping);
         node.setPhysicsObject(physObj);
+    }
+
+    public void createCubePhysicsObjectWithRotationAboutX(SceneNode node, float mass, float bounciness, float friction, float damping, Degreef rotation)
+    {
+    	double[] originalTransform = toDoubleArray(node.getLocalTransform().toFloatArray());
+        
+        double[] newTransform = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0, originalTransform[12], originalTransform[13], originalTransform[14], 1.0};
+
+        Matrix4f rotationMatrix = (Matrix4f)Matrix4f.createFrom(toFloatArray(newTransform));
+        rotationMatrix = (Matrix4f)rotationMatrix.rotate(rotation, Degreef.createFrom(0), Degreef.createFrom(0));             
+ 
+        float[] size = node.getLocalScale().toFloatArray();
+        
+        //Cube primitive is 2f
+        size[0] = 2f * size[0];
+        size[1] = 2f * size[1];
+        size[2] = 2f * size[2];
+  
+        PhysicsObject physObj = physicsEng.addBoxObject(physicsEng.nextUID(), mass, toDoubleArray(rotationMatrix.toFloatArray()), size);
+        physObj.setBounciness(bounciness);
+        physObj.setFriction(friction);
+        physObj.setDamping(damping, damping);
+        node.setPhysicsObject(physObj);
+        node.pitch(rotation);
     }
 
     public void createStaticGroundPlane(SceneNode node, float bounciness, float friction, float damping, Vector3f scale)
