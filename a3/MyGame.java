@@ -14,14 +14,12 @@ import ray.rage.rendersystem.*;
 import ray.rage.rendersystem.Renderable.*;
 import ray.rage.scene.*;
 import ray.rage.scene.Camera.Frustum.*;
-import ray.rml.Vector3;
+import ray.rml.Degreef;
 import ray.rml.Vector3f;
 import ray.rage.rendersystem.gl4.GL4RenderSystem;
 import ray.rage.rendersystem.states.TextureState;
 import ray.input.*;
 import ray.input.action.*;
-import ray.physics.PhysicsEngine;
-import ray.physics.PhysicsEngineFactory;
 import myGameEngine.*;
 
 public class MyGame extends VariableFrameRateGame 
@@ -31,13 +29,13 @@ public class MyGame extends VariableFrameRateGame
         //Game Variables
         private NetworkedClient networkedClient;
         private PhysicsManager physMan;
+        private UpdateGameVariables gVars;
         private InputManager im;
         private ScriptManager scriptMan;
         private OrbitCameraController orbitCamera;
         private GhostAvatars ghosts;
         private float lastUpdateTime = 0.0f, elapsTime = 0.0f;
         private Action moveRightAction, moveFwdAction, moveYawAction;
-        private boolean runPhysics;
 
         public static void main(String[] args) 
         {
@@ -72,7 +70,6 @@ public class MyGame extends VariableFrameRateGame
 
                 //Setup physics manager
                 physMan = new PhysicsManager(-8f, scriptMan);
-                runPhysics = (boolean)scriptMan.getValue("runPhysSim");
         }
 
         @Override
@@ -111,8 +108,11 @@ public class MyGame extends VariableFrameRateGame
                 scriptMan.putObjectInEngine("sm", sm);
                 scriptMan.loadScript("lights.js");
 
+                //Setup gVars
+                gVars = new UpdateGameVariables(sm, scriptMan, physMan);
+
                 //Place player avatar
-                Entity avatarE = sm.createEntity(scriptMan.getValue("avatarName").toString(), "dolphinHighPoly.obj");
+                Entity avatarE = sm.createEntity(scriptMan.getValue("avatarName").toString(), "sphere.obj");
                 avatarE.setPrimitive(Primitive.TRIANGLES);
 
                 SceneNode avatarN = sm.getRootSceneNode().createChildSceneNode(avatarE.getName() + "Node");
@@ -128,8 +128,8 @@ public class MyGame extends VariableFrameRateGame
                 cubeN.attachObject(cubeE);
                 
                 cubeN.setLocalPosition(0f, 0f, 0f);
-                cubeN.setLocalScale(5f, 2f, 3.5f);
-                physMan.createCubePhysicsObject(cubeN, 0f, 1f, 1f, .9f);
+                cubeN.setLocalScale(5.78f, 2f, 3.2f);
+                physMan.createCubePhysicsObjectWithRotationAboutX(cubeN, 0f, 1f, 1f, .9f, Degreef.createFrom(-20));
 
           
                 //Set up ambient light
@@ -215,9 +215,8 @@ public class MyGame extends VariableFrameRateGame
                 rs = (GL4RenderSystem) engine.getRenderSystem();
                 elapsTime += engine.getElapsedTimeMillis();
 
-                //If game variables have been updated... update it
-                if (scriptMan.scriptUpdate("gameVariables.js"))
-                        updateGameVariables(engine.getSceneManager());                
+                //Update game variables
+                gVars.update();              
 
                 //Get avatar positions
                 String playerOnePos = "("
@@ -242,7 +241,7 @@ public class MyGame extends VariableFrameRateGame
                 im.update(elapsTime - lastUpdateTime);
 
                 //Process physiscs world and update objects
-                if (runPhysics)
+                if (gVars.runPhysics)
                 {
                         physMan.getPhysicsEngine().update(elapsTime - lastUpdateTime);
                         physMan.updatePhysicsObjects(engine.getSceneManager());
@@ -325,93 +324,25 @@ public class MyGame extends VariableFrameRateGame
         //? Added an offset of .4f to the dolphin to move it up a bit
         public void updateVerticalPosition() 
         {
-//        	SceneNode avatarN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
-//        	SceneNode tessN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("terrainName").toString() + "Node");
-//                Tessellation tessE = (Tessellation)tessN.getAttachedObject(scriptMan.getValue("terrainName").toString());
-//
-//                //Only execute if the avatar is close to ground zero
-//                if (avatarN.getLocalPosition().y() > 2.0f)
-//                        return;
-//                
-//        	//Figure out Avatar's position relative to plane
-//                Vector3 worldAvatarPosition = avatarN.getWorldPosition();               
-//                Vector3 localAvatarPosition = avatarN.getLocalPosition();
-//                
-//            	//Use avatar World coordinates to get coordinates for height
-//                Vector3 newAvatarPosition = Vector3f.createFrom(localAvatarPosition.x(),
-//                                tessE.getWorldHeight(worldAvatarPosition.x(), worldAvatarPosition.z()) + 0.4f,
-//                                localAvatarPosition.z());
-//                    
-//            	//Use avatar Local coordinates to set position, including height
-//            	avatarN.setLocalPosition(newAvatarPosition);
-        }
+        	/*SceneNode avatarN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
+        	SceneNode tessN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("terrainName").toString() + "Node");
+                Tessellation tessE = (Tessellation)tessN.getAttachedObject(scriptMan.getValue("terrainName").toString());
 
-        private void updateGameVariables(SceneManager sm)
-        {
-                System.out.println("Updating variables...");
-                String terrainName = scriptMan.getValue("terrainName").toString();
-                String levelName = scriptMan.getValue("levelName").toString();
+                //Only execute if the avatar is close to ground zero
+                if (avatarN.getLocalPosition().y() > 2.0f)
+                        return;
                 
-                String startPlatName = scriptMan.getValue("startPlatName").toString();
-                String plat1Name = scriptMan.getValue("plat1Name").toString();
-                String plat2Name = scriptMan.getValue("plat2Name").toString();
-                String wishbonePlatName = scriptMan.getValue("wishbonePlatName").toString();
-                String wedgePlatName = scriptMan.getValue("wedgePlatName").toString();
-                String startPhysicsPlane = scriptMan.getValue("startPhysicsPlane").toString();
-                //String plat1PhysicsPlane = scriptMan.getValue("plat1PhysicsPlane").toString();
-                //String plat2PhysicsPlane = scriptMan.getValue("plat2PhysicsPlane").toString();
-
-                //Update player position if "updateAvatarPos is true"
-                if ((Boolean)scriptMan.getValue("updateAvatarPos"))
-                        sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node").setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
-
-                //Update Tesselation
-                sm.getSceneNode(terrainName + "Node").setLocalScale((Vector3f)scriptMan.getValue("terrainTessScale"));
-
-                Tessellation tessE = (Tessellation)sm.getSceneNode(terrainName + "Node").getAttachedObject(terrainName);
-                int tessQuality = Integer.parseInt(scriptMan.getValue("tessQuality").toString());
-                float tessSubdivisions = Float.parseFloat(scriptMan.getValue("tessSubdivisions").toString());
-
-                tessE.setQuality(tessQuality);
-                tessE.setSubdivisions(tessSubdivisions);
-                tessE.setHeightMapTiling(Integer.parseInt(scriptMan.getValue("heightTiling").toString()));
-                tessE.setNormalMapTiling(Integer.parseInt(scriptMan.getValue("normalTiling").toString()));
-                tessE.setTextureTiling(Integer.parseInt(scriptMan.getValue("textureTiling").toString()));
+        	//Figure out Avatar's position relative to plane
+                Vector3 worldAvatarPosition = avatarN.getWorldPosition();               
+                Vector3 localAvatarPosition = avatarN.getLocalPosition();
                 
-                //Update level one
-                sm.getSceneNode(levelName + "Node").setLocalScale((Vector3f)scriptMan.getValue("levelScale"));
-                sm.getSceneNode(levelName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("levelPos"));
-                sm.getSceneNode(startPlatName + "Node").setLocalScale((Vector3f)scriptMan.getValue("startPlatScale"));
-                sm.getSceneNode(startPlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("startPlatPos"));
-                sm.getSceneNode(plat1Name + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat1Scale"));
-                sm.getSceneNode(plat1Name + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat1Pos"));
-                sm.getSceneNode(plat2Name + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat2Scale"));
-                sm.getSceneNode(plat2Name + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat2Pos"));
-                sm.getSceneNode(wishbonePlatName + "Node").setLocalScale((Vector3f)scriptMan.getValue("wishbonePlatScale"));
-                sm.getSceneNode(wishbonePlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("wishbonePlatPos"));
-                sm.getSceneNode(wedgePlatName + "Node").setLocalScale((Vector3f)scriptMan.getValue("wedgePlatScale"));
-                sm.getSceneNode(wedgePlatName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));
-
-                //Update level one physics ground planes
-                //sm.getSceneNode(startPhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("startPhysicsPlanePos"));
-                //sm.getSceneNode(startPhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("startPhysicsPlaneScale"));
-                //sm.getSceneNode(startPhysicsPlane + "Node").getAttachedObject(startPhysicsPlane).setVisible((boolean)scriptMan.getValue("startPhysicsPlaneVis"));
-                //physMan.updatePhysicsTransforms(sm.getSceneNode(startPhysicsPlane + "Node"));
-
-                //sm.getSceneNode(plat1PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat1PhysicsPlanePos"));
-                //sm.getSceneNode(plat1PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat1PhysicsPlaneScale"));
-                //sm.getSceneNode(plat1PhysicsPlane + "Node").getAttachedObject(plat1PhysicsPlane).setVisible((boolean)scriptMan.getValue("plat1PhysicsPlaneVis"));
-                //physMan.updatePhysicsTransforms(sm.getSceneNode(plat1PhysicsPlane + "Node"));
-
-
-                //sm.getSceneNode(plat2PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat2PhysicsPlanePos"));
-                //sm.getSceneNode(plat2PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat2PhysicsPlaneScale"));
-                //sm.getSceneNode(plat2PhysicsPlane + "Node").getAttachedObject(plat2PhysicsPlane).setVisible((boolean)scriptMan.getValue("plat2PhysicsPlaneVis"));
-                //physMan.updatePhysicsTransforms(sm.getSceneNode(plat2PhysicsPlane + "Node"));
-
-
-                //Update physics
-                runPhysics = (boolean)scriptMan.getValue("runPhysSim");
+            	//Use avatar World coordinates to get coordinates for height
+                Vector3 newAvatarPosition = Vector3f.createFrom(localAvatarPosition.x(),
+                                tessE.getWorldHeight(worldAvatarPosition.x(), worldAvatarPosition.z()) + 0.4f,
+                                localAvatarPosition.z());
+                    
+            	//Use avatar Local coordinates to set position, including height
+            	avatarN.setLocalPosition(newAvatarPosition);*/
         }
 
         private void setupSkybox(Engine eng) throws IOException
@@ -444,7 +375,6 @@ public class MyGame extends VariableFrameRateGame
                 sk.setTexture(right, SkyBox.Face.RIGHT);
                 sk.setTexture(top, SkyBox.Face.TOP);
                 sk.setTexture(bottom, SkyBox.Face.BOTTOM);
-
                 eng.getSceneManager().setActiveSkyBox(sk);
         }
 }
