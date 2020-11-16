@@ -1,14 +1,15 @@
 //Import necessary packages
 var JavaPackages = new JavaImporter
 (
-        Packages.ray.rml.Vector3f
+		Packages.ray.rml.Vector3f,
+		Packages.ray.rml.Degreef
 );
 
 with (JavaPackages)
 {
 	//Player avatar information
 	var updateAvatarPos = true;
-	var avatarPos = Vector3f.createFrom(0, 18, 0);
+	var avatarPos = Vector3f.createFrom(0, 25, 0);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
@@ -32,7 +33,7 @@ with (JavaPackages)
 	var textureTiling = 4;
 	
 	//Level values (2x vector3f)
-	var levelScale = Vector3f.createFrom(1, 1, 1);
+	var levelScale = Vector3f.createFrom(1.4, 1.4, 1.4);
 	var levelPos = Vector3f.createFrom(0, 20, 0);
 	
 	//Level object values
@@ -47,9 +48,29 @@ with (JavaPackages)
 	var wishbonePlatPos = Vector3f.createFrom(0, -0.7, 30.8);
 	var wedgePlatPos = Vector3f.createFrom(0, 0, 46.5);
 
+	//Level physics planes
+	var startPhysicsPlanePos = levelPos.add(startPlatPos);
+	startPhysicsPlanePos = startPhysicsPlanePos.add(0, -1, 0);
+	var startPhysicsPlaneScale = Vector3f.createFrom(12.8, 1, 6.65);
+	var plat1PhysicsPlanePos = levelPos.add(plat1Pos);
+	plat1PhysicsPlanePos = plat1PhysicsPlanePos.add(-2.4, -1, 5.5);
+	var plat1PhysicsPlaneScale = Vector3f.createFrom(4.45, 1, 12.8);
+	var plat2PhysicsPlanePos = levelPos.add(plat2Pos);
+	plat2PhysicsPlanePos = plat2PhysicsPlanePos.add(2.4, -1, 5.5);
+	var plat2PhysicsPlaneScale = Vector3f.createFrom(4.45, 1, 12.8);
+	var wedgePhysicsPlanePos = levelPos.add(wedgePlatPos);
+	wedgePhysicsPlanePos = wedgePhysicsPlanePos.add(0, 7.5, 15.3);
+	var wedgePhysicsPlaneScale = Vector3f.createFrom(8.3, 12, 1);
+	var wedgePhysicsPlaneRotX = Degreef.createFrom(45.8);
+
+	//Visibility of physics planes
+	var startPhysicsPlaneVis = false;
+	var plat1PhysicsPlaneVis = false;
+	var plat2PhysicsPlaneVis = false;
+	var wedgePhysicsPlaneVis = false;
+
 	//Physiscs information
-	var runPhysSim = true;
-	
+	var runPhysSim = true;	
 
     //! DO NOT CHANGE DURING RUNTIME
     var terrainName = "terrainTess";
@@ -61,5 +82,9 @@ with (JavaPackages)
 	var plat2Name = "platform2";
 	var wishbonePlatName = "wishbonePlatform";
 	var wedgePlatName = "wedgePlatform";
+	var startPhysicsPlane = "startPhysicsPlane";
+	var plat1PhysicsPlane = "plat1PhysicsPlane";
+	var plat2PhysicsPlane = "plat2PhysicsPlane";
+	var wedgePhysicsPlane = "wedgePhysicsPlane";
 }
 
