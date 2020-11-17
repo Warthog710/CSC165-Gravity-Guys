@@ -1,7 +1,9 @@
 package myGameEngine;
 
 import ray.input.action.AbstractInputAction;
+import ray.physics.PhysicsObject;
 import ray.rage.scene.*;
+import ray.rml.Vector3;
 import a3.MyGame;
 import net.java.games.input.Event;
 
@@ -35,11 +37,12 @@ public class MoveRightAction extends AbstractInputAction
         if (scriptMan.scriptUpdate("movementInfo.js"))
             movementMult = Float.parseFloat(scriptMan.getValue("horizontalMovementMultiplier").toString()); 
 
-        //Move right .005f units every 1ms
-        target.moveRight(-(time * e.getValue()) * movementMult / 200);
-
-        //Update physics world
-        physMan.updatePhysicsTransforms(target);
+        //Get the physics object of the node and apply a right/left force
+        PhysicsObject targ = target.getPhysicsObject();
+        Vector3 forward = target.getLocalRightAxis().mult(-time * e.getValue() * movementMult);
+        Vector3 pos = target.getLocalPosition();
+        targ.applyForce(forward.x(), forward.y(), forward.z(), 
+        		pos.x(), pos.y(), pos.z());
 
         //Update avatar vertical position
         game.updateVerticalPosition();
