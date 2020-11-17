@@ -7,7 +7,7 @@ import ray.rml.Vector3;
 import a3.MyGame;
 import net.java.games.input.Event;
 
-public class MoveFwdAction extends AbstractInputAction 
+public class JumpAction extends AbstractInputAction 
 {
     private SceneNode target;
     private NetworkedClient nc;
@@ -16,33 +16,31 @@ public class MoveFwdAction extends AbstractInputAction
     private MyGame game;
     private float movementMult;
 
-    public MoveFwdAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, PhysicsManager physMan, MyGame game) 
+    public JumpAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, PhysicsManager physMan, MyGame game) 
     {
         this.target = target;
         this.nc = nc;
         this.scriptMan = scriptMan;
         this.game = game;
         this.physMan = physMan;
-        this.movementMult = Float.parseFloat(scriptMan.getValue("forwardMovementMultiplier").toString());
+        this.movementMult = Float.parseFloat(scriptMan.getValue("jumpMultiplier").toString());
     }
 
     // Move forward or backwards 5.0f every 1000ms or 1 second (assuming axis value = 1)
     public void performAction(float time, Event e) 
     {
-        // Deadzone
-        if (e.getValue() > -.2 && e.getValue() < .2)
-            return;
-
         //Updates forward speed, if a script update occured
         if (scriptMan.scriptUpdate("movementInfo.js"))
-            movementMult = Float.parseFloat(scriptMan.getValue("forwardMovementMultiplier").toString()); 
-        
-        //Get the physics object of the node and apply a forward/backward force
+            movementMult = Float.parseFloat(scriptMan.getValue("jumpMultiplier").toString()); 
+
         PhysicsObject targ = target.getPhysicsObject();
-        Vector3 forward = target.getLocalForwardAxis().mult(-time * e.getValue() * movementMult);
-        Vector3 pos = target.getLocalPosition();
-        targ.applyForce(forward.x(), forward.y(), forward.z(), 
-        		pos.x(), pos.y(), pos.z());
+        
+        //Check if the player is on ground and can initiate a jump
+        if (Math.abs(targ.getLinearVelocity()[1]) <= 0.5) {
+        	//Apply an upward force to do a jump
+        	Vector3 pos = target.getLocalPosition();
+            targ.applyForce(0f, movementMult, 0f, pos.x(), pos.y(), pos.z());
+        }
 
         //Update height
         game.updateVerticalPosition();
