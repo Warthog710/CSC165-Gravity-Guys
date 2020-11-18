@@ -12,17 +12,17 @@ public class MoveRightAction extends AbstractInputAction
     private SceneNode target;
     private NetworkedClient nc;
     private ScriptManager scriptMan;
-    private PhysicsManager physMan;
+    private AnimationManager animMan;
     private MyGame game;
     private float movementMult;
 
-    public MoveRightAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, PhysicsManager physMan, MyGame game) 
+    public MoveRightAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, AnimationManager animMan, MyGame game) 
     {
         this.target = target;
         this.nc = nc;
         this.scriptMan = scriptMan;
         this.game = game;
-        this.physMan = physMan;
+        this.animMan = animMan;
         this.movementMult = Float.parseFloat(scriptMan.getValue("horizontalMovementMultiplier").toString());
     }
 
@@ -43,7 +43,9 @@ public class MoveRightAction extends AbstractInputAction
         Vector3 pos = target.getLocalPosition();
         targ.applyForce(forward.x(), forward.y(), forward.z(), 
         		pos.x(), pos.y(), pos.z());
-
+        
+        animMan.playWalk();
+        
         //Update avatar vertical position
         game.updateVerticalPosition();
 

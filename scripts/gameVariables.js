@@ -86,5 +86,7 @@ with (JavaPackages)
 	var plat1PhysicsPlane = "plat1PhysicsPlane";
 	var plat2PhysicsPlane = "plat2PhysicsPlane";
 	var wedgePhysicsPlane = "wedgePhysicsPlane";
+	var jumpAnimation = "jumpAnimation";
+	var walkAnimation = "walkAnimation";
 }
 
