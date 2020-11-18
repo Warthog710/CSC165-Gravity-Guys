@@ -146,9 +146,18 @@ public class MyGame extends VariableFrameRateGame
                 cubeN.attachObject(cubeE);
                 
                 cubeN.setLocalPosition(0f, 0f, 0f);
-                cubeN.setLocalScale(1f, 1f, 1f);
-                physMan.createCubePhysicsObjectWithRotationAboutX(cubeN, 0f, 1f, 1f, .9f, Degreef.createFrom(-20));
+                cubeN.setLocalScale(5f, 1f, 5f);
+                physMan.createCubePhysicsObject(cubeN, 0f, 1f, 1f, .9f);
 
+                //! Temp Cylinder
+                Entity cylinderE = sm.createEntity("cylinder", "cylinder.obj");
+                cylinderE.setPrimitive(Primitive.TRIANGLES);
+
+                SceneNode cylinderN = sm.getRootSceneNode().createChildSceneNode("cylinderNode");
+                cylinderN.attachObject(cylinderE);
+                cylinderN.setLocalPosition(0f, 1f, 0f);
+                cylinderN.setLocalScale(1f, 1f, 1f);
+                physMan.createCylinderPhyicsObject(cylinderN, 1f, 0f, 1f, .9f);
           
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));

@@ -83,6 +83,24 @@ public class PhysicsManager
         node.pitch(rotation);
     }
 
+    public void createCylinderPhyicsObject(SceneNode node, float mass, float bounciness, float friction, float damping)
+    {
+        double[] transform = toDoubleArray(node.getLocalTransform().toFloatArray());
+
+        float[] halfExtents = node.getLocalScale().toFloatArray();
+
+        //Cylinder primitive is 1f, 2f, 1f
+        //halfExtents[0] = 1f;
+        //halfExtents[1] = 1f;
+        //halfExtents[2] = 1f;
+
+        PhysicsObject physObj = physicsEng.addCylinderObject(physicsEng.nextUID(), mass, transform, halfExtents);
+        physObj.setBounciness(bounciness);
+        physObj.setFriction(friction);
+        physObj.setDamping(damping, damping);
+        node.setPhysicsObject(physObj);
+    }
+
     public void createStaticGroundPlane(SceneNode node, float bounciness, float friction, float damping, Vector3f scale)
     {
         double[] temp = toDoubleArray(node.getWorldTransform().toFloatArray());
