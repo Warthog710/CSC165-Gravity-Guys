@@ -6,6 +6,8 @@ import ray.physics.PhysicsObject;
 import ray.rage.scene.SceneManager;
 import ray.rage.scene.SceneNode;
 import ray.rml.Degreef;
+import ray.rml.Matrix3;
+import ray.rml.Matrix3f;
 import ray.rml.Matrix4;
 import ray.rml.Matrix4f;
 import ray.rml.Vector3f;
@@ -29,8 +31,11 @@ public class PhysicsManager
     public void createSpherePhysicsObject(SceneNode node, float mass, float bounciness, float friction, float damping)
     {
         double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
+
+        //!Only works for a perfect sphere!!!
+        float radius = node.getLocalScale().x();
         
-        PhysicsObject physObj = physicsEng.addSphereObject(physicsEng.nextUID(), mass, temp, 1.0f);
+        PhysicsObject physObj = physicsEng.addSphereObject(physicsEng.nextUID(), mass, temp, radius);
         physObj.setBounciness(bounciness);
         physObj.setFriction(friction);
         physObj.setDamping(damping, damping);
@@ -122,7 +127,19 @@ public class PhysicsManager
         {
             if (node.getPhysicsObject() != null)
             {
-                Matrix4 mat = Matrix4f.createFrom(toFloatArray(node.getPhysicsObject().getTransform()));
+                //Grab translation and rotation from the transform
+                Matrix4 mat = Matrix4f.createFrom(toFloatArray(node.getPhysicsObject().getTransform()));              
+                float[] rotVal = { mat.value(0, 0), mat.value(0, 1), mat.value(0, 2), mat.value(1, 0), mat.value(1, 1),
+                        mat.value(1, 2), mat.value(2, 0), mat.value(2, 1), mat.value(2, 2) };
+
+                //Matrix3f rot = (Matrix3f)Matrix3f.createFrom(rotVal);
+                Matrix3 rot = Matrix3f.createTransposeFrom(rotVal);            
+
+                //Don't rotate the avatar
+                if(node.getName().compareTo("playerAvatarNode") != 0)
+                    node.setLocalRotation(rot);                    
+
+                //Update position
                 node.setLocalPosition(mat.value(0, 3), mat.value(1, 3), mat.value(2, 3));
             }
         }

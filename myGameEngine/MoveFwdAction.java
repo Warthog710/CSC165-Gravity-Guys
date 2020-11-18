@@ -48,7 +48,7 @@ public class MoveFwdAction extends AbstractInputAction
         targ.applyForce(forward.x(), forward.y(), forward.z(), 
         		pos.x(), pos.y(), pos.z());
         
-        animMan.playWalk();
+        animMan.playWalk();       
         
         //Update height
         game.updateVerticalPosition();

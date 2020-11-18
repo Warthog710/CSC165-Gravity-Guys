@@ -14,7 +14,6 @@ import ray.rage.rendersystem.*;
 import ray.rage.rendersystem.Renderable.*;
 import ray.rage.scene.*;
 import ray.rage.scene.Camera.Frustum.*;
-import ray.rml.Degreef;
 import ray.rml.Vector3f;
 import ray.rage.rendersystem.gl4.GL4RenderSystem;
 import ray.rage.rendersystem.states.RenderState;
@@ -134,21 +133,27 @@ public class MyGame extends VariableFrameRateGame
                 float playerDamping = .99f;
                 physMan.createSpherePhysicsObject(avatarN, 1f, playerBounciness, playerFriction, playerDamping);     
                 
+                //? Fixes a movement bug
                 avatarN.getPhysicsObject().setSleepThresholds(0f, 0f);
                 // have to create this animation manager after loading animations
                 animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan);
                 
-                //! Temp physics cube
-                Entity cubeE = sm.createEntity("cube", "cube.obj");
+                //! Temp physics sphere
+                Entity cubeE = sm.createEntity("cube", "sphere.obj");
                 cubeE.setPrimitive(Primitive.TRIANGLES);
 
                 SceneNode cubeN = sm.getRootSceneNode().createChildSceneNode(cubeE.getName() + "Node");
                 cubeN.attachObject(cubeE);
                 
-                cubeN.setLocalPosition(0f, 0f, 0f);
-                cubeN.setLocalScale(5f, 1f, 5f);
-                physMan.createCubePhysicsObject(cubeN, 0f, 1f, 1f, .9f);
-
+                cubeN.setLocalPosition(5f, 20f, 0f);
+                cubeN.setLocalScale(2f, 2f, 2f);
+                physMan.createSpherePhysicsObject(cubeN, 5f, 0f, .4f, .9f);
+                
+                Texture tex = eng.getTextureManager().getAssetByPath("hexagons.jpeg");
+                TextureState texState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+                texState.setTexture(tex);
+                cubeE.setRenderState(texState);
+                
                 //! Temp Cylinder
                 Entity cylinderE = sm.createEntity("cylinder", "cylinder.obj");
                 cylinderE.setPrimitive(Primitive.TRIANGLES);
