@@ -3,8 +3,9 @@ var cameraName = "avatarCamera";
 
 //Variables unique to avatar movement
 var avatarYawSpeed = .072;
-var horizontalMovementMultiplier = 1;
-var forwardMovementMultiplier = 1;
+var horizontalMovementMultiplier = 1.5;
+var forwardMovementMultiplier = 1.5;
+var jumpMultiplier = 1500;
 
 //Variables unique to camera movement
 var orbitStartingAzimuth = 180;

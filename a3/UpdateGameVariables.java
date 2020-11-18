@@ -27,7 +27,7 @@ public class UpdateGameVariables
     public void update()    
     {
         //If no update is required return
-        if (!scriptMan.scriptUpdate("gameVariables.js"))
+        if (!scriptMan.scriptUpdate("gameVariables.js") && !scriptMan.scriptUpdate("movementInfo.js"))
             return;
 
         System.out.println("\nUpdating Game Variables...");
@@ -44,12 +44,13 @@ public class UpdateGameVariables
         String plat1PhysicsPlane = scriptMan.getValue("plat1PhysicsPlane").toString();
         String plat2PhysicsPlane = scriptMan.getValue("plat2PhysicsPlane").toString();
         String wedgePhysicsPlane = scriptMan.getValue("wedgePhysicsPlane").toString();
+        String avatarName = scriptMan.getValue("avatarName").toString();
 
         //Update player position if "updateAvatarPos is true"
         if ((Boolean)scriptMan.getValue("updateAvatarPos"))
         {
-                sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node").setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
-                physMan.updatePhysicsTransforms(sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"));
+                sm.getSceneNode(avatarName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
+                physMan.updatePhysicsTransforms(sm.getSceneNode(avatarName + "Node"));
         }
 
         //Update Tesselation
@@ -101,7 +102,7 @@ public class UpdateGameVariables
         sm.getSceneNode(wedgePhysicsPlane + "Node").pitch(temp);
         sm.getSceneNode(wedgePhysicsPlane + "Node").getAttachedObject(wedgePhysicsPlane).setVisible((boolean)scriptMan.getValue(wedgePhysicsPlane + "Vis"));
         physMan.updatePhysicsTransforms(sm.getSceneNode(wedgePhysicsPlane + "Node"));
-
+        
         //Update physics
         runPhysics = (boolean)scriptMan.getValue("runPhysSim");
     }

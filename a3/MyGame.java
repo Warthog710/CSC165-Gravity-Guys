@@ -35,7 +35,7 @@ public class MyGame extends VariableFrameRateGame
         private OrbitCameraController orbitCamera;
         private GhostAvatars ghosts;
         private float lastUpdateTime = 0.0f, elapsTime = 0.0f;
-        private Action moveRightAction, moveFwdAction, moveYawAction;
+        private Action moveRightAction, moveFwdAction, moveYawAction, jumpAction;
 
         public static void main(String[] args) 
         {
@@ -69,7 +69,7 @@ public class MyGame extends VariableFrameRateGame
                 scriptMan.loadScript("movementInfo.js");
 
                 //Setup physics manager
-                physMan = new PhysicsManager(-8f, scriptMan);
+                physMan = new PhysicsManager(-80f, scriptMan);
         }
 
         @Override
@@ -117,8 +117,14 @@ public class MyGame extends VariableFrameRateGame
 
                 SceneNode avatarN = sm.getRootSceneNode().createChildSceneNode(avatarE.getName() + "Node");
                 avatarN.attachObject(avatarE);
-                avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));   
-                physMan.createSpherePhysicsObject(avatarN, 1f, 1f, 1f, .9f);     
+                avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
+                
+                float playerBounciness = 0f;
+                float playerFriction = 0.01f;
+                float playerDamping = .99f;
+                physMan.createSpherePhysicsObject(avatarN, 1f, playerBounciness, playerFriction, playerDamping);     
+                
+                avatarN.getPhysicsObject().setSleepThresholds(0f, 0f);
                 
                 //! Temp physics cube
                 Entity cubeE = sm.createEntity("cube", "cube.obj");
@@ -276,6 +282,7 @@ public class MyGame extends VariableFrameRateGame
                 moveYawAction = new MoveYawAction(orbitCamera, sm.getSceneNode(target), scriptMan, networkedClient);
                 moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan, this);
                 moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan, this);
+                jumpAction = new JumpAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan, this);
 
                 // Iterate over all input devices
                 for (int index = 0; index < controllerList.size(); index++) 
@@ -304,6 +311,9 @@ public class MyGame extends VariableFrameRateGame
                 			im.associateAction(controllerList.get(index), 
                 				net.java.games.input.Component.Identifier.Axis.Z, moveYawAction, 
         					InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                			im.associateAction(controllerList.get(index), 
+                    			net.java.games.input.Component.Identifier.Button._1, jumpAction, 
+            					InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
                 		}
                                 else 
                                 {
@@ -315,7 +325,10 @@ public class MyGame extends VariableFrameRateGame
                                                 InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
                                         im.associateAction(controllerList.get(index),
                                                 net.java.games.input.Component.Identifier.Axis.X, moveRightAction,
-                                                InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);                                
+                                                InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                                        im.associateAction(controllerList.get(index), 
+                                    			net.java.games.input.Component.Identifier.Button._0, jumpAction, 
+                            					InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
                                 }
                                 
                                 //Setup orbit camera controller inputs

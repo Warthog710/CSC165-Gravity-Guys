@@ -3,8 +3,8 @@
 #### MileStone #2 ToDo: **(Due before 11/20)**
 
 - [x] Add collision on game platforms
-- [ ] Rework how moving acts so it uses forces instead of updating transforms. **(Josh)**
-- [ ] Implement jumping using the physics engine **(Josh)**
+- [x] Rework how moving acts so it uses forces instead of updating transforms. **(Josh)**
+- [x] Implement jumping using the physics engine **(Josh)**
 - [ ] Add player avatar with some form of limited animation **(Josh)**
 - [ ] Rework how the "wishbone" is modelled so as to make collision detection more elegant. **(Josh)**
 - [ ] Change how level starts/ends so as to end on some form of terrain to fulfill terrain requirement (this will require working out how to update the physics height...)

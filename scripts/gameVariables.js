@@ -9,7 +9,7 @@ with (JavaPackages)
 {
 	//Player avatar information
 	var updateAvatarPos = true;
-	var avatarPos = Vector3f.createFrom(0, 2, -4);
+	var avatarPos = Vector3f.createFrom(0, 12, 0);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
@@ -34,7 +34,7 @@ with (JavaPackages)
 	
 	//Level values (2x vector3f)
 	var levelScale = Vector3f.createFrom(1.4, 1.4, 1.4);
-	var levelPos = Vector3f.createFrom(0, 20, 0);
+	var levelPos = Vector3f.createFrom(0, 10, 0);
 	
 	//Level object values
 	var startPlatScale = Vector3f.createFrom(1.5, 1, 2);
