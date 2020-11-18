@@ -8,7 +8,7 @@ var JavaPackages = new JavaImporter
 with (JavaPackages)
 {
 	//Player avatar information
-	var updateAvatarPos = false;
+	var updateAvatarPos = true;
 	var avatarPos = Vector3f.createFrom(0, 12, 0);
 	
 	//Default window size... Used only if the dialog box is not implemented
