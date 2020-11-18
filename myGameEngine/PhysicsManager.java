@@ -10,6 +10,7 @@ import ray.rml.Matrix3;
 import ray.rml.Matrix3f;
 import ray.rml.Matrix4;
 import ray.rml.Matrix4f;
+import ray.rml.Vector3;
 import ray.rml.Vector3f;
 
 public class PhysicsManager 
@@ -121,7 +122,7 @@ public class PhysicsManager
         node.setPhysicsObject(gndPlaneP);      
     }
 
-    public void updatePhysicsObjects(SceneManager sm)
+    public void updatePhysicsObjects(SceneManager sm, NetworkedClient nc)
     {
         for (SceneNode node : sm.getSceneNodes())
         {
@@ -137,7 +138,16 @@ public class PhysicsManager
 
                 //Don't rotate the avatar
                 if(node.getName().compareTo("playerAvatarNode") != 0)
-                    node.setLocalRotation(rot);                    
+                    node.setLocalRotation(rot);
+                
+                //Else, it must be the avatar... check to see if it has moved
+                //Tells the client to send an update since it is still sliding around
+                else
+                {
+                    Vector3 temp = Vector3f.createFrom(mat.value(0, 3), mat.value(1, 3), mat.value(2, 3));
+                    if (node.getLocalPosition().compareTo(temp) != 0)
+                        nc.updatePositionOnServer = true;
+                }                    
 
                 //Update position
                 node.setLocalPosition(mat.value(0, 3), mat.value(1, 3), mat.value(2, 3));

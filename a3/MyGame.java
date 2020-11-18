@@ -115,13 +115,13 @@ public class MyGame extends VariableFrameRateGame
                 //Load player mesh, skeleton, and texture
                 //scriptMan.getValue("avatarName").toString()
                 SkeletalEntity avatarE = sm.createSkeletalEntity(scriptMan.getValue("avatarName").toString(), "player.rkm", "player.rks");
-				Texture tex = sm.getTextureManager().getAssetByPath("newPlayer.png");
-				TextureState tstate = (TextureState) sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
-				tstate.setTexture(tex);
-				avatarE.setRenderState(tstate);
-				//load animations
-				avatarE.loadAnimation(scriptMan.getValue("walkAnimation").toString(), "newWalk.rka");
-				avatarE.loadAnimation(scriptMan.getValue("jumpAnimation").toString(), "jump.rka");
+		Texture tex = sm.getTextureManager().getAssetByPath("newPlayer.png");
+		TextureState tstate = (TextureState) sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+		tstate.setTexture(tex);
+	        avatarE.setRenderState(tstate);
+		//load animations
+		avatarE.loadAnimation(scriptMan.getValue("walkAnimation").toString(), "newWalk.rka");
+		avatarE.loadAnimation(scriptMan.getValue("jumpAnimation").toString(), "jump.rka");
 
                 SceneNode avatarN = sm.getRootSceneNode().createChildSceneNode(avatarE.getName() + "Node");
                 avatarN.attachObject(avatarE);
@@ -129,9 +129,9 @@ public class MyGame extends VariableFrameRateGame
                 avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
                 
                 float playerBounciness = 0f;
-                float playerFriction = 0.01f;
+                float playerFriction = .2f;
                 float playerDamping = .99f;
-                physMan.createSpherePhysicsObject(avatarN, 1f, playerBounciness, playerFriction, playerDamping);     
+                physMan.createSpherePhysicsObject(avatarN, 2f, playerBounciness, playerFriction, playerDamping);     
                 
                 //? Fixes a movement bug
                 avatarN.getPhysicsObject().setSleepThresholds(0f, 0f);
@@ -149,10 +149,10 @@ public class MyGame extends VariableFrameRateGame
                 cubeN.setLocalScale(2f, 2f, 2f);
                 physMan.createSpherePhysicsObject(cubeN, 5f, 0f, .4f, .9f);
                 
-                Texture tex = eng.getTextureManager().getAssetByPath("hexagons.jpeg");
-                TextureState texState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
-                texState.setTexture(tex);
-                cubeE.setRenderState(texState);
+                Texture sphereTex = eng.getTextureManager().getAssetByPath("hexagons.jpeg");
+                TextureState sphereTexState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+                sphereTexState.setTexture(sphereTex);
+                cubeE.setRenderState(sphereTexState);
                 
                 //! Temp Cylinder
                 Entity cylinderE = sm.createEntity("cylinder", "cylinder.obj");
@@ -276,7 +276,7 @@ public class MyGame extends VariableFrameRateGame
                 if (gVars.runPhysics)
                 {
                         physMan.getPhysicsEngine().update(elapsTime - lastUpdateTime);
-                        physMan.updatePhysicsObjects(engine.getSceneManager());
+                        physMan.updatePhysicsObjects(engine.getSceneManager(), networkedClient);
                 }
 
                 //Update network info
