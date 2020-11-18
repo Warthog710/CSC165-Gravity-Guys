@@ -17,6 +17,7 @@ import ray.rage.scene.Camera.Frustum.*;
 import ray.rml.Degreef;
 import ray.rml.Vector3f;
 import ray.rage.rendersystem.gl4.GL4RenderSystem;
+import ray.rage.rendersystem.states.RenderState;
 import ray.rage.rendersystem.states.TextureState;
 import ray.input.*;
 import ray.input.action.*;
@@ -36,6 +37,7 @@ public class MyGame extends VariableFrameRateGame
         private GhostAvatars ghosts;
         private float lastUpdateTime = 0.0f, elapsTime = 0.0f;
         private Action moveRightAction, moveFwdAction, moveYawAction, jumpAction;
+        private AnimationManager animMan;
 
         public static void main(String[] args) 
         {
@@ -111,12 +113,20 @@ public class MyGame extends VariableFrameRateGame
                 //Setup gVars
                 gVars = new UpdateGameVariables(sm, scriptMan, physMan);
 
-                //Place player avatar
-                Entity avatarE = sm.createEntity(scriptMan.getValue("avatarName").toString(), "sphere.obj");
-                avatarE.setPrimitive(Primitive.TRIANGLES);
+                //Load player mesh, skeleton, and texture
+                //scriptMan.getValue("avatarName").toString()
+                SkeletalEntity avatarE = sm.createSkeletalEntity(scriptMan.getValue("avatarName").toString(), "player.rkm", "player.rks");
+				Texture tex = sm.getTextureManager().getAssetByPath("newPlayer.png");
+				TextureState tstate = (TextureState) sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+				tstate.setTexture(tex);
+				avatarE.setRenderState(tstate);
+				//load animations
+				avatarE.loadAnimation(scriptMan.getValue("walkAnimation").toString(), "newWalk.rka");
+				avatarE.loadAnimation(scriptMan.getValue("jumpAnimation").toString(), "jump.rka");
 
                 SceneNode avatarN = sm.getRootSceneNode().createChildSceneNode(avatarE.getName() + "Node");
                 avatarN.attachObject(avatarE);
+                avatarN.setLocalScale(0.25f, 0.25f, 0.25f);
                 avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
                 
                 float playerBounciness = 0f;
@@ -125,6 +135,8 @@ public class MyGame extends VariableFrameRateGame
                 physMan.createSpherePhysicsObject(avatarN, 1f, playerBounciness, playerFriction, playerDamping);     
                 
                 avatarN.getPhysicsObject().setSleepThresholds(0f, 0f);
+                // have to create this animation manager after loading animations
+                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan);
                 
                 //! Temp physics cube
                 Entity cubeE = sm.createEntity("cube", "cube.obj");
@@ -137,7 +149,7 @@ public class MyGame extends VariableFrameRateGame
                 cubeN.setLocalScale(5f, 1f, 5f);
                 physMan.createCubePhysicsObject(cubeN, 0f, 1f, 1f, .9f);
 
-                //! Temp Cylidner
+                //! Temp Cylinder
                 Entity cylinderE = sm.createEntity("cylinder", "cylinder.obj");
                 cylinderE.setPrimitive(Primitive.TRIANGLES);
 
@@ -146,7 +158,6 @@ public class MyGame extends VariableFrameRateGame
                 cylinderN.setLocalPosition(0f, 1f, 0f);
                 cylinderN.setLocalScale(1f, 1f, 1f);
                 physMan.createCylinderPhyicsObject(cylinderN, 1f, 0f, 1f, .9f);
-
           
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));
@@ -271,6 +282,10 @@ public class MyGame extends VariableFrameRateGame
 
                 //Record last update in MS
                 lastUpdateTime = elapsTime;
+                
+                SkeletalEntity playerSE = (SkeletalEntity) engine.getSceneManager().getEntity(scriptMan.getValue("avatarName").toString());
+                playerSE.update();
+                animMan.checkAnimations();
         }
 
         protected void setupInputs(Camera camera, SceneManager sm, RenderWindow rw) 
@@ -280,9 +295,9 @@ public class MyGame extends VariableFrameRateGame
 
                 //Setup actions
                 moveYawAction = new MoveYawAction(orbitCamera, sm.getSceneNode(target), scriptMan, networkedClient);
-                moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan, this);
-                moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan, this);
-                jumpAction = new JumpAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan, this);
+                moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
+                moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
+                jumpAction = new JumpAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
 
                 // Iterate over all input devices
                 for (int index = 0; index < controllerList.size(); index++) 
