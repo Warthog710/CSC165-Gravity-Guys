@@ -44,6 +44,8 @@ public class MoveFwdAction extends AbstractInputAction
         targ.applyForce(forward.x(), forward.y(), forward.z(), 
         		pos.x(), pos.y(), pos.z());
 
+        //target.getPhysicsObject().applyForce(10, 0, 0, pos.x(), pos.y(), pos.z());
+
         //Update height
         game.updateVerticalPosition();
         
