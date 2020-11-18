@@ -5,11 +5,11 @@
 - [x] Add collision on game platforms
 - [x] Rework how moving acts so it uses forces instead of updating transforms. **(Josh)**
 - [x] Implement jumping using the physics engine **(Josh)**
-- [ ] Add player avatar with some form of limited animation **(Josh)**
-- [ ] Rework how the "wishbone" is modelled so as to make collision detection more elegant. **(Josh)**
+- [x] Add player avatar with some form of limited animation **(Josh)**
+- [x] Rework how the "wishbone" is modelled so as to make collision detection more elegant. **(Josh)**
 - [ ] Change how level starts/ends so as to end on some form of terrain to fulfill terrain requirement (this will require working out how to update the physics height...)
 - [x] Make level bigger...
-- [ ] At the top and bottom of the wedge we need regular platforms **(Josh)**
+- [x] At the top and bottom of the wedge we need regular platforms **(Josh)**
 
 #### How to compile/run:
 
