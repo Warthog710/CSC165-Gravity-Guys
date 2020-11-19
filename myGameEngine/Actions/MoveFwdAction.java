@@ -1,11 +1,11 @@
-package myGameEngine;
+package myGameEngine.Actions;
 
 import ray.input.action.AbstractInputAction;
 import ray.physics.PhysicsObject;
 import ray.rage.scene.*;
-import ray.rage.scene.SkeletalEntity.EndType;
 import ray.rml.Vector3;
 import a3.MyGame;
+import myGameEngine.*;
 import net.java.games.input.Event;
 
 public class MoveFwdAction extends AbstractInputAction 
@@ -29,9 +29,7 @@ public class MoveFwdAction extends AbstractInputAction
 
     // Move forward or backwards 5.0f every 1000ms or 1 second (assuming axis value = 1)
     public void performAction(float time, Event e) 
-    {
-    	SkeletalEntity playerSE = (SkeletalEntity) game.getEngine().getSceneManager().getEntity(scriptMan.getValue("avatarName").toString());
-        
+    {        
         // Deadzone
         if (e.getValue() > -.2 && e.getValue() < .2) {
         	return;
@@ -51,8 +49,7 @@ public class MoveFwdAction extends AbstractInputAction
         animMan.playWalk();       
         
         //Update height
-        game.updateVerticalPosition();
-        
+        game.updateVerticalPosition();        
         nc.updatePositionOnServer = true;
     }
 }

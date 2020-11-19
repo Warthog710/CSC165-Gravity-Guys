@@ -18,7 +18,7 @@ public class GameServer extends GameConnectionServer<UUID>
 {
     protected volatile Map<UUID, ClientInfo> clientInfo;
     protected volatile boolean threadRunning;
-    private Thread detectDeadClient;
+    private Thread detectDeadClient, ballSpawner;
 
     //Shutdown hook for hopefully closing the server properly... I think...
     private Runtime current;
@@ -46,6 +46,11 @@ public class GameServer extends GameConnectionServer<UUID>
         Runnable runnable = new DeadClient(this);
         detectDeadClient = new Thread(runnable);
         detectDeadClient.start();
+
+        //Create a thread to spawn the balls
+        Runnable balls = new BallSpawner(this);
+        ballSpawner = new Thread(balls);
+        ballSpawner.start();        
 
         //Intilize shutdown hook
         current = Runtime.getRuntime();
@@ -313,9 +318,20 @@ public class GameServer extends GameConnectionServer<UUID>
                     sendPacket(msg, clientID);
                 }
             }
-
         }
         catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    protected void sendMsgToAll(String msg)
+    {
+        try 
+        {
+            sendPacketToAll(msg);
+        } 
+        catch (IOException e) 
         {
             e.printStackTrace();
         }
@@ -327,8 +343,8 @@ public class GameServer extends GameConnectionServer<UUID>
         {
             threadRunning = false;
             detectDeadClient.interrupt();
+            ballSpawner.interrupt();
             System.out.println("Server shutting down...");
         }
-
     }
 }

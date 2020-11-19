@@ -29,7 +29,7 @@ public class AnimationManager
     		SEntity.stopAnimation();
     		isWalking = false;
     	}
-    	SEntity.playAnimation(scriptMan.getValue("jumpAnimation").toString(), 0.5f, EndType.PAUSE, 0);
+    	SEntity.playAnimation(scriptMan.getValue("jumpAnimation").toString(), 0.7f, EndType.PAUSE, 0);
     	isJumping = true;
     }
     
@@ -37,7 +37,7 @@ public class AnimationManager
     	if (isJumping || isWalking)
     		return;
     	else if (!isWalking) {
-    		SEntity.playAnimation(scriptMan.getValue("walkAnimation").toString(), 0.25f, EndType.LOOP, 0);
+    		SEntity.playAnimation(scriptMan.getValue("walkAnimation").toString(), 0.9f, EndType.LOOP, 0);
     		isWalking = true;
     	}
     }

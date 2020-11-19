@@ -17,7 +17,7 @@ with (JavaPackages)
 
     //Server info (string, int)
 	//var serverAddress = "172.17.50.17";
-	var serverAddress = "172.17.50.17";
+	var serverAddress = "192.168.68.106";
     var serverPort = 89;
 
     //Hud position (int, int)
@@ -26,11 +26,11 @@ with (JavaPackages)
 
     //Tesselation values (int, float, 3x vector3f)
     var tessQuality = 7;
-    var tessSubdivisions = 8.0;
-	var terrainTessScale = Vector3f.createFrom(50, 100, 50);
-	var heightTiling = 4;
-	var normalTiling = 4;
-	var textureTiling = 4;
+    var tessSubdivisions = 16.0;
+	var terrainTessScale = Vector3f.createFrom(200, 100, 200);
+	var heightTiling = 16;
+	var normalTiling = 16;
+	var textureTiling = 16;
 	
 	//Level values (2x vector3f)
 	var levelScale = Vector3f.createFrom(1.4, 1.4, 1.4);
@@ -40,12 +40,12 @@ with (JavaPackages)
 	var startPlatScale = Vector3f.createFrom(1.5, 1, 2);
 	var plat1Scale = Vector3f.createFrom(1, 1, 2);
 	var plat2Scale = Vector3f.createFrom(1, 1, 2);
-	var wishbonePlatScale = Vector3f.createFrom(6, 3, 3);
+	var wishbonePlatScale = Vector3f.createFrom(3, 2.8, 6);
 	var wedgePlatScale = Vector3f.createFrom(1, 1, 1);
 	var startPlatPos = Vector3f.createFrom(0, 0, 0);
 	var plat1Pos = Vector3f.createFrom(-5.98, 0, 13.93);
 	var plat2Pos = Vector3f.createFrom(5.98, 0, 13.93);
-	var wishbonePlatPos = Vector3f.createFrom(0, -0.7, 30.8);
+	var wishbonePlatPos = Vector3f.createFrom(0, -0.7, 34.5);
 	var wedgePlatPos = Vector3f.createFrom(0, 0, 46.5);
 
 	//Level physics planes
@@ -62,15 +62,36 @@ with (JavaPackages)
 	wedgePhysicsPlanePos = wedgePhysicsPlanePos.add(0, 7.5, 15.3);
 	var wedgePhysicsPlaneScale = Vector3f.createFrom(8.3, 12, 1);
 	var wedgePhysicsPlaneRotX = Degreef.createFrom(45.8);
+	var plat3PhysicsPlanePos = levelPos.add(wedgePlatPos);
+	plat3PhysicsPlanePos = plat3PhysicsPlanePos.add(0, -1, 4);
+	var plat3PhysicsPlaneScale = Vector3f.createFrom(8.25, 1, 2.2);
+	var plat4PhysicsPlanePos = levelPos.add(wedgePlatPos);
+	plat4PhysicsPlanePos = plat4PhysicsPlanePos.add(0, 15.5, 25.2);
+	var plat4PhysicsPlaneScale = Vector3f.createFrom(8.25, 1, 2.1);
+
+	var wishBoneOnePos = levelPos.add(wishbonePlatPos);
+	wishBoneOnePos = wishBoneOnePos.add(-4.6, -.3, 6);
+	var wishBoneOneScale = Vector3f.createFrom(1, 10, 1);
+	var wishBoneOneRotY = Degreef.createFrom(-24.6);
+
+	var wishBoneTwoPos = levelPos.add(wishbonePlatPos);
+	wishBoneTwoPos = wishBoneTwoPos.add(4.6, -.3, 6);
+	var wishBoneTwoScale = Vector3f.createFrom(1, 10, 1);
+	var wishBoneTwoRotY = Degreef.createFrom(24.6);
+
 
 	//Visibility of physics planes
 	var startPhysicsPlaneVis = false;
 	var plat1PhysicsPlaneVis = false;
 	var plat2PhysicsPlaneVis = false;
 	var wedgePhysicsPlaneVis = false;
+	var plat3PhysicsPlaneVis = false;
+	var plat4PhysicsPlaneVis = false;
+	var wishBoneOneVis = false;
+	var wishBoneTwoVis = false;
 
 	//Physiscs information
-	var runPhysSim = true;	
+	var runPhysSim = true; 
 
     //! DO NOT CHANGE DURING RUNTIME
     var terrainName = "terrainTess";
@@ -85,8 +106,12 @@ with (JavaPackages)
 	var startPhysicsPlane = "startPhysicsPlane";
 	var plat1PhysicsPlane = "plat1PhysicsPlane";
 	var plat2PhysicsPlane = "plat2PhysicsPlane";
+	var plat3PhysicsPlane = "plat3PhysicsPlane";
+	var plat4PhysicsPlane = "plat3PhysicsPlane";
 	var wedgePhysicsPlane = "wedgePhysicsPlane";
 	var jumpAnimation = "jumpAnimation";
 	var walkAnimation = "walkAnimation";
+	var wishBoneOne = "wishBoneOne";
+	var wishBoneTwo = "wishBoneTwo";
 }
 

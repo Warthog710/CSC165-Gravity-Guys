@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.UUID;
 
+import a3.BouncyBalls;
 import a3.MyGame;
 import ray.networking.client.GameConnectionClient;
 import ray.rage.scene.SceneManager;
@@ -24,8 +25,8 @@ public class NetworkedClient extends GameConnectionClient
     public boolean isConnected;
 
     //These variables are set to determine what updates need to be sent to the server
-    protected boolean updatePositionOnServer = false;  
-    protected boolean updateOrientationOnServer = false;
+    public boolean updatePositionOnServer = false;  
+    public boolean updateOrientationOnServer = false;
 
     //Creates a UDP client
     public NetworkedClient(InetAddress remoteAddr, int remotePort, GhostAvatars ghosts, ScriptManager scriptMan, MyGame myGame) throws IOException 
@@ -102,6 +103,12 @@ public class NetworkedClient extends GameConnectionClient
                 if (msgTokens[0].compareTo("DETAILSFOR") == 0)
                 {
                     processDETAILSFOR(msgTokens);
+                }
+
+                //Check for NEWBALL msg
+                if (msgTokens[0].compareTo("NEWBALL") == 0)
+                {
+                    processNEWBALL(msgTokens);
                 }
 
                 //Check for CREATE msg
@@ -388,6 +395,13 @@ public class NetworkedClient extends GameConnectionClient
 
         //Empty last update
         lastUpdate.clear();
+    }
+
+    private void processNEWBALL(String[] msgTokens)
+    {
+        Vector3f pos = (Vector3f)Vector3f.createFrom(Float.parseFloat(msgTokens[1]), Float.parseFloat(msgTokens[2]), Float.parseFloat(msgTokens[3]));
+        float radius = Float.parseFloat(msgTokens[4]);
+        myGame.bouncyBalls.addBall(pos, radius);
     }
 
     //Shutdown hook ensures that "BYE" is sent to the server (most of the time...)

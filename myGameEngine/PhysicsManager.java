@@ -1,5 +1,6 @@
 package myGameEngine;
 
+import a3.MyGame;
 import ray.physics.PhysicsEngine;
 import ray.physics.PhysicsEngineFactory;
 import ray.physics.PhysicsObject;
@@ -10,6 +11,7 @@ import ray.rml.Matrix3;
 import ray.rml.Matrix3f;
 import ray.rml.Matrix4;
 import ray.rml.Matrix4f;
+import ray.rml.Vector3;
 import ray.rml.Vector3f;
 
 public class PhysicsManager 
@@ -88,40 +90,53 @@ public class PhysicsManager
         node.pitch(rotation);
     }
 
-    public void createCylinderPhyicsObject(SceneNode node, float mass, float bounciness, float friction, float damping)
+    public void createCylinderPhyicsObject(SceneNode node, float mass, float bounciness, float friction, float damping, Degreef rotation)
     {
-        double[] transform = toDoubleArray(node.getLocalTransform().toFloatArray());
+        double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
+        double[] transform = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0, temp[12], temp[13], temp[14], 1.0};
+
+        Matrix4f rotationMatrix = (Matrix4f)Matrix4f.createFrom(toFloatArray(transform));
+        rotationMatrix = (Matrix4f)rotationMatrix.rotate(Degreef.createFrom(90), Degreef.createFrom(0), rotation); 
 
         float[] halfExtents = node.getLocalScale().toFloatArray();
 
-        //Cylinder primitive is 1f, 2f, 1f
-        //halfExtents[0] = 1f;
-        //halfExtents[1] = 1f;
-        //halfExtents[2] = 1f;
+        PhysicsObject physObj = physicsEng.addCylinderObject(physicsEng.nextUID(), mass, toDoubleArray(rotationMatrix.toFloatArray()), halfExtents);
+        physObj.setBounciness(bounciness);
+        physObj.setFriction(friction);
+        physObj.setDamping(damping, damping);
+        node.setPhysicsObject(physObj);
+        node.pitch(Degreef.createFrom(90));
+        node.roll(rotation);
+    }
 
-        PhysicsObject physObj = physicsEng.addCylinderObject(physicsEng.nextUID(), mass, transform, halfExtents);
+    public void createAvatarSphere(SceneNode  node, float mass, float bounciness, float friction, float damping)
+    {
+        double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
+        double[] transform = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0, temp[12], temp[13], temp[14], 1.0};
+
+        float radius = 1.02f;
+        
+        PhysicsObject physObj = physicsEng.addSphereObject(physicsEng.nextUID(), mass, transform, radius);
         physObj.setBounciness(bounciness);
         physObj.setFriction(friction);
         physObj.setDamping(damping, damping);
         node.setPhysicsObject(physObj);
     }
-
-    public void createStaticGroundPlane(SceneNode node, float bounciness, float friction, float damping, Vector3f scale)
+    
+    public void createStaticGroundPlane(float bounciness, float friction, float damping)
     {
-        double[] temp = toDoubleArray(node.getWorldTransform().toFloatArray());
+        double[] transform = { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0, 0, 0, 1.0 };
         float[] up = {0, 1, 0};
 
-        PhysicsObject gndPlaneP = physicsEng.addStaticPlaneObject(physicsEng.nextUID(), temp, up, 0.0f);
+        PhysicsObject gndPlaneP = physicsEng.addStaticPlaneObject(physicsEng.nextUID(), transform, up, 0.0f);
         gndPlaneP.setBounciness(bounciness);
         gndPlaneP.setFriction(friction);
-        gndPlaneP.setDamping(damping, damping);
-        gndPlaneP.setTransform(temp);
-
-        //node.setLocalScale(scale);
-        node.setPhysicsObject(gndPlaneP);      
+        gndPlaneP.setDamping(damping, damping);     
     }
 
-    public void updatePhysicsObjects(SceneManager sm)
+    public void updatePhysicsObjects(SceneManager sm, NetworkedClient nc, MyGame game)
     {
         for (SceneNode node : sm.getSceneNodes())
         {
@@ -132,12 +147,25 @@ public class PhysicsManager
                 float[] rotVal = { mat.value(0, 0), mat.value(0, 1), mat.value(0, 2), mat.value(1, 0), mat.value(1, 1),
                         mat.value(1, 2), mat.value(2, 0), mat.value(2, 1), mat.value(2, 2) };
 
-                //Matrix3f rot = (Matrix3f)Matrix3f.createFrom(rotVal);
                 Matrix3 rot = Matrix3f.createTransposeFrom(rotVal);            
 
                 //Don't rotate the avatar
                 if(node.getName().compareTo("playerAvatarNode") != 0)
-                    node.setLocalRotation(rot);                    
+                    node.setLocalRotation(rot);
+                
+                //Else, it must be the avatar... check to see if it has moved
+                //Tells the client to send an update since it is still sliding around
+                else
+                {
+                    Vector3 temp = Vector3f.createFrom(mat.value(0, 3), mat.value(1, 3), mat.value(2, 3));
+                    if (node.getLocalPosition().compareTo(temp) != 0)
+                        nc.updatePositionOnServer = true;
+                        
+                    //Update position
+                    node.setLocalPosition(mat.value(0, 3), mat.value(1, 3) - 1, mat.value(2, 3));
+                    game.updateVerticalPosition();
+                    continue;
+                }                    
 
                 //Update position
                 node.setLocalPosition(mat.value(0, 3), mat.value(1, 3), mat.value(2, 3));
