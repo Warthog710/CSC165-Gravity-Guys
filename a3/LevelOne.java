@@ -64,7 +64,7 @@ public class LevelOne
         SceneNode wishbonePlatN = levelN.createChildSceneNode(wishbonePlatE.getName() + "Node");
         wishbonePlatN.attachObject(wishbonePlatE);
         wishbonePlatN.scale((Vector3f)scriptMan.getValue("wishbonePlatScale"));
-        wishbonePlatN.rotate(Degreef.createFrom(90), Vector3f.createFrom(0.0f, 1.0f, 0.0f));
+        wishbonePlatN.rotate(Degreef.createFrom(180), Vector3f.createFrom(0.0f, 1.0f, 0.0f));
         wishbonePlatN.setLocalPosition((Vector3f)scriptMan.getValue("wishbonePlatPos"));
         
         Entity wedgePlatE = sm.createEntity("wedgePlatform", "wedge.obj");
@@ -73,7 +73,9 @@ public class LevelOne
         wedgePlatN.attachObject(wedgePlatE);
         wedgePlatN.scale((Vector3f)scriptMan.getValue("wedgePlatScale"));
         wedgePlatN.setLocalPosition((Vector3f)scriptMan.getValue("wedgePlatPos"));
-        createPhysicsPlaneWithRotationAboutX("wedgePhysicsPlane");   
+        createPhysicsPlaneWithRotationAboutX("wedgePhysicsPlane"); 
+        createPhysicsPlane("plat3PhysicsPlane");  
+        createPhysicsPlane("plat4PhysicsPlane");
         
         return levelN;
     }

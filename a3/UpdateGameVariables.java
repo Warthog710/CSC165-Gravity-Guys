@@ -43,6 +43,8 @@ public class UpdateGameVariables
         String startPhysicsPlane = scriptMan.getValue("startPhysicsPlane").toString();
         String plat1PhysicsPlane = scriptMan.getValue("plat1PhysicsPlane").toString();
         String plat2PhysicsPlane = scriptMan.getValue("plat2PhysicsPlane").toString();
+        String plat3PhysicsPlane = scriptMan.getValue("plat3PhysicsPlane").toString();
+        String plat4PhysicsPlane = scriptMan.getValue("plat4PhysicsPlane").toString();
         String wedgePhysicsPlane = scriptMan.getValue("wedgePhysicsPlane").toString();
         String avatarName = scriptMan.getValue("avatarName").toString();
 
@@ -93,6 +95,16 @@ public class UpdateGameVariables
         sm.getSceneNode(plat2PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat2PhysicsPlaneScale"));
         sm.getSceneNode(plat2PhysicsPlane + "Node").getAttachedObject(plat2PhysicsPlane).setVisible((boolean)scriptMan.getValue("plat2PhysicsPlaneVis"));
         physMan.updatePhysicsTransforms(sm.getSceneNode(plat2PhysicsPlane + "Node"));
+
+        sm.getSceneNode(plat3PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat3PhysicsPlanePos"));
+        sm.getSceneNode(plat3PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat3PhysicsPlaneScale"));
+        sm.getSceneNode(plat3PhysicsPlane + "Node").getAttachedObject(plat3PhysicsPlane).setVisible((boolean)scriptMan.getValue("plat3PhysicsPlaneVis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(plat3PhysicsPlane + "Node"));
+
+        sm.getSceneNode(plat4PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("plat4PhysicsPlanePos"));
+        sm.getSceneNode(plat4PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("plat4PhysicsPlaneScale"));
+        sm.getSceneNode(plat4PhysicsPlane + "Node").getAttachedObject(plat4PhysicsPlane).setVisible((boolean)scriptMan.getValue("plat4PhysicsPlaneVis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(plat4PhysicsPlane + "Node"));
 
         sm.getSceneNode(wedgePhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue(wedgePhysicsPlane + "Pos"));
         sm.getSceneNode(wedgePhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue(wedgePhysicsPlane + "Scale"));

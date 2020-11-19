@@ -91,7 +91,9 @@ public class PhysicsManager
 
     public void createCylinderPhyicsObject(SceneNode node, float mass, float bounciness, float friction, float damping)
     {
-        double[] transform = toDoubleArray(node.getLocalTransform().toFloatArray());
+        double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
+        double[] transform = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0, temp[12], temp[13], temp[14], 1.0};
 
         float[] halfExtents = node.getLocalScale().toFloatArray();
 
@@ -107,6 +109,21 @@ public class PhysicsManager
         node.setPhysicsObject(physObj);
     }
 
+    public void createAvatarSphere(SceneNode  node, float mass, float bounciness, float friction, float damping)
+    {
+        double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
+        double[] transform = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0, temp[12], temp[13], temp[14], 1.0};
+
+        float radius = 1.02f;
+        
+        PhysicsObject physObj = physicsEng.addSphereObject(physicsEng.nextUID(), mass, transform, radius);
+        physObj.setBounciness(bounciness);
+        physObj.setFriction(friction);
+        physObj.setDamping(damping, damping);
+        node.setPhysicsObject(physObj);
+    }
+    
     public void createStaticGroundPlane(SceneNode node, float bounciness, float friction, float damping, Vector3f scale)
     {
         double[] temp = toDoubleArray(node.getWorldTransform().toFloatArray());
@@ -147,6 +164,10 @@ public class PhysicsManager
                     Vector3 temp = Vector3f.createFrom(mat.value(0, 3), mat.value(1, 3), mat.value(2, 3));
                     if (node.getLocalPosition().compareTo(temp) != 0)
                         nc.updatePositionOnServer = true;
+                        
+                    //Update position
+                    node.setLocalPosition(mat.value(0, 3), mat.value(1, 3) - 1, mat.value(2, 3));
+                    continue;
                 }                    
 
                 //Update position

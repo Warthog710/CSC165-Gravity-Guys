@@ -59,6 +59,19 @@ public class MyGame extends VariableFrameRateGame
                 }
         }
 
+        @Override
+        public void shutdown()
+        {
+                try
+                {
+                        super.shutdown();
+                }
+                catch (Exception e)
+                {
+                        this.exit();
+                }
+        }
+
         public MyGame()
         {
                 //Call parent constructor
@@ -129,9 +142,9 @@ public class MyGame extends VariableFrameRateGame
                 avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
                 
                 float playerBounciness = 0f;
-                float playerFriction = .2f;
+                float playerFriction = .7f;
                 float playerDamping = .99f;
-                physMan.createSpherePhysicsObject(avatarN, 2f, playerBounciness, playerFriction, playerDamping);     
+                physMan.createAvatarSphere(avatarN, 1f, playerBounciness, playerFriction, playerDamping);
                 
                 //? Fixes a movement bug
                 avatarN.getPhysicsObject().setSleepThresholds(0f, 0f);
@@ -153,16 +166,6 @@ public class MyGame extends VariableFrameRateGame
                 TextureState sphereTexState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
                 sphereTexState.setTexture(sphereTex);
                 cubeE.setRenderState(sphereTexState);
-                
-                //! Temp Cylinder
-                Entity cylinderE = sm.createEntity("cylinder", "cylinder.obj");
-                cylinderE.setPrimitive(Primitive.TRIANGLES);
-
-                SceneNode cylinderN = sm.getRootSceneNode().createChildSceneNode("cylinderNode");
-                cylinderN.attachObject(cylinderE);
-                cylinderN.setLocalPosition(0f, 1f, 0f);
-                cylinderN.setLocalScale(1f, 1f, 1f);
-                physMan.createCylinderPhyicsObject(cylinderN, 1f, 0f, 1f, .9f);
           
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));

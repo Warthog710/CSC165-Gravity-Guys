@@ -9,7 +9,7 @@ with (JavaPackages)
 {
 	//Player avatar information
 	var updateAvatarPos = true;
-	var avatarPos = Vector3f.createFrom(0, 12, 0);
+	var avatarPos = Vector3f.createFrom(0, 15, 0);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
@@ -40,12 +40,12 @@ with (JavaPackages)
 	var startPlatScale = Vector3f.createFrom(1.5, 1, 2);
 	var plat1Scale = Vector3f.createFrom(1, 1, 2);
 	var plat2Scale = Vector3f.createFrom(1, 1, 2);
-	var wishbonePlatScale = Vector3f.createFrom(6, 3, 3);
+	var wishbonePlatScale = Vector3f.createFrom(3, 2.8, 6);
 	var wedgePlatScale = Vector3f.createFrom(1, 1, 1);
 	var startPlatPos = Vector3f.createFrom(0, 0, 0);
 	var plat1Pos = Vector3f.createFrom(-5.98, 0, 13.93);
 	var plat2Pos = Vector3f.createFrom(5.98, 0, 13.93);
-	var wishbonePlatPos = Vector3f.createFrom(0, -0.7, 30.8);
+	var wishbonePlatPos = Vector3f.createFrom(0, -0.7, 34.5);
 	var wedgePlatPos = Vector3f.createFrom(0, 0, 46.5);
 
 	//Level physics planes
@@ -62,12 +62,21 @@ with (JavaPackages)
 	wedgePhysicsPlanePos = wedgePhysicsPlanePos.add(0, 7.5, 15.3);
 	var wedgePhysicsPlaneScale = Vector3f.createFrom(8.3, 12, 1);
 	var wedgePhysicsPlaneRotX = Degreef.createFrom(45.8);
+	var plat3PhysicsPlanePos = levelPos.add(wedgePlatPos);
+	plat3PhysicsPlanePos = plat3PhysicsPlanePos.add(0, -1, 4);
+	var plat3PhysicsPlaneScale = Vector3f.createFrom(8.25, 1, 2.2);
+	var plat4PhysicsPlanePos = levelPos.add(wedgePlatPos);
+	plat4PhysicsPlanePos = plat4PhysicsPlanePos.add(0, 15.5, 25.2);
+	var plat4PhysicsPlaneScale = Vector3f.createFrom(8.25, 1, 2.1);
+
 
 	//Visibility of physics planes
 	var startPhysicsPlaneVis = false;
 	var plat1PhysicsPlaneVis = false;
 	var plat2PhysicsPlaneVis = false;
 	var wedgePhysicsPlaneVis = false;
+	var plat3PhysicsPlaneVis = false;
+	var plat4PhysicsPlaneVis = false;
 
 	//Physiscs information
 	var runPhysSim = true;	
@@ -85,6 +94,8 @@ with (JavaPackages)
 	var startPhysicsPlane = "startPhysicsPlane";
 	var plat1PhysicsPlane = "plat1PhysicsPlane";
 	var plat2PhysicsPlane = "plat2PhysicsPlane";
+	var plat3PhysicsPlane = "plat3PhysicsPlane";
+	var plat4PhysicsPlane = "plat3PhysicsPlane";
 	var wedgePhysicsPlane = "wedgePhysicsPlane";
 	var jumpAnimation = "jumpAnimation";
 	var walkAnimation = "walkAnimation";
