@@ -9,7 +9,7 @@ with (JavaPackages)
 {
 	//Player avatar information
 	var updateAvatarPos = true;
-	var avatarPos = Vector3f.createFrom(0, 15, 0);
+	var avatarPos = Vector3f.createFrom(0, 12, 0);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
@@ -26,11 +26,11 @@ with (JavaPackages)
 
     //Tesselation values (int, float, 3x vector3f)
     var tessQuality = 7;
-    var tessSubdivisions = 8.0;
-	var terrainTessScale = Vector3f.createFrom(50, 100, 50);
-	var heightTiling = 4;
-	var normalTiling = 4;
-	var textureTiling = 4;
+    var tessSubdivisions = 16.0;
+	var terrainTessScale = Vector3f.createFrom(200, 100, 200);
+	var heightTiling = 16;
+	var normalTiling = 16;
+	var textureTiling = 16;
 	
 	//Level values (2x vector3f)
 	var levelScale = Vector3f.createFrom(1.4, 1.4, 1.4);
@@ -69,6 +69,16 @@ with (JavaPackages)
 	plat4PhysicsPlanePos = plat4PhysicsPlanePos.add(0, 15.5, 25.2);
 	var plat4PhysicsPlaneScale = Vector3f.createFrom(8.25, 1, 2.1);
 
+	var wishBoneOnePos = levelPos.add(wishbonePlatPos);
+	wishBoneOnePos = wishBoneOnePos.add(-4.6, -.3, 6);
+	var wishBoneOneScale = Vector3f.createFrom(1, 10, 1);
+	var wishBoneOneRotY = Degreef.createFrom(-24.6);
+
+	var wishBoneTwoPos = levelPos.add(wishbonePlatPos);
+	wishBoneTwoPos = wishBoneTwoPos.add(4.6, -.3, 6);
+	var wishBoneTwoScale = Vector3f.createFrom(1, 10, 1);
+	var wishBoneTwoRotY = Degreef.createFrom(24.6);
+
 
 	//Visibility of physics planes
 	var startPhysicsPlaneVis = false;
@@ -77,9 +87,11 @@ with (JavaPackages)
 	var wedgePhysicsPlaneVis = false;
 	var plat3PhysicsPlaneVis = false;
 	var plat4PhysicsPlaneVis = false;
+	var wishBoneOneVis = false;
+	var wishBoneTwoVis = false;
 
 	//Physiscs information
-	var runPhysSim = true;	
+	var runPhysSim = true; 
 
     //! DO NOT CHANGE DURING RUNTIME
     var terrainName = "terrainTess";
@@ -99,5 +111,7 @@ with (JavaPackages)
 	var wedgePhysicsPlane = "wedgePhysicsPlane";
 	var jumpAnimation = "jumpAnimation";
 	var walkAnimation = "walkAnimation";
+	var wishBoneOne = "wishBoneOne";
+	var wishBoneTwo = "wishBoneTwo";
 }
 

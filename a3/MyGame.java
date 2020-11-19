@@ -14,6 +14,7 @@ import ray.rage.rendersystem.*;
 import ray.rage.rendersystem.Renderable.*;
 import ray.rage.scene.*;
 import ray.rage.scene.Camera.Frustum.*;
+import ray.rml.Vector3;
 import ray.rml.Vector3f;
 import ray.rage.rendersystem.gl4.GL4RenderSystem;
 import ray.rage.rendersystem.states.RenderState;
@@ -21,6 +22,9 @@ import ray.rage.rendersystem.states.TextureState;
 import ray.input.*;
 import ray.input.action.*;
 import myGameEngine.*;
+import myGameEngine.Actions.*;
+
+//TODO: Change the ghost avatars to the actual avatar...
 
 public class MyGame extends VariableFrameRateGame 
 {
@@ -35,8 +39,10 @@ public class MyGame extends VariableFrameRateGame
         private OrbitCameraController orbitCamera;
         private GhostAvatars ghosts;
         private float lastUpdateTime = 0.0f, elapsTime = 0.0f;
-        private Action moveRightAction, moveFwdAction, moveYawAction, jumpAction;
+        private Action moveRightAction, moveFwdAction, moveYawAction, jumpAction, resetAction;
         private AnimationManager animMan;
+
+        public BouncyBalls bouncyBalls;
 
         public static void main(String[] args) 
         {
@@ -84,6 +90,7 @@ public class MyGame extends VariableFrameRateGame
 
                 //Setup physics manager
                 physMan = new PhysicsManager(-80f, scriptMan);
+                physMan.createStaticGroundPlane(0f, .5f, .9f);
         }
 
         @Override
@@ -216,6 +223,9 @@ public class MyGame extends VariableFrameRateGame
                 //Setup networking
                 setupNetworking();
 
+                //Setup the bouncy balls 
+                bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);
+
                 //Configure controller(s)
                 setupInputs(sm.getCamera(scriptMan.getValue("cameraName").toString()), sm, eng.getRenderSystem().getRenderWindow());
         }
@@ -279,7 +289,7 @@ public class MyGame extends VariableFrameRateGame
                 if (gVars.runPhysics)
                 {
                         physMan.getPhysicsEngine().update(elapsTime - lastUpdateTime);
-                        physMan.updatePhysicsObjects(engine.getSceneManager(), networkedClient);
+                        physMan.updatePhysicsObjects(engine.getSceneManager(), networkedClient, this);
                 }
 
                 //Update network info
@@ -288,12 +298,13 @@ public class MyGame extends VariableFrameRateGame
                 //Update orbit camera controllers
                 orbitCamera.updateCameraPosition();
 
-                //Record last update in MS
-                lastUpdateTime = elapsTime;
-                
                 SkeletalEntity playerSE = (SkeletalEntity) engine.getSceneManager().getEntity(scriptMan.getValue("avatarName").toString());
                 playerSE.update();
                 animMan.checkAnimations();
+                bouncyBalls.update(elapsTime - lastUpdateTime);
+
+                //Record last update in MS
+                lastUpdateTime = elapsTime;
         }
 
         protected void setupInputs(Camera camera, SceneManager sm, RenderWindow rw) 
@@ -306,6 +317,7 @@ public class MyGame extends VariableFrameRateGame
                 moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
                 moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
                 jumpAction = new JumpAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
+                resetAction = new ResetPlayerAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan);
 
                 // Iterate over all input devices
                 for (int index = 0; index < controllerList.size(); index++) 
@@ -335,8 +347,11 @@ public class MyGame extends VariableFrameRateGame
                 				net.java.games.input.Component.Identifier.Axis.Z, moveYawAction, 
         					InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
                 			im.associateAction(controllerList.get(index), 
-                    			net.java.games.input.Component.Identifier.Button._1, jumpAction, 
-            					InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                    			        net.java.games.input.Component.Identifier.Button._1, jumpAction, 
+                                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                        im.associateAction(controllerList.get(index), 
+                                                net.java.games.input.Component.Identifier.Button._6, resetAction, 
+                                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
                 		}
                                 else 
                                 {
@@ -350,8 +365,11 @@ public class MyGame extends VariableFrameRateGame
                                                 net.java.games.input.Component.Identifier.Axis.X, moveRightAction,
                                                 InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
                                         im.associateAction(controllerList.get(index), 
-                                    			net.java.games.input.Component.Identifier.Button._0, jumpAction, 
-                            					InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                    		net.java.games.input.Component.Identifier.Button._0, jumpAction, 
+                                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);                                                            
+                                        im.associateAction(controllerList.get(index), 
+                                    		net.java.games.input.Component.Identifier.Button._5, resetAction, 
+                            			InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
                                 }
                                 
                                 //Setup orbit camera controller inputs
@@ -367,16 +385,17 @@ public class MyGame extends VariableFrameRateGame
                 }
         }
 
-        //? Added an offset of .4f to the dolphin to move it up a bit
+        //Update the vertical position based on the tesselation when the avatar is close to the ground
         public void updateVerticalPosition() 
         {
-        	/*SceneNode avatarN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
-        	SceneNode tessN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("terrainName").toString() + "Node");
-                Tessellation tessE = (Tessellation)tessN.getAttachedObject(scriptMan.getValue("terrainName").toString());
-
+        	SceneNode avatarN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
+                
                 //Only execute if the avatar is close to ground zero
                 if (avatarN.getLocalPosition().y() > 2.0f)
                         return;
+                
+                SceneNode tessN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("terrainName").toString() + "Node");
+                Tessellation tessE = (Tessellation)tessN.getAttachedObject(scriptMan.getValue("terrainName").toString());
                 
         	//Figure out Avatar's position relative to plane
                 Vector3 worldAvatarPosition = avatarN.getWorldPosition();               
@@ -384,11 +403,11 @@ public class MyGame extends VariableFrameRateGame
                 
             	//Use avatar World coordinates to get coordinates for height
                 Vector3 newAvatarPosition = Vector3f.createFrom(localAvatarPosition.x(),
-                                tessE.getWorldHeight(worldAvatarPosition.x(), worldAvatarPosition.z()) + 0.4f,
-                                localAvatarPosition.z());
+                        tessE.getWorldHeight(worldAvatarPosition.x(), worldAvatarPosition.z()),
+                        localAvatarPosition.z());
                     
             	//Use avatar Local coordinates to set position, including height
-            	avatarN.setLocalPosition(newAvatarPosition);*/
+            	avatarN.setLocalPosition(newAvatarPosition);
         }
 
         private void setupSkybox(Engine eng) throws IOException

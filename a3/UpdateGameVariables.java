@@ -12,7 +12,7 @@ public class UpdateGameVariables
     private SceneManager sm;
     private ScriptManager scriptMan;
     private PhysicsManager physMan;
-    private Degreef prevPitch;
+    private Degreef prevPitch, wishBoneOneYaw, wishBoneTwoYaw;
     protected boolean runPhysics;
 
     public UpdateGameVariables(SceneManager sm, ScriptManager scriptMan, PhysicsManager physMan)
@@ -21,6 +21,8 @@ public class UpdateGameVariables
         this.scriptMan = scriptMan;
         this.physMan = physMan;
         this.prevPitch = (Degreef)this.scriptMan.getValue("wedgePhysicsPlaneRotX");
+        this.wishBoneOneYaw = (Degreef)this.scriptMan.getValue("wishBoneOneRotY");
+        this.wishBoneTwoYaw = (Degreef)this.scriptMan.getValue("wishBoneTwoRotY");
         this.runPhysics = (boolean)this.scriptMan.getValue("runPhysSim");
     }
 
@@ -46,6 +48,8 @@ public class UpdateGameVariables
         String plat3PhysicsPlane = scriptMan.getValue("plat3PhysicsPlane").toString();
         String plat4PhysicsPlane = scriptMan.getValue("plat4PhysicsPlane").toString();
         String wedgePhysicsPlane = scriptMan.getValue("wedgePhysicsPlane").toString();
+        String wishBoneOne = scriptMan.getValue("wishBoneOne").toString();
+        String wishBoneTwo = scriptMan.getValue("wishBoneTwo").toString();
         String avatarName = scriptMan.getValue("avatarName").toString();
 
         //Update player position if "updateAvatarPos is true"
@@ -114,6 +118,24 @@ public class UpdateGameVariables
         sm.getSceneNode(wedgePhysicsPlane + "Node").pitch(temp);
         sm.getSceneNode(wedgePhysicsPlane + "Node").getAttachedObject(wedgePhysicsPlane).setVisible((boolean)scriptMan.getValue(wedgePhysicsPlane + "Vis"));
         physMan.updatePhysicsTransforms(sm.getSceneNode(wedgePhysicsPlane + "Node"));
+
+        sm.getSceneNode(wishBoneOne + "Node").setLocalPosition((Vector3f)scriptMan.getValue(wishBoneOne + "Pos"));
+        sm.getSceneNode(wishBoneOne + "Node").setLocalScale((Vector3f)scriptMan.getValue(wishBoneOne + "Scale"));
+        temp = (Degreef)scriptMan.getValue(wishBoneOne + "RotY");
+        temp = Degreef.createFrom(temp.sub(wishBoneOneYaw));
+        wishBoneOneYaw = (Degreef)scriptMan.getValue(wishBoneOne + "RotY");
+        sm.getSceneNode(wishBoneOne + "Node").roll(temp);
+        sm.getSceneNode(wishBoneOne + "Node").getAttachedObject(wishBoneOne).setVisible((boolean)scriptMan.getValue(wishBoneOne + "Vis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(wishBoneOne + "Node"));
+
+        sm.getSceneNode(wishBoneTwo + "Node").setLocalPosition((Vector3f)scriptMan.getValue(wishBoneTwo + "Pos"));
+        sm.getSceneNode(wishBoneTwo + "Node").setLocalScale((Vector3f)scriptMan.getValue(wishBoneTwo + "Scale"));
+        temp = (Degreef)scriptMan.getValue(wishBoneTwo + "RotY");
+        temp = Degreef.createFrom(temp.sub(wishBoneTwoYaw));
+        wishBoneTwoYaw = (Degreef)scriptMan.getValue(wishBoneTwo + "RotY");
+        sm.getSceneNode(wishBoneTwo + "Node").roll(temp);
+        sm.getSceneNode(wishBoneTwo + "Node").getAttachedObject(wishBoneTwo).setVisible((boolean)scriptMan.getValue(wishBoneTwo + "Vis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(wishBoneTwo + "Node"));
         
         //Update physics
         runPhysics = (boolean)scriptMan.getValue("runPhysSim");
