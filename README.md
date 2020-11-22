@@ -1,5 +1,11 @@
 # CSC165-Final-Project
 
+### Objectives Due 11/29:
+
+* [ ] Fixed issues climbing wedge (either playround with the physics values or lessent the slope of the wege). Note, if the latter is choosen you will have to adjust the physics planes and where the balls spawn. **(Josh)**
+* [ ] Added the platforms that you jump down after the wedge and a finish line platform. **(Josh)**
+* [ ] Add the obstacles to the first two rectangle platforms. First one with moving walls, the second with rotating flails. **(Quinn)**
+
 #### How to compile/run:
 
 * ***runGame.bat*** compiles and runs the game. No server parameters are passed as these are now read from the "gameVariables.js" script. If you wish to update these values, change the *serverAddress* & *serverPort* variables.
