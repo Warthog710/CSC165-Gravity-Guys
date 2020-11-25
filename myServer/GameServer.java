@@ -95,6 +95,9 @@ public class GameServer extends GameConnectionServer<UUID>
 
                 //Send confirmation msg with position of all active clients
                 sendConfirmMessage(UUID.fromString(msgTokens[1]));
+
+                //Since a new clients joined... ask all the clients to Sync
+                sendMsgToAll("SYNC");
             }
 
             //Check for BYE msg

@@ -18,3 +18,6 @@ var cameraRadiusSpeed = .004;
 var zoomMax = 10;
 var zoomMin = 1; 
 
+//Variables unique to wall movement
+var wallCycleTime = 2000;
+var wallSpeed = .002;

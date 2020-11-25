@@ -93,6 +93,11 @@ with (JavaPackages)
 	//Physiscs information
 	var runPhysSim = true; 
 
+	//Moving walls on left platform
+	var offset = 4;
+	var wallStartingPos = Vector3f.createFrom(8.3, 10.9, 7.5);
+	var wallScale = Vector3f.createFrom(3, .75, .1);
+
     //! DO NOT CHANGE DURING RUNTIME
     var terrainName = "terrainTess";
     var waterName = "waterTess";

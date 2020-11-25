@@ -24,8 +24,6 @@ import ray.input.action.*;
 import myGameEngine.*;
 import myGameEngine.Actions.*;
 
-//TODO: Change the ghost avatars to the actual avatar...
-
 public class MyGame extends VariableFrameRateGame 
 {
         GL4RenderSystem rs;
@@ -43,6 +41,7 @@ public class MyGame extends VariableFrameRateGame
         private AnimationManager animMan;
 
         public BouncyBalls bouncyBalls;
+        public Walls platformWalls;
 
         public static void main(String[] args) 
         {
@@ -129,8 +128,11 @@ public class MyGame extends VariableFrameRateGame
                 scriptMan.putObjectInEngine("sm", sm);
                 scriptMan.loadScript("lights.js");
 
+                //Setup walls
+                platformWalls = new Walls(scriptMan, physMan, this.getEngine().getSceneManager());
+
                 //Setup gVars
-                gVars = new UpdateGameVariables(sm, scriptMan, physMan);
+                gVars = new UpdateGameVariables(sm, scriptMan, physMan, platformWalls);
 
                 //Load player mesh, skeleton, and texture
                 //scriptMan.getValue("avatarName").toString()
@@ -223,7 +225,7 @@ public class MyGame extends VariableFrameRateGame
                 //Setup networking
                 setupNetworking();
 
-                //Setup the bouncy balls 
+                //Setup the bouncy balls
                 bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);
 
                 //Configure controller(s)

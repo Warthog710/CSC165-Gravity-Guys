@@ -5,7 +5,6 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.UUID;
 
-import a3.BouncyBalls;
 import a3.MyGame;
 import ray.networking.client.GameConnectionClient;
 import ray.rage.scene.SceneManager;
@@ -142,6 +141,13 @@ public class NetworkedClient extends GameConnectionClient
                 if (msgTokens[0].compareTo("FORCEDBYE") == 0)
                 {
                     processFORCEDBYE();
+                }
+
+                //Server wants all client to sync
+                if (msgTokens[0].compareTo("SYNC") == 0)
+                {
+                    //Sync the walls
+                    myGame.platformWalls.resetWalls();
                 }
             }
         }

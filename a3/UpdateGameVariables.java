@@ -1,8 +1,11 @@
 package a3;
 
+import java.util.Iterator;
+
 import myGameEngine.PhysicsManager;
 import myGameEngine.ScriptManager;
 import ray.rage.scene.SceneManager;
+import ray.rage.scene.SceneNode;
 import ray.rage.scene.Tessellation;
 import ray.rml.Degreef;
 import ray.rml.Vector3f;
@@ -12,14 +15,16 @@ public class UpdateGameVariables
     private SceneManager sm;
     private ScriptManager scriptMan;
     private PhysicsManager physMan;
+    private Walls platformWalls;
     private Degreef prevPitch, wishBoneOneYaw, wishBoneTwoYaw;
     protected boolean runPhysics;
 
-    public UpdateGameVariables(SceneManager sm, ScriptManager scriptMan, PhysicsManager physMan)
+    public UpdateGameVariables(SceneManager sm, ScriptManager scriptMan, PhysicsManager physMan, Walls platformWalls)
     {
         this.sm = sm;
         this.scriptMan = scriptMan;
         this.physMan = physMan;
+        this.platformWalls = platformWalls;
         this.prevPitch = (Degreef)this.scriptMan.getValue("wedgePhysicsPlaneRotX");
         this.wishBoneOneYaw = (Degreef)this.scriptMan.getValue("wishBoneOneRotY");
         this.wishBoneTwoYaw = (Degreef)this.scriptMan.getValue("wishBoneTwoRotY");
@@ -136,9 +141,29 @@ public class UpdateGameVariables
         sm.getSceneNode(wishBoneTwo + "Node").roll(temp);
         sm.getSceneNode(wishBoneTwo + "Node").getAttachedObject(wishBoneTwo).setVisible((boolean)scriptMan.getValue(wishBoneTwo + "Vis"));
         physMan.updatePhysicsTransforms(sm.getSceneNode(wishBoneTwo + "Node"));
+
+        updateWalls();
         
         //Update physics
         runPhysics = (boolean)scriptMan.getValue("runPhysSim");
+    }
+
+    //Updates the positions of the walls
+    private void updateWalls()
+    {
+        int offset = 0;
+        Vector3f startPos = (Vector3f)scriptMan.getValue("wallStartingPos");
+        Vector3f wallScale = (Vector3f)scriptMan.getValue("wallScale");
+        Iterator<SceneNode> nodeIter = platformWalls.getWalls().iterator();
+
+        while (nodeIter.hasNext())
+        {
+            SceneNode wall = nodeIter.next();
+            wall.setLocalPosition(startPos.x(), startPos.y(), startPos.z() + offset);
+            wall.setLocalScale(wallScale);
+            physMan.updatePhysicsTransforms(wall);
+            offset += Integer.parseInt(scriptMan.getValue("offset").toString());
+        }
     }
     
 }

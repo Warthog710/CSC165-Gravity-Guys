@@ -4,6 +4,7 @@ import a3.MyGame;
 import ray.physics.PhysicsEngine;
 import ray.physics.PhysicsEngineFactory;
 import ray.physics.PhysicsObject;
+import ray.rage.scene.Node;
 import ray.rage.scene.SceneManager;
 import ray.rage.scene.SceneNode;
 import ray.rml.Degreef;
@@ -183,6 +184,12 @@ public class PhysicsManager
     {
         if (node.getPhysicsObject() != null)
             node.getPhysicsObject().setTransform(toDoubleArray(node.getLocalTransform().toFloatArray()));
+    }
+
+    public void updatePhysicsPosition(Node node)
+    {
+        float[] newValues = { 1, 0, 0, node.getLocalPosition().x(), 0, 1, 0, node.getLocalPosition().y(), 0, 0, 1, node.getLocalPosition().z(), 0, 0, 0, 1};
+        node.getPhysicsObject().setTransform(toDoubleArray(Matrix4f.createTransposeFrom(newValues).toFloatArray()));
     }
 
     private double[] toDoubleArray(float[] fArray)
