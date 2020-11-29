@@ -10,12 +10,14 @@ public class AnimationManager
 	private ScriptManager scriptMan;
 	private boolean isWalking, isJumping, goingDown;
 	private PhysicsObject PObject;
+	private SoundManager soundMan;
 
-    public AnimationManager(SkeletalEntity SEntity, PhysicsObject PObject, ScriptManager scriptMan)
+    public AnimationManager(SkeletalEntity SEntity, PhysicsObject PObject, ScriptManager scriptMan, SoundManager soundMan)
     {
     	this.PObject = PObject;
     	this.SEntity = SEntity;
         this.scriptMan = scriptMan;
+        this.soundMan = soundMan;
         isWalking = false;
         isJumping = false;
         goingDown = false;
@@ -30,6 +32,7 @@ public class AnimationManager
     		isWalking = false;
     	}
     	SEntity.playAnimation(scriptMan.getValue("jumpAnimation").toString(), 0.7f, EndType.PAUSE, 0);
+    	soundMan.playJump();
     	isJumping = true;
     }
     
@@ -38,6 +41,7 @@ public class AnimationManager
     		return;
     	else if (!isWalking) {
     		SEntity.playAnimation(scriptMan.getValue("walkAnimation").toString(), 0.9f, EndType.LOOP, 0);
+    		soundMan.playWalk();
     		isWalking = true;
     	}
     }
@@ -66,6 +70,7 @@ public class AnimationManager
     	//Else, if the player is not moving fast enough along the ground, then stop the walk animation
     	else if (Math.abs(PObject.getLinearVelocity()[0]) < 0.1f && Math.abs(PObject.getLinearVelocity()[2]) < 0.1f) {
     		SEntity.stopAnimation();
+    		soundMan.stopWalk();
     		isWalking = false;
     	}
     }
