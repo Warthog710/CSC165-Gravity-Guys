@@ -33,6 +33,7 @@ public class AnimationManager
     	}
     	SEntity.playAnimation(scriptMan.getValue("jumpAnimation").toString(), 0.7f, EndType.PAUSE, 0);
     	soundMan.playJump();
+    	soundMan.stopWalk();
     	isJumping = true;
     }
     
