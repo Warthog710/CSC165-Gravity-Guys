@@ -39,6 +39,7 @@ public class MyGame extends VariableFrameRateGame
         private float lastUpdateTime = 0.0f, elapsTime = 0.0f;
         private Action moveRightAction, moveFwdAction, moveYawAction, jumpAction, resetAction;
         private AnimationManager animMan;
+        private SoundManager soundMan;
 
         public BouncyBalls bouncyBalls;
         public Walls platformWalls;
@@ -158,8 +159,10 @@ public class MyGame extends VariableFrameRateGame
                 
                 //? Fixes a movement bug
                 avatarN.getPhysicsObject().setSleepThresholds(0f, 0f);
+                
+                soundMan = new SoundManager(sm, scriptMan);
                 // have to create this animation manager after loading animations
-                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan);
+                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan, soundMan);
                 
                 //! Temp physics sphere
                 Entity cubeE = sm.createEntity("cube", "sphere.obj");
@@ -231,6 +234,9 @@ public class MyGame extends VariableFrameRateGame
 
                 //Setup NPC
                 npc = new NPC(sm, scriptMan, networkedClient);
+
+                // initialize sound
+                soundMan.initAudio();                
 
                 //Configure controller(s)
                 setupInputs(sm.getCamera(scriptMan.getValue("cameraName").toString()), sm, eng.getRenderSystem().getRenderWindow());
@@ -306,6 +312,7 @@ public class MyGame extends VariableFrameRateGame
 
                 SkeletalEntity playerSE = (SkeletalEntity) engine.getSceneManager().getEntity(scriptMan.getValue("avatarName").toString());
                 playerSE.update();
+                soundMan.updateSound();
                 animMan.checkAnimations();
                 bouncyBalls.update(elapsTime - lastUpdateTime);
                 npc.update(elapsTime - lastUpdateTime);
