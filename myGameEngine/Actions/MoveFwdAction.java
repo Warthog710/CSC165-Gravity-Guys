@@ -42,9 +42,8 @@ public class MoveFwdAction extends AbstractInputAction
         //Get the physics object of the node and apply a forward/backward force
         PhysicsObject targ = target.getPhysicsObject();
         Vector3 forward = target.getLocalForwardAxis().mult(-time * e.getValue() * movementMult);
-        Vector3 pos = target.getLocalPosition();
-        targ.applyForce(forward.x(), forward.y(), forward.z(), 
-        		pos.x(), pos.y(), pos.z());
+        //Vector3 pos = target.getLocalPosition();
+        targ.applyForce(forward.x(), forward.y(), forward.z(), 0f, 0f, 0f);
         
         animMan.playWalk();       
         
