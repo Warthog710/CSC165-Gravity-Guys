@@ -2,11 +2,17 @@
 
 ### Objectives Due by 11/29:
 
-* [ ] Fixed issues climbing wedge (either playround with the physics values or lessent the slope of the wege). Note, if the latter is choosen you will have to adjust the physics planes and where the balls spawn. **(Josh)**
+* [x] Fixed issues climbing wedge (either playround with the physics values or lessent the slope of the wege). Note, if the latter is choosen you will have to adjust the physics planes and where the balls spawn. **(Josh)**
 * [ ] Added the platforms that you jump down after the wedge and a finish line platform. **(Josh)**
 * [ ] Add the obstacles to the first two rectangle platforms. First one with moving walls, the second with rotating flails. **(Quinn)**
 * [ ] Adding NPC/AI to the game **(Quinn)**
-* [ ] Add sound to the game **(Josh)**
+* [x] Add sound to the game **(Josh)**
+
+### Objectives Due by 12/12 (Project Submission):
+
+* [ ] Add two different types of light in addition to ambient light, allowing the player to turn one on and off.
+* [ ] Update the HUD information (possibly allow the user to toggle the HUD display).
+* [ ] Get server IP information via command line, or prompt the user for it interactively.
 
 #### How to compile/run:
 
