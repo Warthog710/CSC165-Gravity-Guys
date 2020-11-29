@@ -184,10 +184,10 @@ public class MyGame extends VariableFrameRateGame
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));
 
                 //Set up point light
-                Light plight = (Light)scriptMan.getValue("pLight");        		
-                SceneNode plightNode = sm.getRootSceneNode().createChildSceneNode(scriptMan.getValue("lightName").toString());
-                plightNode.attachObject(plight);
-                plightNode.setLocalPosition((Vector3f)scriptMan.getValue("pLightPos"));
+                Light dlight = (Light)scriptMan.getValue("dLight");      
+                SceneNode dlightNode = sm.getRootSceneNode().createChildSceneNode(scriptMan.getValue("lightName").toString());
+                dlightNode.attachObject(dlight);
+                dlightNode.setLocalPosition((Vector3f)scriptMan.getValue("dLightPos"));
 
                 //Setup skybox
                 setupSkybox(eng);
@@ -297,6 +297,15 @@ public class MyGame extends VariableFrameRateGame
                 //Process inputs
                 im.update(elapsTime - lastUpdateTime);
 
+                //Check if player is on wedge and needs upward force
+                SceneNode playerN = engine.getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
+                //Calculate distance from the wedge based on formula for distance between a point and a plane
+                double distance = Math.abs(-298.8 * playerN.getLocalPosition().y() + 282.2 * playerN.getLocalPosition().z() - 11686.4)/
+                					Math.sqrt(298.8*298.8 + 282.2*282.2);
+                if (distance < 0.2 && playerN.getWorldPosition().z() < 70 && playerN.getWorldPosition().z() > 52) {
+                	playerN.getPhysicsObject().applyForce(0, 27, 27, 0, 0, 0);
+                }
+                
                 //Process physiscs world and update objects
                 if (gVars.runPhysics)
                 {

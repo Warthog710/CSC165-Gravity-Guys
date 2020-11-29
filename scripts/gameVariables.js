@@ -9,7 +9,7 @@ with (JavaPackages)
 {
 	//Player avatar information
 	var updateAvatarPos = true;
-	var avatarPos = Vector3f.createFrom(0, 12, 0);
+	var avatarPos = Vector3f.createFrom(0, 32, 71);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
@@ -42,11 +42,21 @@ with (JavaPackages)
 	var plat2Scale = Vector3f.createFrom(1, 1, 2);
 	var wishbonePlatScale = Vector3f.createFrom(3, 2.8, 6);
 	var wedgePlatScale = Vector3f.createFrom(1, 1, 1);
+	var endPlat1Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
+	var endPlat2Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
+	var endPlat3Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
+	var endPlat4Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
+	var endPlat5Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
 	var startPlatPos = Vector3f.createFrom(0, 0, 0);
 	var plat1Pos = Vector3f.createFrom(-5.98, 0, 13.93);
 	var plat2Pos = Vector3f.createFrom(5.98, 0, 13.93);
 	var wishbonePlatPos = Vector3f.createFrom(0, -0.7, 34.5);
 	var wedgePlatPos = Vector3f.createFrom(0, 0, 46.5);
+	var endPlat1Pos = Vector3f.createFrom(0, 10, 57);
+	var endPlat2Pos = Vector3f.createFrom(-2, 8, 62);
+	var endPlat3Pos = Vector3f.createFrom(1, 6, 67);
+	var endPlat4Pos = Vector3f.createFrom(4, 4, 72);
+	var endPlat5Pos = Vector3f.createFrom(-5, 2, 77);
 
 	//Level physics planes
 	var startPhysicsPlanePos = levelPos.add(startPlatPos);
@@ -113,6 +123,11 @@ with (JavaPackages)
 	var plat2Name = "platform2";
 	var wishbonePlatName = "wishbonePlatform";
 	var wedgePlatName = "wedgePlatform";
+	var endPlat1Name = "endPlatform1";
+	var endPlat2Name = "endPlatform2";
+	var endPlat3Name = "endPlatform3";
+	var endPlat4Name = "endPlatform4";
+	var endPlat5Name = "endPlatform5";
 	var startPhysicsPlane = "startPhysicsPlane";
 	var plat1PhysicsPlane = "plat1PhysicsPlane";
 	var plat2PhysicsPlane = "plat2PhysicsPlane";

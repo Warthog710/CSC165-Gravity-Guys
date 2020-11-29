@@ -85,9 +85,6 @@ public class NPC
         npcNode.setLocalPosition(playerNode.getLocalPosition());
         Vector3 fwd = npcNode.getLocalForwardAxis().mult(timeElapsed * blowPower);
         npcNode.setLocalPosition(temp);
-
-        //Get player position
-        Vector3 playerPos = playerNode.getLocalPosition();
         
         //Play wind sound effect
         soundMan.playWind();
@@ -155,9 +152,6 @@ public class NPC
             npcNode.setLocalPosition(playerNode.getLocalPosition());
             Vector3 fwd = npcNode.getLocalForwardAxis().mult(timeElapsed * blowPower);
             npcNode.setLocalPosition(temp);
-
-            //Get player position
-            Vector3 playerPos = playerNode.getLocalPosition();
 
             //Apply physics force
             playerNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0f, 0f, 0f);

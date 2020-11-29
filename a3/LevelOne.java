@@ -79,6 +79,42 @@ public class LevelOne
         createPhysicsPlane("plat3PhysicsPlane");  
         createPhysicsPlane("plat4PhysicsPlane");
         
+        Entity endPlat1E = sm.createEntity("endPlatform1", "groundPlatform.obj");
+        endPlat1E.setPrimitive(Primitive.TRIANGLES);
+        SceneNode endPlat1N = levelN.createChildSceneNode(endPlat1E.getName() + "Node");
+        endPlat1N.attachObject(endPlat1E);
+        endPlat1N.scale((Vector3f)scriptMan.getValue("endPlat1Scale"));
+        endPlat1N.setLocalPosition((Vector3f)scriptMan.getValue("endPlat1Pos"));
+        //createPhysicsPlane("endPlat1PhysicsPlane");
+        
+        Entity endPlat2E = sm.createEntity("endPlatform2", "groundPlatform.obj");
+        endPlat2E.setPrimitive(Primitive.TRIANGLES);
+        SceneNode endPlat2N = levelN.createChildSceneNode(endPlat2E.getName() + "Node");
+        endPlat2N.attachObject(endPlat2E);
+        endPlat2N.scale((Vector3f)scriptMan.getValue("endPlat2Scale"));
+        endPlat2N.setLocalPosition((Vector3f)scriptMan.getValue("endPlat2Pos"));
+        
+        Entity endPlat3E = sm.createEntity("endPlatform3", "groundPlatform.obj");
+        endPlat3E.setPrimitive(Primitive.TRIANGLES);
+        SceneNode endPlat3N = levelN.createChildSceneNode(endPlat3E.getName() + "Node");
+        endPlat3N.attachObject(endPlat3E);
+        endPlat3N.scale((Vector3f)scriptMan.getValue("endPlat3Scale"));
+        endPlat3N.setLocalPosition((Vector3f)scriptMan.getValue("endPlat3Pos"));
+        
+        Entity endPlat4E = sm.createEntity("endPlatform4", "groundPlatform.obj");
+        endPlat4E.setPrimitive(Primitive.TRIANGLES);
+        SceneNode endPlat4N = levelN.createChildSceneNode(endPlat4E.getName() + "Node");
+        endPlat4N.attachObject(endPlat4E);
+        endPlat4N.scale((Vector3f)scriptMan.getValue("endPlat4Scale"));
+        endPlat4N.setLocalPosition((Vector3f)scriptMan.getValue("endPlat4Pos"));
+        
+        Entity endPlat5E = sm.createEntity("endPlatform5", "groundPlatform.obj");
+        endPlat5E.setPrimitive(Primitive.TRIANGLES);
+        SceneNode endPlat5N = levelN.createChildSceneNode(endPlat5E.getName() + "Node");
+        endPlat5N.attachObject(endPlat5E);
+        endPlat5N.scale((Vector3f)scriptMan.getValue("endPlat5Scale"));
+        endPlat5N.setLocalPosition((Vector3f)scriptMan.getValue("endPlat5Pos"));
+        
         return levelN;
     }
 
