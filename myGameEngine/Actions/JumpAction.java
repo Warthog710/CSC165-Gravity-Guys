@@ -41,8 +41,7 @@ public class JumpAction extends AbstractInputAction
         {
         	//Apply an upward force to do a jump
             animMan.playJump();
-        	Vector3 pos = target.getLocalPosition();
-            targ.applyForce(0f, movementMult, 0f, pos.x(), pos.y(), pos.z());
+            targ.applyForce(0f, movementMult, 0f, 0f, 0f, 0f);
         }
 
         //Update height

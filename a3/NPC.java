@@ -5,6 +5,7 @@ import java.io.IOException;
 import myGameEngine.NetworkedClient;
 import myGameEngine.ObjectDistance;
 import myGameEngine.ScriptManager;
+import myGameEngine.SoundManager;
 import ray.ai.behaviortrees.BTAction;
 import ray.ai.behaviortrees.BTCompositeType;
 import ray.ai.behaviortrees.BTCondition;
@@ -26,12 +27,14 @@ public class NPC
     private SceneNode npcNode, playerNode;
     private BehaviorTree bTree;
     private float blowPower;
+    private SoundManager soundMan;
 
-    public NPC(SceneManager sm, ScriptManager scriptMan, NetworkedClient nc)  throws IOException
+    public NPC(SceneManager sm, ScriptManager scriptMan, NetworkedClient nc, SoundManager soundMan)  throws IOException
     {
         this.scriptMan = scriptMan;
         this.nc = nc;
         this.blowPower = Float.parseFloat(scriptMan.getValue("blowPower").toString());
+        this.soundMan = soundMan;
 
         //Create the NPC
         Entity cube = sm.createEntity(scriptMan.getValue("npcName").toString(), "cube.obj");
@@ -82,12 +85,12 @@ public class NPC
         npcNode.setLocalPosition(playerNode.getLocalPosition());
         Vector3 fwd = npcNode.getLocalForwardAxis().mult(timeElapsed * blowPower);
         npcNode.setLocalPosition(temp);
-
-        //Get player position
-        Vector3 playerPos = playerNode.getLocalPosition();
+        
+        //Play wind sound effect
+        soundMan.playWind();
 
         //Apply physics force
-        playerNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), playerPos.x(), playerPos.y(), playerPos.z());
+        playerNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0f, 0f, 0f);
         nc.updatePositionOnServer = true;
     }
 
@@ -96,6 +99,7 @@ public class NPC
     {
         npcNode.setLocalPosition(pos);
         npcNode.setLocalRotation(rot);
+        soundMan.stopWind();
     }
 
     private void setupBehaviorTree() 
@@ -149,12 +153,12 @@ public class NPC
             Vector3 fwd = npcNode.getLocalForwardAxis().mult(timeElapsed * blowPower);
             npcNode.setLocalPosition(temp);
 
-            //Get player position
-            Vector3 playerPos = playerNode.getLocalPosition();
-
             //Apply physics force
-            playerNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), playerPos.x(), playerPos.y(), playerPos.z());
+            playerNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0f, 0f, 0f);
             nc.updatePositionOnServer = true;
+            
+            //Play wind sound effect
+            soundMan.playWind();
 
             return BTStatus.BH_SUCCESS;
         }        
@@ -192,7 +196,10 @@ public class NPC
                 npcNode.setLocalPosition(previousPos.x(), previousPos.y(), previousPos.z() + movementMult * timeElapsed);
             else
                 npcNode.setLocalPosition(previousPos.x(), previousPos.y(), previousPos.z() + -movementMult * timeElapsed);
-
+            
+            //Stop wind sound effect
+            soundMan.stopWind();
+            
             return BTStatus.BH_SUCCESS;            
         }        
     }    

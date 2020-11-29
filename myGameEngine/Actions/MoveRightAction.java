@@ -40,10 +40,9 @@ public class MoveRightAction extends AbstractInputAction
 
         //Get the physics object of the node and apply a right/left force
         PhysicsObject targ = target.getPhysicsObject();
-        Vector3 forward = target.getLocalRightAxis().mult(-time * e.getValue() * movementMult);
-        Vector3 pos = target.getLocalPosition();
-        targ.applyForce(forward.x(), forward.y(), forward.z(), 
-        		pos.x(), pos.y(), pos.z());
+        Vector3 right = target.getLocalRightAxis().mult(-time * e.getValue() * movementMult);
+        //Vector3 pos = target.getLocalPosition();
+        targ.applyForce(right.x(), right.y(), right.z(), 0f, 0f, 0f);
         
         animMan.playWalk();
         

@@ -3,8 +3,8 @@ var cameraName = "avatarCamera";
 
 //Variables unique to avatar movement
 var avatarYawSpeed = .072;
-var horizontalMovementMultiplier = .2;
-var forwardMovementMultiplier = .2;
+var horizontalMovementMultiplier = 1;
+var forwardMovementMultiplier = 1;
 var jumpMultiplier = 1500;
 
 //Variables unique to camera movement
@@ -24,4 +24,4 @@ var wallSpeed = .0015;
 
 //NPC stuff
 var npcSpeed = .001;
-var blowPower = .15;
+var blowPower = 2;

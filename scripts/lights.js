@@ -4,21 +4,21 @@ var JavaPackages = new JavaImporter
     Packages.ray.rage.scene.SceneManager,  
     Packages.ray.rage.scene.Light,  
     Packages.ray.rage.scene.Light.Type,  
-    Packages.ray.rage.scene.Light.Type.POINT, 
+    Packages.ray.rage.scene.Light.Type.DIRECTIONAL, 
     Packages.ray.rml.Vector3f, 
     Packages.java.awt.Color
 );
 
 with (JavaPackages)
 {
-    //Create point light
-    var lightName = "pLight1";
-    var pLightPos = Vector3f.createFrom(0, 8, 0);
-    var pLight = sm.createLight("pLight1", Light.Type.POINT);
-    pLight.setAmbient(new Color(.1, .1, .1));
-    pLight.setDiffuse(new Color(.7, .7, .7));
-    pLight.setSpecular(new Color(1, 1, 1));
-    pLight.setRange(30);
+    //Create directional light
+    var lightName = "dLight1";
+    var dLightPos = Vector3f.createFrom(0, 15, -5);
+    var dLight = sm.createLight("dLight1", Light.Type.DIRECTIONAL);
+    dLight.setAmbient(new Color(.1, .1, .1));
+    dLight.setDiffuse(new Color(.4, .4, .4));
+    dLight.setSpecular(new Color(.7, .7, .7));
+    dLight.setRange(80);
         
 
     //Ambient light color
