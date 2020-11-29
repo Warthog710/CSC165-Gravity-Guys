@@ -9,7 +9,7 @@ with (JavaPackages)
 {
 	//Player avatar information
 	var updateAvatarPos = true;
-	var avatarPos = Vector3f.createFrom(0, 32, 71);
+	var avatarPos = Vector3f.createFrom(0, 12, 0);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
