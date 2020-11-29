@@ -111,6 +111,29 @@ public class PhysicsManager
         node.roll(rotation);
     }
 
+    public void createFlailPhysicsObject(SceneNode node, float mass, float bounciness, float friction, float damping)
+    {
+        double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
+        double[] transform = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0, temp[12], temp[13], temp[14], 1.0};
+
+        Matrix4f rotationMatrix = (Matrix4f)Matrix4f.createFrom(toFloatArray(transform));
+        //rotationMatrix = (Matrix4f)rotationMatrix.rotate(Degreef.createFrom(90), Degreef.createFrom(0), rotation); 
+
+        float[] halfExtents = node.getLocalScale().toFloatArray();
+
+        PhysicsObject physObj = physicsEng.addCylinderObject(physicsEng.nextUID(), mass, toDoubleArray(rotationMatrix.toFloatArray()), halfExtents);
+        physObj.setBounciness(bounciness);
+        physObj.setFriction(friction);
+        physObj.setDamping(damping, damping);
+        node.setPhysicsObject(physObj);
+    }
+
+    public void createHingeConstraint(SceneNode pillar, SceneNode flail)
+    {
+        physicsEng.addHingeConstraint(physicsEng.nextUID(), pillar.getPhysicsObject(), flail.getPhysicsObject(), 0, 0, -1);
+    }
+
     public void createAvatarSphere(SceneNode  node, float mass, float bounciness, float friction, float damping)
     {
         double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());

@@ -35,12 +35,12 @@ public class SoundManager {
 			return;
 		}
 		
-		resource1 = audioMgr.createAudioResource("./assets/sounds/footsteps.wav", AudioResourceType.AUDIO_SAMPLE);
+		resource1 = audioMgr.createAudioResource("./assets/sounds/walk.wav", AudioResourceType.AUDIO_SAMPLE);
 		resource2 = audioMgr.createAudioResource("./assets/sounds/jump.wav", AudioResourceType.AUDIO_SAMPLE);
 		resource3 = audioMgr.createAudioResource("./assets/sounds/wind.wav", AudioResourceType.AUDIO_SAMPLE);
 		walkSound = new Sound(resource1, SoundType.SOUND_EFFECT, 50, true);
 		jumpSound = new Sound(resource2, SoundType.SOUND_EFFECT, 50, true);
-		windSound = new Sound(resource3, SoundType.SOUND_EFFECT, 100, true);
+		windSound = new Sound(resource3, SoundType.SOUND_EFFECT, 100, false);
 		walkSound.initialize(audioMgr);
 		jumpSound.initialize(audioMgr);
 		windSound.initialize(audioMgr);
@@ -91,10 +91,9 @@ public class SoundManager {
 		if (!windSound.getIsPlaying())
 			windSound.play();
 	}
-	
-	public void stopWind() {
-		if (windSound.getIsPlaying())
-			windSound.stop();
+
+	public IAudioManager getSoundManager()
+	{
+		return audioMgr;
 	}
-	
 }

@@ -106,6 +106,10 @@ public class BouncyBalls
                 sm.destroySceneNode(ballList.get(index));
                 ballList.remove(ballList.get(index));
             }
+
+            //If the ball is on the bottom part of the platform... apply a bit of force to make sure it falls off
+            else if(ballList.get(index).getLocalPosition().z() <= 52f)
+                ballList.get(index).getPhysicsObject().applyForce(0, 0, -100, 0, 0, 0);
         }
     }
     

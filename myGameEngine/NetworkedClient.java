@@ -17,7 +17,7 @@ public class NetworkedClient extends GameConnectionClient
     private GhostAvatars ghosts;
     private MyGame myGame;
     private UUID id;
-    private float timeSinceLastKeepAlive;
+    private float timeSinceLastKeepAlive, timeSinceLastJoin;
     private HashMap<UUID, Long> lastUpdate;
 
     //Public boolean to determine whether we are connected to a server
@@ -37,7 +37,8 @@ public class NetworkedClient extends GameConnectionClient
         this.ghosts = ghosts;
         this.id = UUID.randomUUID();   
         this.isConnected = false; 
-        this.timeSinceLastKeepAlive = 0.0f;  
+        this.timeSinceLastKeepAlive = 0.0f; 
+        this.timeSinceLastJoin = 10000f; 
         this.lastUpdate = new HashMap<>();  
 
         //Send a join
@@ -50,6 +51,10 @@ public class NetworkedClient extends GameConnectionClient
     //Overloaded version of processpackets implements additional functionality
     public void processPackets(float timeElapsed) 
     {
+        timeSinceLastJoin += timeElapsed;
+        timeSinceLastKeepAlive += timeElapsed;
+
+
         //If the client is connected. Ask for updates and send updates if necessary
         if (isConnected)
         {
@@ -60,17 +65,15 @@ public class NetworkedClient extends GameConnectionClient
             sendUPDATEFOR(scriptMan.getValue("avatarName").toString() + "Node");
         }
         //Else, try to connect to a server (allows the game to connect to a server even if it starts after...)
-        else
+        else if(timeSinceLastJoin > 10000f)
         {
             sendJOIN(scriptMan.getValue("avatarName").toString() + "Node");
+            timeSinceLastJoin = 0.0f;
         }
         
         //Process packets that have arrived
-        processPackets();       
-        
-        //If a certain amount of time has happened... send a keep alive message
-        timeSinceLastKeepAlive += timeElapsed;
-        
+        processPackets();    
+         
         //Every 10 seconds send a keepAlive if connected
         if (timeSinceLastKeepAlive > 10000f && isConnected)
         {
@@ -163,7 +166,7 @@ public class NetworkedClient extends GameConnectionClient
         }
 
         //! Handles a null packet
-        catch (NullPointerException e)
+        catch (Exception e)
         {
             //Don't process this null packet
             return;

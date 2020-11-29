@@ -6,10 +6,7 @@ import ray.rage.scene.controllers.*;
 import ray.rage.scene.*;
 import ray.rml.*;
 
-//TODO: Make the server control the walls if the client is connected to one
-//IDEA: May just make the server send a sync msg when a new client joins?
-
-//Streches all child nodes of the assigned node in alternating X and Y directions using scale
+//Moves all nodes left, then right... or vice versa
 public class WallController extends AbstractController
 {
     private PhysicsManager physMan;

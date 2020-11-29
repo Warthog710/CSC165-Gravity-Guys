@@ -9,7 +9,15 @@ with (JavaPackages)
 {
 	//Player avatar information
 	var updateAvatarPos = true;
-	var avatarPos = Vector3f.createFrom(0, 12, 0);
+
+	//Start
+	var avatarPos = Vector3f.createFrom(0, 15, 0);
+
+	//Top of wedge
+	//var avatarPos = Vector3f.createFrom(0, 27, 72);
+
+	//Below wedge
+	//var avatarPos = Vector3f.createFrom(0, 15, 50);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
@@ -56,7 +64,7 @@ with (JavaPackages)
 	var endPlat2Pos = Vector3f.createFrom(-2, 8, 62);
 	var endPlat3Pos = Vector3f.createFrom(1, 6, 67);
 	var endPlat4Pos = Vector3f.createFrom(4, 4, 72);
-	var endPlat5Pos = Vector3f.createFrom(-5, 2, 77);
+	var endPlat5Pos = Vector3f.createFrom(-2, 2, 77);
 
 	//Level physics planes
 	var startPhysicsPlanePos = levelPos.add(startPlatPos);
@@ -79,16 +87,32 @@ with (JavaPackages)
 	plat4PhysicsPlanePos = plat4PhysicsPlanePos.add(0, 15.5, 25.2);
 	var plat4PhysicsPlaneScale = Vector3f.createFrom(8.25, 1, 2.1);
 
+	//End platforms
+	var endPlat1PhysicsPlanePos = levelPos.add(endPlat1Pos);
+	endPlat1PhysicsPlanePos = endPlat1PhysicsPlanePos.add(0, 3.6, 22.8);
+	var endPlat1PhysicsPlaneScale = Vector3f.createFrom(3.34, .4, 3.2);
+	var endPlat2PhysicsPlanePos = levelPos.add(endPlat2Pos);
+	endPlat2PhysicsPlanePos = endPlat2PhysicsPlanePos.add(-.8, 2.8, 24.8);
+	var endPlat2PhysicsPlaneScale = Vector3f.createFrom(3.34, .4, 3.2);
+	var endPlat3PhysicsPlanePos = levelPos.add(endPlat3Pos);
+	endPlat3PhysicsPlanePos = endPlat3PhysicsPlanePos.add(.4, 2, 26.8);
+	var endPlat3PhysicsPlaneScale = Vector3f.createFrom(3.34, .4, 3.2);
+	var endPlat4PhysicsPlanePos = levelPos.add(endPlat4Pos);
+	endPlat4PhysicsPlanePos = endPlat4PhysicsPlanePos.add(1.6, 1.2, 28.8);
+	var endPlat4PhysicsPlaneScale = Vector3f.createFrom(3.32, .4, 3.2);
+	var endPlat5PhysicsPlanePos = levelPos.add(endPlat5Pos);
+	endPlat5PhysicsPlanePos = endPlat5PhysicsPlanePos.add(-.82, .4, 30.8);
+	var endPlat5PhysicsPlaneScale = Vector3f.createFrom(3.32, .4, 3.2);
+
+	//Wishbone cylinder
 	var wishBoneOnePos = levelPos.add(wishbonePlatPos);
 	wishBoneOnePos = wishBoneOnePos.add(-4.6, -.3, 6);
 	var wishBoneOneScale = Vector3f.createFrom(1, 10, 1);
 	var wishBoneOneRotY = Degreef.createFrom(-24.6);
-
 	var wishBoneTwoPos = levelPos.add(wishbonePlatPos);
 	wishBoneTwoPos = wishBoneTwoPos.add(4.6, -.3, 6);
 	var wishBoneTwoScale = Vector3f.createFrom(1, 10, 1);
 	var wishBoneTwoRotY = Degreef.createFrom(24.6);
-
 
 	//Visibility of physics planes
 	var startPhysicsPlaneVis = false;
@@ -97,6 +121,11 @@ with (JavaPackages)
 	var wedgePhysicsPlaneVis = false;
 	var plat3PhysicsPlaneVis = false;
 	var plat4PhysicsPlaneVis = false;
+	var endPlat1PhysicsPlaneVis = false;
+	var endPlat2PhysicsPlaneVis = false;
+	var endPlat3PhysicsPlaneVis = false;
+	var endPlat4PhysicsPlaneVis = false;
+	var endPlat5PhysicsPlaneVis = false;
 	var wishBoneOneVis = false;
 	var wishBoneTwoVis = false;
 
@@ -107,6 +136,31 @@ with (JavaPackages)
 	var offset = 4;
 	var wallStartingPos = Vector3f.createFrom(8.3, 11, 7.5);
 	var wallScale = Vector3f.createFrom(3, 1, .3);
+
+	//Flails
+	pillar0Pos = Vector3f.createFrom(-5.5, 11, 9);
+	flail0Pos = pillar0Pos.add(0, 0, -1);
+	pillar1Pos = Vector3f.createFrom(-11.2, 11, 9);
+	flail1Pos = pillar1Pos.add(0, 0, -1);
+	pillar2Pos = Vector3f.createFrom(-5.5, 11, 19);
+	flail2Pos = pillar2Pos.add(0, 0, -1);
+	pillar3Pos = Vector3f.createFrom(-11.2, 11, 19);
+	flail3Pos = pillar3Pos.add(0, 0, -1);
+	pillar4Pos = Vector3f.createFrom(-5.5, 11, 29);
+	flail4Pos = pillar4Pos.add(0, 0, -1);
+	pillar5Pos = Vector3f.createFrom(-11.2, 11, 29);
+	flail5Pos = pillar5Pos.add(0, 0, -1);
+	pillar6Pos = Vector3f.createFrom(-8, 11, 14);
+	flail6Pos = pillar6Pos.add(0, 0, -1);
+	pillar7Pos = Vector3f.createFrom(-8, 11, 24);
+	flail7Pos = pillar7Pos.add(0, 0, -1);
+
+	//Constant across all flails
+	flailCubePos = Vector3f.createFrom(0, 0, 1);
+	pillarScale = Vector3f.createFrom(.5, 1, .5);
+	flailScale = Vector3f.createFrom(.25, .9, .25);
+	flailCubeScale = Vector3f.createFrom(.8, .2, 1.5);
+	flailSpeed = 15;
 
 	//NPC and platform
 	var platformPos = Vector3f.createFrom(0, 9, 19);
@@ -133,11 +187,20 @@ with (JavaPackages)
 	var plat2PhysicsPlane = "plat2PhysicsPlane";
 	var plat3PhysicsPlane = "plat3PhysicsPlane";
 	var plat4PhysicsPlane = "plat3PhysicsPlane";
+	var endPlat1PhysicsPlane = "endPlat1PhysicsPlane";
+	var endPlat2PhysicsPlane = "endPlat2PhysicsPlane";
+	var endPlat3PhysicsPlane = "endPlat3PhysicsPlane";
+	var endPlat4PhysicsPlane = "endPlat4PhysicsPlane";
+	var endPlat5PhysicsPlane = "endPlat5PhysicsPlane";
 	var wedgePhysicsPlane = "wedgePhysicsPlane";
 	var jumpAnimation = "jumpAnimation";
 	var walkAnimation = "walkAnimation";
 	var wishBoneOne = "wishBoneOne";
 	var wishBoneTwo = "wishBoneTwo";
 	var npcName = "npc";
+	var pillarName = "pillar";
+	var flailName = "flail";
+	var flailCubeName = "flailCube";
+
 }
 

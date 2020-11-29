@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import myGameEngine.NetworkedClient;
 import myGameEngine.ObjectDistance;
+import myGameEngine.PhysicsManager;
 import myGameEngine.ScriptManager;
 import myGameEngine.SoundManager;
 import ray.ai.behaviortrees.BTAction;
@@ -29,7 +30,7 @@ public class NPC
     private float blowPower;
     private SoundManager soundMan;
 
-    public NPC(SceneManager sm, ScriptManager scriptMan, NetworkedClient nc, SoundManager soundMan)  throws IOException
+    public NPC(SceneManager sm, ScriptManager scriptMan, NetworkedClient nc, SoundManager soundMan, PhysicsManager physMan)  throws IOException
     {
         this.scriptMan = scriptMan;
         this.nc = nc;
@@ -51,7 +52,8 @@ public class NPC
         SceneNode platformNode = sm.getRootSceneNode().createChildSceneNode(platform.getName() + "Node");
         platformNode.attachObject(platform);
         platformNode.setLocalScale((Vector3f)scriptMan.getValue("platformScale"));
-        platformNode.setLocalPosition((Vector3f)scriptMan.getValue("platformPos"));    
+        platformNode.setLocalPosition((Vector3f)scriptMan.getValue("platformPos"));
+        physMan.createCubePhysicsObject(platformNode, 0f, 1f, 1f, .99f);    
 
         //Save the player node
         playerNode = sm.getSceneNode(this.scriptMan.getValue("avatarName").toString() + "Node");
@@ -99,7 +101,7 @@ public class NPC
     {
         npcNode.setLocalPosition(pos);
         npcNode.setLocalRotation(rot);
-        soundMan.stopWind();
+        //soundMan.stopWind();
     }
 
     private void setupBehaviorTree() 
@@ -198,7 +200,7 @@ public class NPC
                 npcNode.setLocalPosition(previousPos.x(), previousPos.y(), previousPos.z() + -movementMult * timeElapsed);
             
             //Stop wind sound effect
-            soundMan.stopWind();
+            //soundMan.stopWind();
             
             return BTStatus.BH_SUCCESS;            
         }        

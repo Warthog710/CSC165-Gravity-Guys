@@ -38,6 +38,7 @@ public class UpdateGameVariables
             return;
 
         System.out.println("\nUpdating Game Variables...");
+        System.out.println("Note: THIS WILL BREAK THE PHYSICS WORLD!!!");
 
         //Get names
         String terrainName = scriptMan.getValue("terrainName").toString();
@@ -53,6 +54,11 @@ public class UpdateGameVariables
         String plat3PhysicsPlane = scriptMan.getValue("plat3PhysicsPlane").toString();
         String plat4PhysicsPlane = scriptMan.getValue("plat4PhysicsPlane").toString();
         String wedgePhysicsPlane = scriptMan.getValue("wedgePhysicsPlane").toString();
+        String endPlat1PhysicsPlane = scriptMan.getValue("endPlat1PhysicsPlane").toString();
+        String endPlat2PhysicsPlane = scriptMan.getValue("endPlat2PhysicsPlane").toString();
+        String endPlat3PhysicsPlane = scriptMan.getValue("endPlat3PhysicsPlane").toString();
+        String endPlat4PhysicsPlane = scriptMan.getValue("endPlat4PhysicsPlane").toString();
+        String endPlat5PhysicsPlane = scriptMan.getValue("endPlat5PhysicsPlane").toString();
         String wishBoneOne = scriptMan.getValue("wishBoneOne").toString();
         String wishBoneTwo = scriptMan.getValue("wishBoneTwo").toString();
         String avatarName = scriptMan.getValue("avatarName").toString();
@@ -115,6 +121,31 @@ public class UpdateGameVariables
         sm.getSceneNode(plat4PhysicsPlane + "Node").getAttachedObject(plat4PhysicsPlane).setVisible((boolean)scriptMan.getValue("plat4PhysicsPlaneVis"));
         physMan.updatePhysicsTransforms(sm.getSceneNode(plat4PhysicsPlane + "Node"));
 
+        sm.getSceneNode(endPlat1PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("endPlat1PhysicsPlanePos"));
+        sm.getSceneNode(endPlat1PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("endPlat1PhysicsPlaneScale"));
+        sm.getSceneNode(endPlat1PhysicsPlane + "Node").getAttachedObject(endPlat1PhysicsPlane).setVisible((boolean)scriptMan.getValue("endPlat1PhysicsPlaneVis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(endPlat1PhysicsPlane + "Node"));
+
+        sm.getSceneNode(endPlat2PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("endPlat2PhysicsPlanePos"));
+        sm.getSceneNode(endPlat2PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("endPlat2PhysicsPlaneScale"));
+        sm.getSceneNode(endPlat2PhysicsPlane + "Node").getAttachedObject(endPlat2PhysicsPlane).setVisible((boolean)scriptMan.getValue("endPlat2PhysicsPlaneVis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(endPlat2PhysicsPlane + "Node"));
+
+        sm.getSceneNode(endPlat3PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("endPlat3PhysicsPlanePos"));
+        sm.getSceneNode(endPlat3PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("endPlat3PhysicsPlaneScale"));
+        sm.getSceneNode(endPlat3PhysicsPlane + "Node").getAttachedObject(endPlat3PhysicsPlane).setVisible((boolean)scriptMan.getValue("endPlat3PhysicsPlaneVis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(endPlat3PhysicsPlane + "Node"));
+
+        sm.getSceneNode(endPlat4PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("endPlat4PhysicsPlanePos"));
+        sm.getSceneNode(endPlat4PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("endPlat4PhysicsPlaneScale"));
+        sm.getSceneNode(endPlat4PhysicsPlane + "Node").getAttachedObject(endPlat4PhysicsPlane).setVisible((boolean)scriptMan.getValue("endPlat4PhysicsPlaneVis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(endPlat4PhysicsPlane + "Node"));
+
+        sm.getSceneNode(endPlat5PhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue("endPlat5PhysicsPlanePos"));
+        sm.getSceneNode(endPlat5PhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue("endPlat5PhysicsPlaneScale"));
+        sm.getSceneNode(endPlat5PhysicsPlane + "Node").getAttachedObject(endPlat5PhysicsPlane).setVisible((boolean)scriptMan.getValue("endPlat5PhysicsPlaneVis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(endPlat5PhysicsPlane + "Node"));
+
         sm.getSceneNode(wedgePhysicsPlane + "Node").setLocalPosition((Vector3f)scriptMan.getValue(wedgePhysicsPlane + "Pos"));
         sm.getSceneNode(wedgePhysicsPlane + "Node").setLocalScale((Vector3f)scriptMan.getValue(wedgePhysicsPlane + "Scale"));
         Degreef temp = (Degreef)scriptMan.getValue(wedgePhysicsPlane + "RotX");
@@ -143,6 +174,7 @@ public class UpdateGameVariables
         physMan.updatePhysicsTransforms(sm.getSceneNode(wishBoneTwo + "Node"));
 
         updateWalls();
+        updateFlails();
         updateNPC();
         
         //Update physics
@@ -167,6 +199,30 @@ public class UpdateGameVariables
         }
     }
 
+    private void updateFlails()
+    {
+        String pillar = scriptMan.getValue("pillarName").toString();
+        String flail = scriptMan.getValue("flailName").toString();
+        String flailCube = scriptMan.getValue("flailCubeName").toString();
+
+        for (int index = 0; index < 8; index++)
+        {
+            SceneNode pillarN = sm.getSceneNode(pillar + index + "Node");
+            pillarN.setLocalPosition((Vector3f)scriptMan.getValue(pillar + index + "Pos"));
+            pillarN.setLocalScale((Vector3f)scriptMan.getValue(pillar + "Scale"));
+            physMan.updatePhysicsTransforms(pillarN);
+
+            SceneNode flailN = sm.getSceneNode(flail + index + "Node");
+            flailN.setLocalPosition((Vector3f)scriptMan.getValue(flail + index + "Pos"));
+            flailN.setLocalScale((Vector3f)scriptMan.getValue(flail + "Scale"));
+            physMan.updatePhysicsTransforms(flailN);
+
+            SceneNode cubeN = sm.getSceneNode(flailCube + index + "Node");
+            cubeN.setLocalPosition((Vector3f)scriptMan.getValue(flailCube + "Pos"));
+            cubeN.setLocalScale((Vector3f)scriptMan.getValue(flailCube + "Scale"));
+        }        
+    }
+
     private void updateNPC()
     {
         String npcName = scriptMan.getValue("npcName").toString();
@@ -174,7 +230,7 @@ public class UpdateGameVariables
 
         sm.getSceneNode(platformName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("platformPos"));
         sm.getSceneNode(platformName + "Node").setLocalScale((Vector3f)scriptMan.getValue("platformScale"));
+        physMan.updatePhysicsPosition(sm.getSceneNode(platformName + "Node"));
         sm.getSceneNode(npcName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("npcStartLocation"));
-    }
-    
+    }    
 }

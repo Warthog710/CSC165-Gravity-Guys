@@ -44,6 +44,7 @@ public class MyGame extends VariableFrameRateGame
         public BouncyBalls bouncyBalls;
         public Walls platformWalls;
         public NPC npc;
+        public Flails flails;
 
         public static void main(String[] args) 
         {
@@ -71,6 +72,7 @@ public class MyGame extends VariableFrameRateGame
         {
                 try
                 {
+                        soundMan.getSoundManager().shutdown();
                         super.shutdown();
                 }
                 catch (Exception e)
@@ -130,8 +132,9 @@ public class MyGame extends VariableFrameRateGame
                 scriptMan.putObjectInEngine("sm", sm);
                 scriptMan.loadScript("lights.js");
 
-                //Setup walls
-                platformWalls = new Walls(scriptMan, physMan, this.getEngine().getSceneManager());
+                //Setup walls & flails
+                platformWalls = new Walls(scriptMan, physMan, sm);
+                flails = new Flails(sm, physMan, scriptMan);
 
                 //Setup gVars
                 gVars = new UpdateGameVariables(sm, scriptMan, physMan, platformWalls);
@@ -153,7 +156,7 @@ public class MyGame extends VariableFrameRateGame
                 avatarN.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
                 
                 float playerBounciness = 0f;
-                float playerFriction = .7f;
+                float playerFriction = 1f;
                 float playerDamping = .9f;
                 physMan.createAvatarSphere(avatarN, 1f, playerBounciness, playerFriction, playerDamping);
                 
@@ -233,9 +236,9 @@ public class MyGame extends VariableFrameRateGame
                 bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);
 
                 //Setup NPC
-                npc = new NPC(sm, scriptMan, networkedClient, soundMan);
+                npc = new NPC(sm, scriptMan, networkedClient, soundMan, physMan);
 
-                // initialize sound
+                //Initialize sound
                 soundMan.initAudio();                
 
                 //Configure controller(s)
