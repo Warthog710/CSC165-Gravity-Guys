@@ -143,6 +143,7 @@ public class UpdateGameVariables
         physMan.updatePhysicsTransforms(sm.getSceneNode(wishBoneTwo + "Node"));
 
         updateWalls();
+        updateNPC();
         
         //Update physics
         runPhysics = (boolean)scriptMan.getValue("runPhysSim");
@@ -164,6 +165,16 @@ public class UpdateGameVariables
             physMan.updatePhysicsTransforms(wall);
             offset += Integer.parseInt(scriptMan.getValue("offset").toString());
         }
+    }
+
+    private void updateNPC()
+    {
+        String npcName = scriptMan.getValue("npcName").toString();
+        String platformName = "npcPlatform";
+
+        sm.getSceneNode(platformName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("platformPos"));
+        sm.getSceneNode(platformName + "Node").setLocalScale((Vector3f)scriptMan.getValue("platformScale"));
+        sm.getSceneNode(npcName + "Node").setLocalPosition((Vector3f)scriptMan.getValue("npcStartLocation"));
     }
     
 }

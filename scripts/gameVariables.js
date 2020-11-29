@@ -95,8 +95,13 @@ with (JavaPackages)
 
 	//Moving walls on left platform
 	var offset = 4;
-	var wallStartingPos = Vector3f.createFrom(8.3, 10.9, 7.5);
-	var wallScale = Vector3f.createFrom(3, .75, .1);
+	var wallStartingPos = Vector3f.createFrom(8.3, 11, 7.5);
+	var wallScale = Vector3f.createFrom(3, 1, .3);
+
+	//NPC and platform
+	var platformPos = Vector3f.createFrom(0, 9, 19);
+	var platformScale = Vector3f.createFrom(1, 1, 10);
+	var npcStartLocation = Vector3f.createFrom(0, 10.5, 10);
 
     //! DO NOT CHANGE DURING RUNTIME
     var terrainName = "terrainTess";
@@ -118,5 +123,6 @@ with (JavaPackages)
 	var walkAnimation = "walkAnimation";
 	var wishBoneOne = "wishBoneOne";
 	var wishBoneTwo = "wishBoneTwo";
+	var npcName = "npc";
 }
 

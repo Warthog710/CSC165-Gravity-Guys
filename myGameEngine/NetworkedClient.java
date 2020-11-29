@@ -104,6 +104,16 @@ public class NetworkedClient extends GameConnectionClient
                     processDETAILSFOR(msgTokens);
                 }
 
+                if (msgTokens[0].compareTo("NPCPOS") == 0)
+                {
+                    processNPCPOS(msgTokens);
+                }
+
+                if (msgTokens[0].compareTo("BLOW") == 0)
+                {
+                    myGame.npc.applyBlowForce(Float.parseFloat(msgTokens[1]));
+                }
+
                 //Check for NEWBALL msg
                 if (msgTokens[0].compareTo("NEWBALL") == 0)
                 {
@@ -325,6 +335,26 @@ public class NetworkedClient extends GameConnectionClient
         }
     }
 
+    public void sendNPCRot(Matrix3f npcRot)
+    {
+        //If I am not connected don't
+        if (!isConnected)
+            return;
+
+        float[] temp = npcRot.toFloatArray();
+        String msg = "NPCROT" +"," + temp[0] + "," + temp[1] + "," + temp[2] + "," + temp[3] + "," + temp[4] + "," + temp[5] + ","
+                + temp[6] + "," + temp[7] + "," + temp[8];
+
+        try 
+        {
+            sendPacket(msg);            
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+    }
+
     private void processCREATE(String[] msgTokens)
     {
         //Fixes a weird networking bug where multiple ghosts with the same ID were being added...
@@ -408,6 +438,19 @@ public class NetworkedClient extends GameConnectionClient
         Vector3f pos = (Vector3f)Vector3f.createFrom(Float.parseFloat(msgTokens[1]), Float.parseFloat(msgTokens[2]), Float.parseFloat(msgTokens[3]));
         float radius = Float.parseFloat(msgTokens[4]);
         myGame.bouncyBalls.addBall(pos, radius);
+    }
+
+    private void processNPCPOS(String[] msgTokens)
+    {
+        Vector3f npcPos = (Vector3f)Vector3f.createFrom(Float.parseFloat(msgTokens[1]), Float.parseFloat(msgTokens[2]), Float.parseFloat(msgTokens[3]));
+
+        float[] temp = { Float.parseFloat(msgTokens[4]), Float.parseFloat(msgTokens[5]), Float.parseFloat(msgTokens[6]),
+                Float.parseFloat(msgTokens[7]), Float.parseFloat(msgTokens[8]), Float.parseFloat(msgTokens[9]),
+                Float.parseFloat(msgTokens[10]), Float.parseFloat(msgTokens[11]), Float.parseFloat(msgTokens[12]) };
+
+        Matrix3f rot =(Matrix3f)Matrix3f.createFrom(temp);            
+        
+        myGame.npc.updateNPCTransform(npcPos, rot);
     }
 
     //Shutdown hook ensures that "BYE" is sent to the server (most of the time...)

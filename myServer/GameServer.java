@@ -12,13 +12,15 @@ import java.util.UUID;
 
 import ray.networking.server.GameConnectionServer;
 import ray.networking.server.IClientInfo;
+import ray.rml.Matrix3f;
 
 //This game server uses UDP
 public class GameServer extends GameConnectionServer<UUID>
 {
     protected volatile Map<UUID, ClientInfo> clientInfo;
     protected volatile boolean threadRunning;
-    private Thread detectDeadClient, ballSpawner;
+    private Thread detectDeadClient, ballSpawner, npcControl;
+    private Matrix3f npcRot;
 
     //Shutdown hook for hopefully closing the server properly... I think...
     private Runtime current;
@@ -50,7 +52,16 @@ public class GameServer extends GameConnectionServer<UUID>
         //Create a thread to spawn the balls
         Runnable balls = new BallSpawner(this);
         ballSpawner = new Thread(balls);
-        ballSpawner.start();        
+        ballSpawner.start(); 
+        
+        //Create a thread to control the NPC
+        Runnable npc = new NPCController(this);
+        npcControl = new Thread(npc);
+        npcControl.start();
+
+        //Intilize npc rotation
+        float[] rotVal = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+        npcRot = (Matrix3f)Matrix3f.createTransposeFrom(rotVal);
 
         //Intilize shutdown hook
         current = Runtime.getRuntime();
@@ -79,6 +90,12 @@ public class GameServer extends GameConnectionServer<UUID>
             {
                 //Update details for the client passed
                 processUPDATEFOR(msgTokens);
+            }
+
+            //Check for NPC rotation update
+            if (msgTokens[0].compareTo("NPCROT") == 0)
+            {
+                processNPCRot(msgTokens);
             }
 
             //Check for KEEPALIVE msg
@@ -283,6 +300,15 @@ public class GameServer extends GameConnectionServer<UUID>
             clientInfo.get(UUID.fromString(msgTokens[1])).lastKeepAlive = System.currentTimeMillis();
 
     }
+
+    private void processNPCRot(String[] msgTokens)
+    {
+        float[] temp = { Float.parseFloat(msgTokens[1]), Float.parseFloat(msgTokens[2]), Float.parseFloat(msgTokens[3]),
+            Float.parseFloat(msgTokens[4]), Float.parseFloat(msgTokens[5]), Float.parseFloat(msgTokens[6]),
+            Float.parseFloat(msgTokens[7]), Float.parseFloat(msgTokens[8]), Float.parseFloat(msgTokens[9]) };
+
+        npcRot =(Matrix3f)Matrix3f.createFrom(temp);   
+    }
     
     private void sendCreateMessages(UUID clientID, String position, String rotation)
     {
@@ -340,6 +366,35 @@ public class GameServer extends GameConnectionServer<UUID>
         }
     }
 
+    protected void sendNPCInfo(String msg)
+    {
+        try 
+        {
+            //Also send NPC rotation
+            float[] temp = npcRot.toFloatArray();
+            msg += "," + temp[0] + "," + temp[1] + "," + temp[2] + "," + temp[3] + "," + temp[4] + "," + temp[5] + ","
+                    + temp[6] + "," + temp[7] + "," + temp[8];
+
+            sendPacketToAll(msg);
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+    }
+
+    protected void sendMsgToClient(String msg, UUID client)
+    {
+        try
+        {
+            sendPacket(msg, client);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private class Shutdown extends Thread
     {
         public void run()
@@ -347,6 +402,7 @@ public class GameServer extends GameConnectionServer<UUID>
             threadRunning = false;
             detectDeadClient.interrupt();
             ballSpawner.interrupt();
+            npcControl.interrupt();
             System.out.println("Server shutting down...");
         }
     }

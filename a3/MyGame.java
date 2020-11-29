@@ -43,6 +43,7 @@ public class MyGame extends VariableFrameRateGame
 
         public BouncyBalls bouncyBalls;
         public Walls platformWalls;
+        public NPC npc;
 
         public static void main(String[] args) 
         {
@@ -231,9 +232,12 @@ public class MyGame extends VariableFrameRateGame
                 //Setup the bouncy balls
                 bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);
 
+                //Setup NPC
+                npc = new NPC(sm, scriptMan, networkedClient);
+
                 // initialize sound
-                soundMan.initAudio();
-                
+                soundMan.initAudio();                
+
                 //Configure controller(s)
                 setupInputs(sm.getCamera(scriptMan.getValue("cameraName").toString()), sm, eng.getRenderSystem().getRenderWindow());
         }
@@ -311,6 +315,7 @@ public class MyGame extends VariableFrameRateGame
                 soundMan.updateSound();
                 animMan.checkAnimations();
                 bouncyBalls.update(elapsTime - lastUpdateTime);
+                npc.update(elapsTime - lastUpdateTime);
 
                 //Record last update in MS
                 lastUpdateTime = elapsTime;

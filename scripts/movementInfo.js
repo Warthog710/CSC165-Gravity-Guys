@@ -20,4 +20,8 @@ var zoomMin = 1;
 
 //Variables unique to wall movement
 var wallCycleTime = 2000;
-var wallSpeed = .002;
+var wallSpeed = .0015;
+
+//NPC stuff
+var npcSpeed = .001;
+var blowPower = .15;
