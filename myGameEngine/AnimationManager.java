@@ -41,6 +41,7 @@ public class AnimationManager
     	if (isJumping || isWalking)
     		return;
     	else if (!isWalking) {
+    		//System.out.println(isWalking);
     		SEntity.playAnimation(scriptMan.getValue("walkAnimation").toString(), 0.9f, EndType.LOOP, 0);
     		soundMan.playWalk();
     		isWalking = true;
@@ -61,6 +62,7 @@ public class AnimationManager
     		SEntity.stopAnimation();
     		goingDown = false;
     		isJumping = false;
+    		isWalking = false;
     	}
     }
     
@@ -68,12 +70,15 @@ public class AnimationManager
     	//If the player is jumping, checkJumping will handle stopping animations
     	if (isJumping)
     		return;
-    	//Else, if the player is not moving fast enough along the ground, then stop the walk animation
-    	else if (Math.abs(PObject.getLinearVelocity()[0]) < 0.1f && Math.abs(PObject.getLinearVelocity()[2]) < 0.1f) {
+    	//Else, if the player is not moving fast enough along the ground or is falling, then stop the walk animation
+    	else if ((Math.abs(PObject.getLinearVelocity()[0]) < 0.1f && Math.abs(PObject.getLinearVelocity()[2]) < 0.1f) || PObject.getLinearVelocity()[1] < -2f) {
     		SEntity.stopAnimation();
     		soundMan.stopWalk();
     		isWalking = false;
     	}
+    	else
+    		playWalk();
+    	
     }
 
     
