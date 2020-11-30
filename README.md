@@ -13,6 +13,10 @@
 * [ ] Add two different types of light in addition to ambient light, allowing the player to turn one on and off.
 * [ ] Update the HUD information (possibly allow the user to toggle the HUD display).
 * [ ] Get server IP information via command line, or prompt the user for it interactively.
+* [ ] Server only accepts 8 players & automatically assigns an avatar color
+* [ ] Win/loss condition (win a player reaches the finish line, give them a point and start over...)
+* [ ] Ghost avatars need animation and sound
+* [ ] Platforms before finish line need to move back and forth
 
 #### How to compile/run:
 
