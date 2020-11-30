@@ -11,7 +11,7 @@ with (JavaPackages)
 	var updateAvatarPos = true;
 
 	//Start
-	var avatarPos = Vector3f.createFrom(0, 15, 0);
+	var avatarPos = Vector3f.createFrom(0, 12, 0);
 
 	//Top of wedge
 	//var avatarPos = Vector3f.createFrom(0, 27, 72);
@@ -55,6 +55,7 @@ with (JavaPackages)
 	var endPlat3Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
 	var endPlat4Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
 	var endPlat5Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
+	var finishPlatScale = Vector3f.createFrom(1, 1, 1);
 	var startPlatPos = Vector3f.createFrom(0, 0, 0);
 	var plat1Pos = Vector3f.createFrom(-5.98, 0, 13.93);
 	var plat2Pos = Vector3f.createFrom(5.98, 0, 13.93);
@@ -65,6 +66,7 @@ with (JavaPackages)
 	var endPlat3Pos = Vector3f.createFrom(1, 6, 67);
 	var endPlat4Pos = Vector3f.createFrom(4, 4, 72);
 	var endPlat5Pos = Vector3f.createFrom(-2, 2, 77);
+	var finishPlatPos = Vector3f.createFrom(0, 0, 85);
 
 	//Level physics planes
 	var startPhysicsPlanePos = levelPos.add(startPlatPos);
@@ -103,6 +105,11 @@ with (JavaPackages)
 	var endPlat5PhysicsPlanePos = levelPos.add(endPlat5Pos);
 	endPlat5PhysicsPlanePos = endPlat5PhysicsPlanePos.add(-.82, .4, 30.8);
 	var endPlat5PhysicsPlaneScale = Vector3f.createFrom(3.32, .4, 3.2);
+	
+	//Finish platform
+	var finishPlatPhysicsPlanePos = levelPos.add(finishPlatPos);
+	finishPlatPhysicsPlanePos = finishPlatPhysicsPlanePos.add(0, -3.45, 34);
+	var finishPlatPhysicsPlaneScale = Vector3f.createFrom(7.2533, 3.45, 4.79);
 
 	//Wishbone cylinder
 	var wishBoneOnePos = levelPos.add(wishbonePlatPos);
@@ -128,6 +135,7 @@ with (JavaPackages)
 	var endPlat5PhysicsPlaneVis = false;
 	var wishBoneOneVis = false;
 	var wishBoneTwoVis = false;
+	var finishPlatPhysicsPlaneVis = false;
 
 	//Physiscs information
 	var runPhysSim = true; 
@@ -182,6 +190,7 @@ with (JavaPackages)
 	var endPlat3Name = "endPlatform3";
 	var endPlat4Name = "endPlatform4";
 	var endPlat5Name = "endPlatform5";
+	var finishPlatName = "finishPlatform";
 	var startPhysicsPlane = "startPhysicsPlane";
 	var plat1PhysicsPlane = "plat1PhysicsPlane";
 	var plat2PhysicsPlane = "plat2PhysicsPlane";
@@ -192,6 +201,7 @@ with (JavaPackages)
 	var endPlat3PhysicsPlane = "endPlat3PhysicsPlane";
 	var endPlat4PhysicsPlane = "endPlat4PhysicsPlane";
 	var endPlat5PhysicsPlane = "endPlat5PhysicsPlane";
+	var finishPlatPhysicsPlane = "finishPlatPhysicsPlane";
 	var wedgePhysicsPlane = "wedgePhysicsPlane";
 	var jumpAnimation = "jumpAnimation";
 	var walkAnimation = "walkAnimation";

@@ -119,6 +119,14 @@ public class LevelOne
         endPlat5N.setLocalPosition((Vector3f)scriptMan.getValue("endPlat5Pos"));
         createPhysicsPlane("endPlat5PhysicsPlane");
         
+        Entity finishPlatE = sm.createEntity("finishPlatform", "finishPlatform.obj");
+        finishPlatE.setPrimitive(Primitive.TRIANGLES);
+        SceneNode finishPlatN = levelN.createChildSceneNode(finishPlatE.getName() + "Node");
+        finishPlatN.attachObject(finishPlatE);
+        finishPlatN.scale((Vector3f)scriptMan.getValue("finishPlatScale"));
+        finishPlatN.setLocalPosition((Vector3f)scriptMan.getValue("finishPlatPos"));
+        createPhysicsPlane("finishPlatPhysicsPlane");
+        
         return levelN;
     }
 
