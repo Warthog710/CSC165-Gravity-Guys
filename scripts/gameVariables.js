@@ -11,7 +11,7 @@ with (JavaPackages)
 	var updateAvatarPos = true;
 
 	//Start
-	var avatarPos = Vector3f.createFrom(0, 15, 0);
+	var avatarPos = Vector3f.createFrom(0, 35, 71);
 
 	//Top of wedge
 	//var avatarPos = Vector3f.createFrom(0, 27, 72);
@@ -55,6 +55,7 @@ with (JavaPackages)
 	var endPlat3Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
 	var endPlat4Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
 	var endPlat5Scale = Vector3f.createFrom(0.75, 0.125, 0.5);
+	var finishPlatScale = Vector3f.createFrom(1, 1, 1);
 	var startPlatPos = Vector3f.createFrom(0, 0, 0);
 	var plat1Pos = Vector3f.createFrom(-5.98, 0, 13.93);
 	var plat2Pos = Vector3f.createFrom(5.98, 0, 13.93);
@@ -65,6 +66,7 @@ with (JavaPackages)
 	var endPlat3Pos = Vector3f.createFrom(1, 6, 67);
 	var endPlat4Pos = Vector3f.createFrom(4, 4, 72);
 	var endPlat5Pos = Vector3f.createFrom(-2, 2, 77);
+	var finishPlatPos = Vector3f.createFrom(0, 0, 85);
 
 	//Level physics planes
 	var startPhysicsPlanePos = levelPos.add(startPlatPos);
@@ -182,6 +184,7 @@ with (JavaPackages)
 	var endPlat3Name = "endPlatform3";
 	var endPlat4Name = "endPlatform4";
 	var endPlat5Name = "endPlatform5";
+	var finishPlatName = "finishPlatform";
 	var startPhysicsPlane = "startPhysicsPlane";
 	var plat1PhysicsPlane = "plat1PhysicsPlane";
 	var plat2PhysicsPlane = "plat2PhysicsPlane";
