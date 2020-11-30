@@ -3,7 +3,7 @@
 ### Objectives Due by 11/29:
 
 * [x] Fixed issues climbing wedge (either playround with the physics values or lessent the slope of the wege). Note, if the latter is choosen you will have to adjust the physics planes and where the balls spawn. **(Josh)**
-* [ ] Added the platforms that you jump down after the wedge and a finish line platform. **(Josh)**
+* [x] Added the platforms that you jump down after the wedge and a finish line platform. **(Josh)**
 * [x] Add the obstacles to the first two rectangle platforms. First one with moving walls, the second with rotating flails. **(Quinn)**
 * [x] Adding NPC/AI to the game **(Quinn)**
 * [x] Add sound to the game **(Josh)**
