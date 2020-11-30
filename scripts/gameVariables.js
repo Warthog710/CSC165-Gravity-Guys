@@ -11,7 +11,7 @@ with (JavaPackages)
 	var updateAvatarPos = true;
 
 	//Start
-	var avatarPos = Vector3f.createFrom(0, 35, 71);
+	var avatarPos = Vector3f.createFrom(0, 12, 0);
 
 	//Top of wedge
 	//var avatarPos = Vector3f.createFrom(0, 27, 72);
@@ -105,6 +105,11 @@ with (JavaPackages)
 	var endPlat5PhysicsPlanePos = levelPos.add(endPlat5Pos);
 	endPlat5PhysicsPlanePos = endPlat5PhysicsPlanePos.add(-.82, .4, 30.8);
 	var endPlat5PhysicsPlaneScale = Vector3f.createFrom(3.32, .4, 3.2);
+	
+	//Finish platform
+	var finishPlatPhysicsPlanePos = levelPos.add(finishPlatPos);
+	finishPlatPhysicsPlanePos = finishPlatPhysicsPlanePos.add(0, -3.45, 34);
+	var finishPlatPhysicsPlaneScale = Vector3f.createFrom(7.2533, 3.45, 4.79);
 
 	//Wishbone cylinder
 	var wishBoneOnePos = levelPos.add(wishbonePlatPos);
@@ -130,6 +135,7 @@ with (JavaPackages)
 	var endPlat5PhysicsPlaneVis = false;
 	var wishBoneOneVis = false;
 	var wishBoneTwoVis = false;
+	var finishPlatPhysicsPlaneVis = false;
 
 	//Physiscs information
 	var runPhysSim = true; 
@@ -195,6 +201,7 @@ with (JavaPackages)
 	var endPlat3PhysicsPlane = "endPlat3PhysicsPlane";
 	var endPlat4PhysicsPlane = "endPlat4PhysicsPlane";
 	var endPlat5PhysicsPlane = "endPlat5PhysicsPlane";
+	var finishPlatPhysicsPlane = "finishPlatPhysicsPlane";
 	var wedgePhysicsPlane = "wedgePhysicsPlane";
 	var jumpAnimation = "jumpAnimation";
 	var walkAnimation = "walkAnimation";

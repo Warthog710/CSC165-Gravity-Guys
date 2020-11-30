@@ -125,7 +125,7 @@ public class LevelOne
         finishPlatN.attachObject(finishPlatE);
         finishPlatN.scale((Vector3f)scriptMan.getValue("finishPlatScale"));
         finishPlatN.setLocalPosition((Vector3f)scriptMan.getValue("finishPlatPos"));
-        //createPhysicsPlane("finishPlatPhysicsPlane");
+        createPhysicsPlane("finishPlatPhysicsPlane");
         
         return levelN;
     }
