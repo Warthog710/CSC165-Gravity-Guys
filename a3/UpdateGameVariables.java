@@ -1,7 +1,4 @@
 package a3;
-
-import java.util.Iterator;
-
 import myGameEngine.PhysicsManager;
 import myGameEngine.ScriptManager;
 import ray.rage.scene.SceneManager;
@@ -16,7 +13,7 @@ public class UpdateGameVariables
     private ScriptManager scriptMan;
     private PhysicsManager physMan;
     private Walls platformWalls;
-    private Degreef prevPitch, wishBoneOneYaw, wishBoneTwoYaw;
+    private Degreef prevPitch, wishBoneOneYaw, wishBoneTwoYaw, wishBoneThreePitch, wishBoneFourPitch;
     protected boolean runPhysics;
 
     public UpdateGameVariables(SceneManager sm, ScriptManager scriptMan, PhysicsManager physMan, Walls platformWalls)
@@ -28,6 +25,8 @@ public class UpdateGameVariables
         this.prevPitch = (Degreef)this.scriptMan.getValue("wedgePhysicsPlaneRotX");
         this.wishBoneOneYaw = (Degreef)this.scriptMan.getValue("wishBoneOneRotY");
         this.wishBoneTwoYaw = (Degreef)this.scriptMan.getValue("wishBoneTwoRotY");
+        this.wishBoneThreePitch = (Degreef)this.scriptMan.getValue("wishBoneThreeRotY");
+        this.wishBoneFourPitch = (Degreef)this.scriptMan.getValue("wishBoneThreeRotY");
         this.runPhysics = (boolean)this.scriptMan.getValue("runPhysSim");
     }
 
@@ -61,6 +60,8 @@ public class UpdateGameVariables
         String endPlat5PhysicsPlane = scriptMan.getValue("endPlat5PhysicsPlane").toString();
         String wishBoneOne = scriptMan.getValue("wishBoneOne").toString();
         String wishBoneTwo = scriptMan.getValue("wishBoneTwo").toString();
+        String wishBoneThree = scriptMan.getValue("wishBoneThree").toString();
+        String wishBoneFour = scriptMan.getValue("wishBoneFour").toString();
         String avatarName = scriptMan.getValue("avatarName").toString();
 
         //Update player position if "updateAvatarPos is true"
@@ -173,6 +174,24 @@ public class UpdateGameVariables
         sm.getSceneNode(wishBoneTwo + "Node").getAttachedObject(wishBoneTwo).setVisible((boolean)scriptMan.getValue(wishBoneTwo + "Vis"));
         physMan.updatePhysicsTransforms(sm.getSceneNode(wishBoneTwo + "Node"));
 
+        sm.getSceneNode(wishBoneThree + "Node").setLocalPosition((Vector3f)scriptMan.getValue(wishBoneThree + "Pos"));
+        sm.getSceneNode(wishBoneThree + "Node").setLocalScale((Vector3f)scriptMan.getValue(wishBoneThree + "Scale"));
+        temp = (Degreef)scriptMan.getValue(wishBoneThree + "RotY");
+        temp = Degreef.createFrom(temp.sub(wishBoneThreePitch));
+        wishBoneThreePitch = (Degreef)scriptMan.getValue(wishBoneThree + "RotY");
+        sm.getSceneNode(wishBoneThree + "Node").yaw(temp);
+        sm.getSceneNode(wishBoneThree + "Node").getAttachedObject(wishBoneThree).setVisible((boolean)scriptMan.getValue(wishBoneThree + "Vis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(wishBoneThree + "Node"));
+
+        sm.getSceneNode(wishBoneFour + "Node").setLocalPosition((Vector3f)scriptMan.getValue(wishBoneFour + "Pos"));
+        sm.getSceneNode(wishBoneFour + "Node").setLocalScale((Vector3f)scriptMan.getValue(wishBoneFour + "Scale"));
+        temp = (Degreef)scriptMan.getValue(wishBoneFour + "RotY");
+        temp = Degreef.createFrom(temp.sub(wishBoneFourPitch));
+        wishBoneFourPitch = (Degreef)scriptMan.getValue(wishBoneFour + "RotY");
+        sm.getSceneNode(wishBoneFour + "Node").yaw(temp);
+        sm.getSceneNode(wishBoneFour + "Node").getAttachedObject(wishBoneFour).setVisible((boolean)scriptMan.getValue(wishBoneFour + "Vis"));
+        physMan.updatePhysicsTransforms(sm.getSceneNode(wishBoneFour + "Node"));
+
         updateWalls();
         updateFlails();
         updateNPC();
@@ -187,15 +206,14 @@ public class UpdateGameVariables
         int offset = 0;
         Vector3f startPos = (Vector3f)scriptMan.getValue("wallStartingPos");
         Vector3f wallScale = (Vector3f)scriptMan.getValue("wallScale");
-        Iterator<SceneNode> nodeIter = platformWalls.getWalls().iterator();
 
-        while (nodeIter.hasNext())
+        for (SceneNode node : platformWalls.getWalls())
         {
-            SceneNode wall = nodeIter.next();
-            wall.setLocalPosition(startPos.x(), startPos.y(), startPos.z() + offset);
-            wall.setLocalScale(wallScale);
-            physMan.updatePhysicsTransforms(wall);
+            node.setLocalPosition(startPos.x(), startPos.y(), startPos.z() + offset);
+            node.setLocalScale(wallScale);
+            physMan.updatePhysicsTransforms(node);
             offset += Integer.parseInt(scriptMan.getValue("offset").toString());
+            
         }
     }
 

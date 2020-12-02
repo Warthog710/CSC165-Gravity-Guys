@@ -11,13 +11,15 @@ public class WallController extends AbstractController
 {
     private PhysicsManager physMan;
     private ScriptManager scriptMan;
+    private SceneNode avatarNode;
     private float cycleTime, totalTime = 0, speed;
     private int moveDir = 1, direction = 0, valueDir = 0, value = 0, offset = 0;
 
-    public WallController(PhysicsManager physMan, ScriptManager scriptMan)
+    public WallController(PhysicsManager physMan, ScriptManager scriptMan, SceneNode avatarNode)
     {
         this.physMan = physMan;
         this.scriptMan = scriptMan; 
+        this.avatarNode = avatarNode;
         
         //Get initial cycle and speed values
         cycleTime = Float.parseFloat(scriptMan.getValue("wallCycleTime").toString());
@@ -100,8 +102,28 @@ public class WallController extends AbstractController
             } 
 
             physMan.updatePhysicsPosition(node);
+
+            //Perform collision detection on this node and the avatar
+            float minX = node.getLocalPosition().x() - node.getLocalScale().x();
+            float maxX = node.getLocalPosition().x() + node.getLocalScale().x();
+            float minY = node.getLocalPosition().y() - node.getLocalScale().y();
+            float maxY = node.getLocalPosition().y() + node.getLocalScale().y();
+            float minZ = node.getLocalPosition().z() - node.getLocalScale().z();
+            float maxZ = node.getLocalPosition().z() + node.getLocalScale().z();
+
+            Vector3f pos = (Vector3f)avatarNode.getLocalPosition();
+            //What... it works? Just don't look too close...
+            if (pos.x() >= minX && pos.x() <= maxX && pos.y() >= minY && pos.y() <= maxY && pos.z() >= minZ && pos.z() <= maxZ)
+            {
+                //If a collision is detected, push the player away
+                Matrix3f rot = (Matrix3f) avatarNode.getLocalRotation();
+                avatarNode.lookAt(node);
+                Vector3 fwd = avatarNode.getLocalForwardAxis().mult(-200);
+                avatarNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0, 0, 0);  
+                avatarNode.setLocalRotation(rot);            
+            }
             count++;
-        } 
+        }        
     } 
     
     public void reset() 

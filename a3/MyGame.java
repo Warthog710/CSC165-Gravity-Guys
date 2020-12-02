@@ -41,6 +41,7 @@ public class MyGame extends VariableFrameRateGame
         private AnimationManager animMan;
         private SoundManager soundMan;
 
+        public DetectWallCollision collision;
         public BouncyBalls bouncyBalls;
         public Walls platformWalls;
         public NPC npc;
@@ -130,14 +131,7 @@ public class MyGame extends VariableFrameRateGame
         {
                 //Load the light script file
                 scriptMan.putObjectInEngine("sm", sm);
-                scriptMan.loadScript("lights.js");
-
-                //Setup walls & flails
-                platformWalls = new Walls(scriptMan, physMan, sm);
-                flails = new Flails(sm, physMan, scriptMan);
-
-                //Setup gVars
-                gVars = new UpdateGameVariables(sm, scriptMan, physMan, platformWalls);
+                scriptMan.loadScript("lights.js");        
 
                 //Load player mesh, skeleton, and texture
                 //scriptMan.getValue("avatarName").toString()
@@ -218,6 +212,12 @@ public class MyGame extends VariableFrameRateGame
                 LevelOne level = new LevelOne(eng, scriptMan, physMan);
                 level.loadLevelObjects();
 
+                //Setup walls & flails
+                platformWalls = new Walls(scriptMan, physMan, eng);
+                flails = new Flails(eng, physMan, scriptMan);   
+                
+                collision = new DetectWallCollision(platformWalls.getWalls());
+
                 //Create input manager
                 im = new GenericInputManager();
 
@@ -236,13 +236,16 @@ public class MyGame extends VariableFrameRateGame
                 bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);
 
                 //Setup NPC
-                npc = new NPC(sm, scriptMan, networkedClient, soundMan, physMan);
+                npc = new NPC(eng, scriptMan, networkedClient, soundMan, physMan);
 
                 //Initialize sound
                 soundMan.initAudio();                
 
                 //Configure controller(s)
                 setupInputs(sm.getCamera(scriptMan.getValue("cameraName").toString()), sm, eng.getRenderSystem().getRenderWindow());
+
+                //Setup gVars
+                gVars = new UpdateGameVariables(sm, scriptMan, physMan, platformWalls);
         }
 
         protected void setupOrbitCamera(SceneManager sm) 

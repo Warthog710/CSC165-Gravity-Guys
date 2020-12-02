@@ -19,7 +19,7 @@ public class NPCController implements Runnable
         this.myGameServer = myGameServer;
         this.bTree = new BehaviorTree(BTCompositeType.SELECTOR);
         this.lastUpdateTime = System.currentTimeMillis();
-        npcPos = (Vector3f)Vector3f.createFrom(0f, 10.5f, 10f);
+        npcPos = (Vector3f)Vector3f.createFrom(0f, 10f, 10f);
 
         setupBehaviorTree();
     }
@@ -103,6 +103,8 @@ public class NPCController implements Runnable
         protected BTStatus update(float timeElapsed) 
         {
             myGameServer.sendMsgToClient("BLOW," + timeElapsed, targetNPC);
+            myGameServer.forwardToClients("ROTATEFAN", targetNPC);
+
             return BTStatus.BH_SUCCESS;
         }        
     }
@@ -137,7 +139,11 @@ public class NPCController implements Runnable
 
             
             String msg = "NPCPOS," + npcPos.x() + "," + npcPos.y() + "," + npcPos.z();
+
+            //Send NPC info but sync with the gameserver
             myGameServer.sendNPCInfo(msg);
+
+
             return BTStatus.BH_SUCCESS;            
         }        
     }    

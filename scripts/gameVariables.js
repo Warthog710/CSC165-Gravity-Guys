@@ -18,6 +18,7 @@ with (JavaPackages)
 
 	//Below wedge
 	//var avatarPos = Vector3f.createFrom(0, 15, 50);
+	//var avatarPos = Vector3f.createFrom(0, 10, 45);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
@@ -121,6 +122,17 @@ with (JavaPackages)
 	var wishBoneTwoScale = Vector3f.createFrom(1, 10, 1);
 	var wishBoneTwoRotY = Degreef.createFrom(24.6);
 
+	//Wishbone physics plane
+	var wishBoneThreePos = levelPos.add(wishbonePlatPos);
+	wishBoneThreePos = wishBoneThreePos.add(4.5, -.3, 6);
+	var wishBoneThreeScale = Vector3f.createFrom(.5, 1, 9.2);
+	var wishBoneThreeRotY = Degreef.createFrom(-24.6);
+
+	var wishBoneFourPos = levelPos.add(wishbonePlatPos);
+	wishBoneFourPos = wishBoneFourPos.add(-4.5, -.3, 6);
+	var wishBoneFourScale = Vector3f.createFrom(.5, 1, 9.2);
+	var wishBoneFourRotY = Degreef.createFrom(24.6);
+
 	//Visibility of physics planes
 	var startPhysicsPlaneVis = false;
 	var plat1PhysicsPlaneVis = false;
@@ -135,6 +147,8 @@ with (JavaPackages)
 	var endPlat5PhysicsPlaneVis = false;
 	var wishBoneOneVis = false;
 	var wishBoneTwoVis = false;
+	var wishBoneThreeVis = false;
+	var wishBoneFourVis = false;
 	var finishPlatPhysicsPlaneVis = false;
 
 	//Physiscs information
@@ -173,7 +187,7 @@ with (JavaPackages)
 	//NPC and platform
 	var platformPos = Vector3f.createFrom(0, 9, 19);
 	var platformScale = Vector3f.createFrom(1, 1, 10);
-	var npcStartLocation = Vector3f.createFrom(0, 10.5, 10);
+	var npcStartLocation = Vector3f.createFrom(0, 10, 10);
 
     //! DO NOT CHANGE DURING RUNTIME
     var terrainName = "terrainTess";
@@ -207,6 +221,8 @@ with (JavaPackages)
 	var walkAnimation = "walkAnimation";
 	var wishBoneOne = "wishBoneOne";
 	var wishBoneTwo = "wishBoneTwo";
+	var wishBoneThree = "wishBoneThree";
+	var wishBoneFour = "wishBoneFour";
 	var npcName = "npc";
 	var pillarName = "pillar";
 	var flailName = "flail";

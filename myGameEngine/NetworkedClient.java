@@ -117,6 +117,11 @@ public class NetworkedClient extends GameConnectionClient
                     myGame.npc.applyBlowForce(Float.parseFloat(msgTokens[1]));
                 }
 
+                if (msgTokens[0].compareTo("ROTATEFAN") == 0)
+                {
+                    myGame.npc.rotateFan();
+                }
+
                 //Check for NEWBALL msg
                 if (msgTokens[0].compareTo("NEWBALL") == 0)
                 {

@@ -6,7 +6,11 @@ import java.util.Vector;
 import myGameEngine.PhysicsManager;
 import myGameEngine.ScriptManager;
 import myGameEngine.WallController;
+import ray.rage.Engine;
+import ray.rage.asset.texture.Texture;
 import ray.rage.rendersystem.Renderable.Primitive;
+import ray.rage.rendersystem.states.RenderState;
+import ray.rage.rendersystem.states.TextureState;
 import ray.rage.scene.Entity;
 import ray.rage.scene.Node;
 import ray.rage.scene.SceneManager;
@@ -21,11 +25,11 @@ public class Walls
     private SceneManager sm;
     private WallController wc;
     
-    public Walls(ScriptManager scriptMan, PhysicsManager physMan, SceneManager sm)
+    public Walls(ScriptManager scriptMan, PhysicsManager physMan, Engine eng)
     {
         this.scriptMan = scriptMan;
         this.physMan = physMan;
-        this.sm = sm;
+        this.sm = eng.getSceneManager();
         this.wallList = new Vector<>();
 
         try
@@ -39,11 +43,16 @@ public class Walls
 
             Vector<Vector3f> startingPos = new Vector<>();
 
+            Texture wallTex = eng.getTextureManager().getAssetByPath("walls.png");
+            TextureState wallTexState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+            wallTexState.setTexture(wallTex);
+
             //Create 6 walls
             for (int count = 0; count < 6; count++)
             {
-                wallE = this.sm.createEntity("wall" + count, "cube.obj");
+                wallE = this.sm.createEntity("wall" + count, "customCube.obj");
                 wallE.setPrimitive(Primitive.TRIANGLES);
+                wallE.setRenderState(wallTexState);
                 wallN = this.sm.getRootSceneNode().createChildSceneNode(wallE.getName() + "Node");
                 wallN.attachObject(wallE);
 
@@ -60,7 +69,7 @@ public class Walls
             }
 
             //Create a wall controller and add the list
-            wc = new WallController(physMan, scriptMan);
+            wc = new WallController(physMan, scriptMan, sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"));
             wc.addNodeList(wallList);
             sm.addController(wc);
         }
