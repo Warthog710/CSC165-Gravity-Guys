@@ -3,6 +3,7 @@ package myServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.Collections;
@@ -404,6 +405,33 @@ public class GameServer extends GameConnectionServer<UUID>
         catch (IOException e)
         {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void sendPacketToAll(Serializable object) throws IOException 
+    {
+        synchronized(this)
+        {
+            super.sendPacketToAll(object);
+        }
+    }
+
+    @Override
+    protected void sendPacket(Serializable object, UUID clientUID) throws IOException 
+    {
+        synchronized(this)
+        {
+            super.sendPacket(object, clientUID);
+        }
+    }
+
+    @Override
+    protected void forwardPacketToAll(Serializable object, UUID originalClientUID) throws IOException
+    {
+        synchronized(this)
+        {
+            super.forwardPacketToAll(object, originalClientUID);
         }
     }
     

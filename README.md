@@ -17,6 +17,7 @@
 * [ ] Win/loss condition (win a player reaches the finish line, give them a point and start over...)
 * [ ] Ghost avatars need animation and sound
 * [ ] Platforms before finish line need to move back and forth
+* [ ] Add keyboard controls
 
 #### How to compile/run:
 

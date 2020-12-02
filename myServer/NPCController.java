@@ -143,7 +143,6 @@ public class NPCController implements Runnable
             //Send NPC info but sync with the gameserver
             myGameServer.sendNPCInfo(msg);
 
-
             return BTStatus.BH_SUCCESS;            
         }        
     }    
