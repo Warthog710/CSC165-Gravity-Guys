@@ -4,6 +4,7 @@ import ray.input.action.AbstractInputAction;
 import ray.physics.PhysicsObject;
 import ray.rage.scene.*;
 import ray.rml.Vector3;
+import ray.rml.Vector3f;
 import a3.MyGame;
 import myGameEngine.*;
 import net.java.games.input.Event;
@@ -43,6 +44,11 @@ public class MoveFwdAction extends AbstractInputAction
         PhysicsObject targ = target.getPhysicsObject();
         Vector3 forward = target.getLocalForwardAxis().mult(-time * e.getValue() * movementMult);
         //Vector3 pos = target.getLocalPosition();
+
+        //If the new vector collides with a wall don't move
+        if (game.collision.wallCollision((Vector3f)forward))
+            return;
+
         targ.applyForce(forward.x(), forward.y(), forward.z(), 0f, 0f, 0f);
         
         animMan.playWalk();       

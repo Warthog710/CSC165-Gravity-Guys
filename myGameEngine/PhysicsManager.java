@@ -91,6 +91,33 @@ public class PhysicsManager
         node.pitch(rotation);
     }
 
+    public void createCubePhysicsObjectWithRotationAboutY(SceneNode node, float mass, float bounciness, float friction, float damping, Degreef rotation)
+    {
+    	double[] originalTransform = toDoubleArray(node.getLocalTransform().toFloatArray());
+        
+        double[] newTransform = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0, originalTransform[12], originalTransform[13], originalTransform[14], 1.0};
+
+        Matrix4f rotationMatrix = (Matrix4f)Matrix4f.createFrom(toFloatArray(newTransform));
+        rotationMatrix = (Matrix4f)rotationMatrix.rotate(Degreef.createFrom(0), rotation, Degreef.createFrom(0));             
+ 
+        float[] size = node.getLocalScale().toFloatArray();
+        
+        //Cube primitive is 2f
+        size[0] = 2f * size[0];
+        size[1] = 2f * size[1];
+        size[2] = 2f * size[2];
+  
+        PhysicsObject physObj = physicsEng.addBoxObject(physicsEng.nextUID(), mass, toDoubleArray(rotationMatrix.toFloatArray()), size);
+        physObj.setBounciness(bounciness);
+        physObj.setFriction(friction);
+        physObj.setDamping(damping, damping);
+        node.setPhysicsObject(physObj);
+        node.yaw(rotation);
+    }
+
+    
+
     public void createCylinderPhyicsObject(SceneNode node, float mass, float bounciness, float friction, float damping, Degreef rotation)
     {
         double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());

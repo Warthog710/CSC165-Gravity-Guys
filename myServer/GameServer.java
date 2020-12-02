@@ -395,6 +395,18 @@ public class GameServer extends GameConnectionServer<UUID>
         }
     }
 
+    protected void forwardToClients(String msg, UUID client)
+    {
+        try
+        {
+            forwardPacketToAll(msg, client);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
     private class Shutdown extends Thread
     {
         public void run()

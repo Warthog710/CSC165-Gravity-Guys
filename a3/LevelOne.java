@@ -68,6 +68,8 @@ public class LevelOne
         wishbonePlatN.setLocalPosition((Vector3f)scriptMan.getValue("wishbonePlatPos"));
         createPhysicsCylinderPlane("wishBoneOne");
         createPhysicsCylinderPlane("wishBoneTwo");
+        createPhysicsPlaneWithRotationAboutY("wishBoneThree");
+        createPhysicsPlaneWithRotationAboutY("wishBoneFour");
         
         Entity wedgePlatE = sm.createEntity("wedgePlatform", "wedge.obj");
         wedgePlatE.setPrimitive(Primitive.TRIANGLES);
@@ -152,6 +154,19 @@ public class LevelOne
         physicsPlaneNode.setLocalScale((Vector3f)scriptMan.getValue(name + "Scale"));
         physicsPlane.setVisible((boolean)scriptMan.getValue(name + "Vis"));
         physMan.createCubePhysicsObjectWithRotationAboutX(physicsPlaneNode, 0f, 1f, 1f, .99f, (Degreef) scriptMan.getValue(name + "RotX"));
+    }
+
+    private void createPhysicsPlaneWithRotationAboutY(String name) throws IOException
+    {
+        Entity physicsPlane = sm.createEntity(name, "cube.obj");
+        physicsPlane.setPrimitive(Primitive.TRIANGLES);
+        SceneNode physicsPlaneNode = sm.getRootSceneNode().createChildSceneNode(name + "Node");
+        physicsPlaneNode.attachObject(physicsPlane);
+        physicsPlaneNode.setLocalPosition((Vector3f)scriptMan.getValue(name + "Pos"));
+        physicsPlaneNode.setLocalScale((Vector3f)scriptMan.getValue(name + "Scale"));
+        physicsPlane.setVisible((boolean)scriptMan.getValue(name + "Vis"));
+        physMan.createCubePhysicsObjectWithRotationAboutY(physicsPlaneNode, 0f, 1f, 1f, .99f, (Degreef) scriptMan.getValue(name + "RotY"));
+
     }
 
     private void createPhysicsCylinderPlane(String name) throws IOException

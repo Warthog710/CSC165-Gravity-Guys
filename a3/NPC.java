@@ -13,10 +13,15 @@ import ray.ai.behaviortrees.BTCondition;
 import ray.ai.behaviortrees.BTSequence;
 import ray.ai.behaviortrees.BTStatus;
 import ray.ai.behaviortrees.BehaviorTree;
+import ray.rage.Engine;
+import ray.rage.asset.texture.Texture;
 import ray.rage.rendersystem.Renderable.Primitive;
+import ray.rage.rendersystem.states.RenderState;
+import ray.rage.rendersystem.states.TextureState;
 import ray.rage.scene.Entity;
 import ray.rage.scene.SceneManager;
 import ray.rage.scene.SceneNode;
+import ray.rml.Degreef;
 import ray.rml.Matrix3f;
 import ray.rml.Vector3;
 import ray.rml.Vector3f;
@@ -30,25 +35,37 @@ public class NPC
     private float blowPower;
     private SoundManager soundMan;
 
-    public NPC(SceneManager sm, ScriptManager scriptMan, NetworkedClient nc, SoundManager soundMan, PhysicsManager physMan)  throws IOException
+    public NPC(Engine eng, ScriptManager scriptMan, NetworkedClient nc, SoundManager soundMan, PhysicsManager physMan)  throws IOException
     {
         this.scriptMan = scriptMan;
         this.nc = nc;
         this.blowPower = Float.parseFloat(scriptMan.getValue("blowPower").toString());
         this.soundMan = soundMan;
+        SceneManager sm = eng.getSceneManager();
 
-        //Create the NPC
-        Entity cube = sm.createEntity(scriptMan.getValue("npcName").toString(), "cube.obj");
-        cube.setPrimitive(Primitive.TRIANGLES);
+        Texture platformTex = eng.getTextureManager().getAssetByPath("npcPlatform.png");
+        TextureState platformTexState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+        platformTexState.setTexture(platformTex);
 
-        this.npcNode = sm.getRootSceneNode().createChildSceneNode(cube.getName() + "Node");
-        npcNode.attachObject(cube);
-        npcNode.setLocalScale(.5f, .5f, .5f);
-        npcNode.setLocalPosition((Vector3f)scriptMan.getValue("npcStartLocation"));
+        Entity fanE = sm.createEntity(scriptMan.getValue("npcName").toString(), "fanBase.obj");
+        fanE.setPrimitive(Primitive.TRIANGLES);
+
+        this.npcNode = sm.getRootSceneNode().createChildSceneNode(fanE.getName() + "Node");
+        this.npcNode.attachObject(fanE);
+
+        Entity fanBladeE = sm.createEntity("fanBlade", "fanBlades.obj");
+        fanBladeE.setPrimitive(Primitive.TRIANGLES);
+
+        SceneNode fanBladeN = this.npcNode.createChildSceneNode("fanBladeNode");
+        fanBladeN.attachObject(fanBladeE);
+        fanBladeN.setLocalPosition(0, 2.3f, .4f);
+        this.npcNode.setLocalScale(.5f, .5f, .5f);
+        this.npcNode.setLocalPosition((Vector3f)scriptMan.getValue("npcStartLocation"));
 
         //Create the platform
-        Entity platform = sm.createEntity("npcPlatform", "cube.obj");
+        Entity platform = sm.createEntity("npcPlatform", "customCube.obj");
         platform.setPrimitive(Primitive.TRIANGLES);
+        platform.setRenderState(platformTexState);
         SceneNode platformNode = sm.getRootSceneNode().createChildSceneNode(platform.getName() + "Node");
         platformNode.attachObject(platform);
         platformNode.setLocalScale((Vector3f)scriptMan.getValue("platformScale"));
@@ -87,6 +104,9 @@ public class NPC
         npcNode.setLocalPosition(playerNode.getLocalPosition());
         Vector3 fwd = npcNode.getLocalForwardAxis().mult(timeElapsed * blowPower);
         npcNode.setLocalPosition(temp);
+
+        //Rotate the child fan blades of the fan
+        npcNode.getChild("fanBladeNode").roll(Degreef.createFrom(10f));
         
         //Play wind sound effect
         soundMan.playWind();
@@ -102,6 +122,11 @@ public class NPC
         npcNode.setLocalPosition(pos);
         npcNode.setLocalRotation(rot);
         //soundMan.stopWind();
+    }
+
+    public void rotateFan()
+    {
+        npcNode.getChild("fanBladeNode").roll(Degreef.createFrom(10f));
     }
 
     private void setupBehaviorTree() 
@@ -154,6 +179,9 @@ public class NPC
             npcNode.setLocalPosition(playerNode.getLocalPosition());
             Vector3 fwd = npcNode.getLocalForwardAxis().mult(timeElapsed * blowPower);
             npcNode.setLocalPosition(temp);
+
+            //Rotate the child fan blades of the fan
+            npcNode.getChild("fanBladeNode").roll(Degreef.createFrom(10f));
 
             //Apply physics force
             playerNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0f, 0f, 0f);
