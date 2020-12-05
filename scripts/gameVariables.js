@@ -11,10 +11,10 @@ with (JavaPackages)
 	var updateAvatarPos = true;
 
 	//Start
-	var avatarPos = Vector3f.createFrom(0, 12, 0);
+	//var avatarPos = Vector3f.createFrom(0, 12, 0);
 
 	//Top of wedge
-	//var avatarPos = Vector3f.createFrom(0, 27, 72);
+	var avatarPos = Vector3f.createFrom(0, 27, 72);
 
 	//Below wedge
 	//var avatarPos = Vector3f.createFrom(0, 15, 50);
@@ -91,21 +91,16 @@ with (JavaPackages)
 	var plat4PhysicsPlaneScale = Vector3f.createFrom(8.25, 1, 2.1);
 
 	//End platforms
-	var endPlat1PhysicsPlanePos = levelPos.add(endPlat1Pos);
-	endPlat1PhysicsPlanePos = endPlat1PhysicsPlanePos.add(0, 3.6, 22.8);
 	var endPlat1PhysicsPlaneScale = Vector3f.createFrom(3.34, .4, 3.2);
-	var endPlat2PhysicsPlanePos = levelPos.add(endPlat2Pos);
-	endPlat2PhysicsPlanePos = endPlat2PhysicsPlanePos.add(-.8, 2.8, 24.8);
 	var endPlat2PhysicsPlaneScale = Vector3f.createFrom(3.34, .4, 3.2);
-	var endPlat3PhysicsPlanePos = levelPos.add(endPlat3Pos);
-	endPlat3PhysicsPlanePos = endPlat3PhysicsPlanePos.add(.4, 2, 26.8);
 	var endPlat3PhysicsPlaneScale = Vector3f.createFrom(3.34, .4, 3.2);
-	var endPlat4PhysicsPlanePos = levelPos.add(endPlat4Pos);
-	endPlat4PhysicsPlanePos = endPlat4PhysicsPlanePos.add(1.6, 1.2, 28.8);
 	var endPlat4PhysicsPlaneScale = Vector3f.createFrom(3.32, .4, 3.2);
-	var endPlat5PhysicsPlanePos = levelPos.add(endPlat5Pos);
-	endPlat5PhysicsPlanePos = endPlat5PhysicsPlanePos.add(-.82, .4, 30.8);
 	var endPlat5PhysicsPlaneScale = Vector3f.createFrom(3.32, .4, 3.2);
+	var endPlat1PhysicsPlanePos = Vector3f.createFrom(0, 23.6, 79.8);
+	var endPlat2PhysicsPlanePos = Vector3f.createFrom(-2.8, 20.8, 86.8);
+	var endPlat3PhysicsPlanePos = Vector3f.createFrom(1.4, 18, 93.8);
+	var endPlat4PhysicsPlanePos = Vector3f.createFrom(5.6, 15.2, 100.8);
+	var endPlat5PhysicsPlanePos = Vector3f.createFrom(-2.82, 12.4, 107.8);
 	
 	//Finish platform
 	var finishPlatPhysicsPlanePos = levelPos.add(finishPlatPos);
@@ -140,11 +135,11 @@ with (JavaPackages)
 	var wedgePhysicsPlaneVis = false;
 	var plat3PhysicsPlaneVis = false;
 	var plat4PhysicsPlaneVis = false;
-	var endPlat1PhysicsPlaneVis = false;
-	var endPlat2PhysicsPlaneVis = false;
-	var endPlat3PhysicsPlaneVis = false;
-	var endPlat4PhysicsPlaneVis = false;
-	var endPlat5PhysicsPlaneVis = false;
+	var endPlat1PhysicsPlaneVis = true;
+	var endPlat2PhysicsPlaneVis = true;
+	var endPlat3PhysicsPlaneVis = true;
+	var endPlat4PhysicsPlaneVis = true;
+	var endPlat5PhysicsPlaneVis = true;
 	var wishBoneOneVis = false;
 	var wishBoneTwoVis = false;
 	var wishBoneThreeVis = false;

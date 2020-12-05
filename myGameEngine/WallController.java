@@ -129,9 +129,9 @@ public class WallController extends AbstractController
     public void reset() 
     {
         //Reset all internal variables to default
-        cycleTime = 2000f; //!Get from script
+        cycleTime = Float.parseFloat(scriptMan.getValue("wallCycleTime").toString());
         totalTime = 0;
-        speed = .001f; //!Get from script
+        speed = Float.parseFloat(scriptMan.getValue("wallSpeed").toString());
         moveDir = 1;
         direction = 0;
         valueDir = 0;

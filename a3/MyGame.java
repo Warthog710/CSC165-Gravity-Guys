@@ -41,6 +41,7 @@ public class MyGame extends VariableFrameRateGame
         private AnimationManager animMan;
         private SoundManager soundMan;
 
+        public PlatformController pc;
         public DetectWallCollision collision;
         public BouncyBalls bouncyBalls;
         public Walls platformWalls;
@@ -246,6 +247,10 @@ public class MyGame extends VariableFrameRateGame
 
                 //Setup gVars
                 gVars = new UpdateGameVariables(sm, scriptMan, physMan, platformWalls);
+
+                //Setup moving platforms
+                pc = new PlatformController(physMan, scriptMan, networkedClient, sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"));
+                pc.addNodeList(level.getEndPlatformPhysicsPlanes());
         }
 
         protected void setupOrbitCamera(SceneManager sm) 
@@ -311,13 +316,16 @@ public class MyGame extends VariableFrameRateGame
                 if (distance < 0.2 && playerN.getWorldPosition().z() < 70 && playerN.getWorldPosition().z() > 52) {
                 	playerN.getPhysicsObject().applyForce(0, 27, 27, 0, 0, 0);
                 }
-                
+
                 //Process physiscs world and update objects
                 if (gVars.runPhysics)
                 {
                         physMan.getPhysicsEngine().update(elapsTime - lastUpdateTime);
                         physMan.updatePhysicsObjects(engine.getSceneManager(), networkedClient, this);
                 }
+
+                //Update platform controller
+                pc.update(elapsTime - lastUpdateTime);
 
                 //Update network info
                 networkedClient.processPackets(elapsTime - lastUpdateTime);
@@ -345,7 +353,7 @@ public class MyGame extends VariableFrameRateGame
                 moveYawAction = new MoveYawAction(orbitCamera, sm.getSceneNode(target), scriptMan, networkedClient);
                 moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
                 moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
-                jumpAction = new JumpAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
+                jumpAction = new JumpAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this, physMan);
                 resetAction = new ResetPlayerAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan);
 
                 // Iterate over all input devices

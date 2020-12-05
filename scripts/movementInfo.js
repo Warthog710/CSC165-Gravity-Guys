@@ -21,6 +21,8 @@ var zoomMin = 1;
 //Variables unique to wall movement
 var wallCycleTime = 2000;
 var wallSpeed = .0015;
+var platformCycleTime = 5000;
+var platformSpeed = .0015;
 
 //NPC stuff
 var npcSpeed = .001;

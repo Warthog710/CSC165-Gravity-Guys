@@ -82,7 +82,7 @@ public class Flails
             cubeN.setLocalScale((Vector3f)scriptMan.getValue(flailCube + "Scale"));
 
             //Each flail has its own controller 
-            FlailController fc = new FlailController(pillarN, Float.parseFloat(scriptMan.getValue("flailSpeed").toString()), 1f, 0f, true, physMan);
+            FlailController fc = new FlailController(pillarN, Float.parseFloat(scriptMan.getValue("flailSpeed").toString()), 1f, 0f, true, physMan, sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"), flailN);
             fc.addNode(flailN);
             sm.addController(fc);
         }

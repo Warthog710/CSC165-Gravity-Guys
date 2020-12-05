@@ -16,7 +16,7 @@
 * [ ] Server only accepts 8 players & automatically assigns an avatar color
 * [ ] Win/loss condition (win a player reaches the finish line, give them a point and start over...)
 * [ ] Ghost avatars need animation and sound
-* [ ] Platforms before finish line need to move back and forth
+* [x] Platforms before finish line need to move back and forth
 * [ ] Add keyboard controls
 
 #### How to compile/run:

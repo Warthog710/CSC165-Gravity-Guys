@@ -164,8 +164,9 @@ public class NetworkedClient extends GameConnectionClient
                 //Server wants all client to sync
                 if (msgTokens[0].compareTo("SYNC") == 0)
                 {
-                    //Sync the walls
+                    //Sync the walls and platforms
                     myGame.platformWalls.resetWalls();
+                    myGame.pc.reset();
                 }
             }
         }
