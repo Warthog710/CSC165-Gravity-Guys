@@ -12,6 +12,7 @@
 * [x] Platforms before finish line need to move back and forth
 * [ ] Add keyboard controls **(Anyone)**
 * [ ] Have orbit camera focus be higher on the avatar **(Anyone)**
+* [ ] Do something with the ground so it does not look like it ends... **(Anyone)**
 
 #### How to compile/run:
 
