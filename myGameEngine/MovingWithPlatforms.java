@@ -8,17 +8,15 @@ import ray.rml.Vector3f;
 public class MovingWithPlatforms 
 {
     private PhysicsManager physMan;
-    private NetworkedClient nc;
     private Vector<SceneNode> platforms = new Vector<>();
     private SceneNode avatarNode;
     private String parentName;
 
     private boolean isChild = false;
 
-    public MovingWithPlatforms(PhysicsManager physMan, NetworkedClient nc, SceneNode avatarNode)
+    public MovingWithPlatforms(PhysicsManager physMan, SceneNode avatarNode)
     {
         this.physMan = physMan;
-        this.nc = nc;
         this.avatarNode = avatarNode;
     }
 
@@ -48,7 +46,6 @@ public class MovingWithPlatforms
                 if (isChild)
                 {
                     avatarNode.setLocalPosition(avatarNode.getLocalPosition().x(), maxY, avatarNode.getLocalPosition().z());
-                    nc.updatePositionOnServer = true;
                 }
 
                 if (!isChild)
@@ -60,7 +57,6 @@ public class MovingWithPlatforms
                     float[] temp = {avatarNode.getPhysicsObject().getLinearVelocity()[0], 0, avatarNode.getPhysicsObject().getLinearVelocity()[2]};
                     avatarNode.getPhysicsObject().setLinearVelocity(temp);
                     physMan.updatePhysicsPosition(avatarNode);
-                    nc.updateOrientationOnServer = true;
                 }      
 
                 return;

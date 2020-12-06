@@ -31,7 +31,7 @@ public class BallSpawner implements Runnable
             //Attempt to sleep for 5 seconds
             try
             {
-                Thread.sleep(5000);
+                Thread.sleep(3000);
             }
             //Catches an interrupt and awakes the thread
             catch (InterruptedException e)

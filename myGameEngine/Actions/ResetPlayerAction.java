@@ -10,15 +10,13 @@ import net.java.games.input.Event;
 public class ResetPlayerAction extends AbstractInputAction 
 {
     private SceneNode target;
-    private NetworkedClient nc;
     private ScriptManager scriptMan;
     private PhysicsManager physMan;
 
 
-    public ResetPlayerAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, PhysicsManager physMan) 
+    public ResetPlayerAction(SceneNode target, ScriptManager scriptMan, PhysicsManager physMan) 
     {
         this.target = target;
-        this.nc = nc;
         this.scriptMan = scriptMan;
         this.physMan = physMan;
     }
@@ -35,8 +33,5 @@ public class ResetPlayerAction extends AbstractInputAction
 
         //Update physics transforms
         physMan.updatePhysicsTransforms(target);
-
-        //Update pos on server
-        nc.updatePositionOnServer = true;
     }
 }

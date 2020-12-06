@@ -19,8 +19,9 @@ import ray.rml.Matrix3f;
 public class GameServer extends GameConnectionServer<UUID>
 {
     protected volatile Map<UUID, ClientInfo> clientInfo;
-    protected volatile boolean threadRunning;
-    private Thread detectDeadClient, ballSpawner, npcControl;
+    protected volatile boolean threadRunning, playerWonThisRound;
+    private Thread detectDeadClient, ballSpawner, npcControl, resetGame;
+    private AvatarTextureManager avatarTexMan;
     private Matrix3f npcRot;
 
     //Shutdown hook for hopefully closing the server properly... I think...
@@ -33,6 +34,8 @@ public class GameServer extends GameConnectionServer<UUID>
 
         //Synchronized thread safe map
         this.clientInfo = Collections.synchronizedMap(new HashMap<UUID, ClientInfo>());
+        this.playerWonThisRound = false;
+        this.avatarTexMan = new AvatarTextureManager();
 
         //Get public IP using a web service
         URL myIp = new URL("http://checkip.amazonaws.com");
@@ -83,7 +86,7 @@ public class GameServer extends GameConnectionServer<UUID>
             if (msgTokens[0].compareTo("WANTDETAILSFOR") == 0)
             {
                 //Send back details for the requested client
-                processWANTDETAILSFOR(UUID.fromString(msgTokens[1]), UUID.fromString(msgTokens[2]), Long.parseLong(msgTokens[3]));
+                processWANTDETAILSFOR(UUID.fromString(msgTokens[1]), UUID.fromString(msgTokens[2]));
             }
 
             //Check for UPDATEFOR msg
@@ -110,12 +113,6 @@ public class GameServer extends GameConnectionServer<UUID>
             {
                 //Process the join
                 processJOIN(msgTokens, senderIP, sndPort);
-
-                //Send confirmation msg with position of all active clients
-                sendConfirmMessage(UUID.fromString(msgTokens[1]));
-
-                //Since a new clients joined... ask all the clients to Sync
-                sendMsgToAll("SYNC");
             }
 
             //Check for BYE msg
@@ -125,6 +122,31 @@ public class GameServer extends GameConnectionServer<UUID>
 
                 System.out.println("Client " + msgTokens[1] + " left");
             }
+
+            //Win msg
+            if (msgTokens[0].compareTo("WIN") == 0)
+            {
+                //If this is the first player to win this round send a msg back
+                if (!playerWonThisRound)
+                {
+                    //Increment score by two for the first winner
+                    clientInfo.get(UUID.fromString(msgTokens[1])).score += 2;
+    
+                    sendMsgToClient("FIRSTWINNER", UUID.fromString(msgTokens[1]));
+                    System.out.println("Client: " + msgTokens[1] + " won the round");
+                    playerWonThisRound = true;
+
+                    //Start the thread to reset the game
+                    Runnable rst = new ResetGame(this, UUID.fromString(msgTokens[1]));
+                    resetGame = new Thread(rst);
+                    resetGame.start();
+                }
+                else
+                {
+                    clientInfo.get(UUID.fromString(msgTokens[1])).score++;
+                    System.out.println("Client: " + msgTokens[1] + " got to the end");
+                }
+            }
         }
     }
 
@@ -133,6 +155,10 @@ public class GameServer extends GameConnectionServer<UUID>
     {
         try 
         {
+            //If 8 clients already exist, don't join this client
+            if (clientInfo.size() == 8)
+                return;
+
             //If the client doesn't already exists...
             if (!clientInfo.containsKey(UUID.fromString(msgTokens[1])))
             {
@@ -146,16 +172,23 @@ public class GameServer extends GameConnectionServer<UUID>
                 + msgTokens[13];
         
                 //Add the client to the HashMap
-                clientInfo.put(clientID, new ClientInfo(clientID, pos, rotation));
+                AvatarTexture temp = avatarTexMan.getRandomUnusedTexture();
+                clientInfo.put(clientID, new ClientInfo(clientID, pos, rotation, temp.name, temp.textureName));
         
                 //If we have more than 1 client... Inform them of the new client
                 if (getClients().size() > 1)
                 {
-                    sendCreateMessages(clientID, pos, rotation);
+                    sendCreateMessages(clientID, pos, rotation, temp);
                 }
 
-                //Log join
+                //Log join                
                 System.out.println("Client " + msgTokens[1] + " joined");
+
+                //Send confirmation msg with position of all active clients
+                sendConfirmMessage(UUID.fromString(msgTokens[1]), temp);
+
+                //Since a new clients joined... ask all the clients to Sync
+                sendMsgToAll("SYNC");
             }
         }
         catch (IOException e)
@@ -165,22 +198,16 @@ public class GameServer extends GameConnectionServer<UUID>
     }
 
     //Processes a WANTDETAILSFOR and sends info back about the wanted client
-    //! Just position information at the moment.
-    private void processWANTDETAILSFOR(UUID clientID, UUID wantID, long lastUpdateTime)
+    private void processWANTDETAILSFOR(UUID clientID, UUID wantID)
     {
         try
         {
             //If the requested client exists
             if (clientInfo.containsKey(wantID))
             {
-                //! This is causing a bug??? HUH?
-                //TODO: Fix me!
-                //Only send a packet if an update has actually occured
-                //if (clientInfo.get(wantID).lastUpdate > lastUpdateTime)
-                {
-                    String msg = new String("DETAILSFOR," + wantID.toString() + clientInfo.get(wantID).pos + clientInfo.get(wantID).rotation);
+                //Send the update
+                String msg = new String("DETAILSFOR," + wantID.toString() + clientInfo.get(wantID).pos + clientInfo.get(wantID).rotation);
                     sendPacket(msg, clientID);
-                }
             }
         }
         catch (IOException e)
@@ -190,64 +217,22 @@ public class GameServer extends GameConnectionServer<UUID>
     }
 
     //Processes a UPDATEFOR msg
-    //! Just position information at the moment
     private void processUPDATEFOR(String[] msgTokens)
     {
         UUID updatefor = UUID.fromString(msgTokens[2]);
-        long updateTime = Long.parseLong(msgTokens[msgTokens.length - 1]);
 
-        //If msg contains POS
-        if (msgTokens[1].compareTo("POS") == 0)
+        //If the client exists update it
+        if (clientInfo.containsKey(updatefor))
         {
-            //If the client exists update it
-            if (clientInfo.containsKey(updatefor))
-            {
-                //Only if the update is not out of date
-                if (updateTime > clientInfo.get(updatefor).lastUpdate)
-                {
-                    String pos = "," + msgTokens[3] + "," + msgTokens[4] + "," + msgTokens[5];
-                    clientInfo.get(updatefor).pos = pos;
-                    clientInfo.get(updatefor).lastUpdate = System.currentTimeMillis();
-                }
-            }
-        }
 
-        else if (msgTokens[1].compareTo("ORIENT") == 0)
-        {
-            //If the client exists update it
-            if (clientInfo.containsKey(updatefor))
-            {
-                //Only if the update is not out of date
-                if (updateTime > clientInfo.get(updatefor).lastUpdate)
-                {
-                    String rotation = "," + msgTokens[3] + "," + msgTokens[4] + "," + msgTokens[5] + "," + msgTokens[6] + ","
-                            + msgTokens[7] + "," + msgTokens[8] + "," + msgTokens[9] + "," + msgTokens[10] + ","
-                            + msgTokens[11];
+            String pos = "," + msgTokens[3] + "," + msgTokens[4] + "," + msgTokens[5];
 
-                    clientInfo.get(updatefor).rotation = rotation;
-                    clientInfo.get(updatefor).lastUpdate = System.currentTimeMillis();
-                }
-            }
-        }
-        else
-        {
-            //If the client exists update it
-            if (clientInfo.containsKey(updatefor))
-            {
-                //Only if the update is not out of date
-                if (updateTime > clientInfo.get(updatefor).lastUpdate)
-                {
-                    String pos = "," + msgTokens[3] + "," + msgTokens[4] + "," + msgTokens[5];
+            String rotation = "," + msgTokens[6] + "," + msgTokens[7] + "," + msgTokens[8] + "," + msgTokens[9]
+                    + "," + msgTokens[10] + "," + msgTokens[11] + "," + msgTokens[12] + "," + msgTokens[13] + ","
+                    + msgTokens[14];
 
-                    String rotation = "," + msgTokens[6] + "," + msgTokens[7] + "," + msgTokens[8] + "," + msgTokens[9]
-                            + "," + msgTokens[10] + "," + msgTokens[11] + "," + msgTokens[12] + "," + msgTokens[13] + ","
-                            + msgTokens[14];
-
-                    clientInfo.get(updatefor).pos = pos;
-                    clientInfo.get(updatefor).rotation = rotation;
-                    clientInfo.get(updatefor).lastUpdate = System.currentTimeMillis();
-                }
-            }
+            clientInfo.get(updatefor).pos = pos;
+            clientInfo.get(updatefor).rotation = rotation;
         }
     }
 
@@ -260,6 +245,7 @@ public class GameServer extends GameConnectionServer<UUID>
             if (clientInfo.containsKey(leavingID))
             {
                 //Remove client from clientInfo
+                avatarTexMan.reclaimTexture(clientInfo.get(leavingID).textureName);
                 clientInfo.remove(leavingID);
 
                 //Remove from server
@@ -311,13 +297,14 @@ public class GameServer extends GameConnectionServer<UUID>
         npcRot =(Matrix3f)Matrix3f.createFrom(temp);   
     }
     
-    private void sendCreateMessages(UUID clientID, String position, String rotation)
+    private void sendCreateMessages(UUID clientID, String position, String rotation, AvatarTexture avTex)
     {
         //Send a create msg to all clients other than the client that joined
         try
         {
             String msg = new String("CREATE," + clientID.toString());
             msg += position + rotation;
+            msg += "," + avTex.name + "," + avTex.textureName;
             
             forwardPacketToAll(msg, clientID);
         }
@@ -329,11 +316,11 @@ public class GameServer extends GameConnectionServer<UUID>
 
     //Confirms a join request was received.
     //Sends the location of all active clients to the newly joined client
-    private void sendConfirmMessage(UUID clientID)
+    private void sendConfirmMessage(UUID clientID, AvatarTexture avTex)
     {
         try
         {
-            sendPacket("CONFIRM", clientID);
+            sendPacket("CONFIRM," + avTex.name + "," + avTex.textureName, clientID);
 
             //Send the position of all other clients through create msgs
             for (ClientInfo ci : clientInfo.values())
@@ -343,7 +330,7 @@ public class GameServer extends GameConnectionServer<UUID>
                 {
                     //Send a create msg
                     String msg = new String("CREATE," + ci.clientID.toString());
-                    msg += ci.pos + ci.rotation;
+                    msg += ci.pos + ci.rotation + "," + ci.name + "," + ci.textureName;
 
                     sendPacket(msg, clientID);
                 }

@@ -27,3 +27,6 @@ var platformSpeed = .0015;
 //NPC stuff
 var npcSpeed = .001;
 var blowPower = 2;
+
+//Cylinder stuff
+var cylinderKnockback = -1200;

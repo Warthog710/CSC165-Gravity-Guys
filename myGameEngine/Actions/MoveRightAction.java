@@ -12,16 +12,14 @@ import net.java.games.input.Event;
 public class MoveRightAction extends AbstractInputAction 
 {
     private SceneNode target;
-    private NetworkedClient nc;
     private ScriptManager scriptMan;
     private AnimationManager animMan;
     private MyGame game;
     private float movementMult;
 
-    public MoveRightAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, AnimationManager animMan, MyGame game) 
+    public MoveRightAction(SceneNode target, ScriptManager scriptMan, AnimationManager animMan, MyGame game) 
     {
         this.target = target;
-        this.nc = nc;
         this.scriptMan = scriptMan;
         this.game = game;
         this.animMan = animMan;
@@ -54,8 +52,5 @@ public class MoveRightAction extends AbstractInputAction
         
         //Update avatar vertical position
         game.updateVerticalPosition();
-
-        //Tell the networked client that an update is required
-        nc.updatePositionOnServer = true;
     }
 }

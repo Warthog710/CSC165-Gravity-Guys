@@ -1,7 +1,5 @@
 package myGameEngine;
 
-import java.util.Vector;
-
 import ray.rage.scene.Node;
 import ray.rage.scene.SceneNode;
 import ray.rage.scene.controllers.OrbitController;
@@ -12,18 +10,19 @@ import ray.rml.Vector3f;
 //Adds a bit of additional functionality to the built-in orbit controller
 public class FlailController extends OrbitController 
 {
-    private PhysicsManager physMan;
-    private SceneNode node;
     private SceneNode avatarNode;
+    private ScriptManager scriptMan;
 
-    public FlailController(Node orbitTarget, float orbitalSpeed, float distanceFromTarget, float verticalDistance, boolean faceTarget, PhysicsManager physMan, SceneNode avatarNode, SceneNode flail) 
+    private float cylinderKnockback;
+
+    public FlailController(ScriptManager scriptMan, Node orbitTarget, float orbitalSpeed, float distanceFromTarget, float verticalDistance, boolean faceTarget, SceneNode avatarNode) 
     {
         //Call super
         super(orbitTarget, orbitalSpeed, distanceFromTarget, verticalDistance, faceTarget);
 
-        this.physMan = physMan;
+        this.scriptMan = scriptMan;
         this.avatarNode = avatarNode;
-        this.node = flail;
+        this.cylinderKnockback = Float.parseFloat(scriptMan.getValue("cylinderKnockback").toString());
     }
 
     @Override
@@ -32,28 +31,27 @@ public class FlailController extends OrbitController
         //Call super
         super.updateImpl(elapsedTimeMillis);
 
-        //Update the physics object position
-        physMan.updatePhysicsPosition(super.controlledNodesList.get(0));
+        //Update knockback if an update occured
+        if (scriptMan.scriptUpdate("movementInfo.js"))
+            cylinderKnockback = Float.parseFloat(scriptMan.getValue("cylinderKnockback").toString());        
 
-        /*Vector3f pos = (Vector3f)avatarNode.getLocalPosition();      
-        float minX = node.getLocalPosition().x() - (node.getLocalScale().x());
-        float maxX = node.getLocalPosition().x() + (node.getLocalScale().x());
-        float minY = node.getLocalPosition().y() - (node.getLocalScale().y());
-        float maxY = node.getLocalPosition().y() + (node.getLocalScale().y());
-        float minZ = node.getLocalPosition().z() - (node.getLocalScale().z());
-        float maxZ = node.getLocalPosition().z() + (node.getLocalScale().z());
-        //System.out.println(node.getName());
+        Vector3f pos = (Vector3f)avatarNode.getLocalPosition();      
+        float minX = super.controlledNodesList.get(0).getLocalPosition().x() - (super.controlledNodesList.get(0).getLocalScale().x() + .4f);
+        float maxX = super.controlledNodesList.get(0).getLocalPosition().x() + (super.controlledNodesList.get(0).getLocalScale().x() + .4f);
+        float minY = super.controlledNodesList.get(0).getLocalPosition().y() - (super.controlledNodesList.get(0).getLocalScale().y() + 1);
+        float maxY = super.controlledNodesList.get(0).getLocalPosition().y() + (super.controlledNodesList.get(0).getLocalScale().y() + 1);
+        float minZ = super.controlledNodesList.get(0).getLocalPosition().z() - (super.controlledNodesList.get(0).getLocalScale().z() + .4f);
+        float maxZ = super.controlledNodesList.get(0).getLocalPosition().z() + (super.controlledNodesList.get(0).getLocalScale().z() + .4f);
             
         //Collission with the platform... Avatar should start moving with it... attach as a pseudo child
         if (pos.x() >= minX && pos.x() <= maxX && pos.y() >= minY && pos.y() <= maxY && pos.z() >= minZ && pos.z() <= maxZ)
         {
-            System.out.println("Flail collission");
             //If a collision is detected, push the player away
-            //Matrix3f rot = (Matrix3f) avatarNode.getLocalRotation();
-            //avatarNode.lookAt(node);
-            //Vector3 fwd = avatarNode.getLocalForwardAxis().mult(-200);
-            //avatarNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0, 0, 0);  
-            //avatarNode.setLocalRotation(rot);
-        }*/
+            Matrix3f rot = (Matrix3f) avatarNode.getLocalRotation();
+            avatarNode.lookAt(super.controlledNodesList.get(0));
+            Vector3 fwd = avatarNode.getLocalForwardAxis().mult(cylinderKnockback);
+            avatarNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0, 0, 0);  
+            avatarNode.setLocalRotation(rot);
+        }
     }    
 }

@@ -70,8 +70,6 @@ public class Flails
             flailN.attachObject(flailE);
             flailN.setLocalPosition((Vector3f)scriptMan.getValue(flail + index + "Pos"));
             flailN.setLocalScale((Vector3f)scriptMan.getValue(flail + "Scale"));
-            physMan.createFlailPhysicsObject(flailN, 100, 0, 1, .99f);
-            physMan.createHingeConstraint(pillarN, flailN);
 
             Entity cubeE = sm.createEntity(flailCube + index, "cube.obj");
             cubeE.setPrimitive(Primitive.TRIANGLES);
@@ -82,7 +80,7 @@ public class Flails
             cubeN.setLocalScale((Vector3f)scriptMan.getValue(flailCube + "Scale"));
 
             //Each flail has its own controller 
-            FlailController fc = new FlailController(pillarN, Float.parseFloat(scriptMan.getValue("flailSpeed").toString()), 1f, 0f, true, physMan, sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"), flailN);
+            FlailController fc = new FlailController(scriptMan, pillarN, Float.parseFloat(scriptMan.getValue("flailSpeed").toString()), 1f, 0f, true, sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"));
             fc.addNode(flailN);
             sm.addController(fc);
         }

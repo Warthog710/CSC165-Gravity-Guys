@@ -17,7 +17,6 @@ public class GhostAvatars
 {
     protected Vector<UUID> activeGhosts;
     private SceneManager sm;
-    private Texture ghostTex;
 
     //TODO: Ghost avatars need animations
 
@@ -26,24 +25,15 @@ public class GhostAvatars
     {
         this.sm = sm;
         this.activeGhosts = new Vector<>();
-
-        try 
-        {
-            this.ghostTex = sm.getTextureManager().getAssetByPath("newPlayer.png");
-        } 
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
     }
 
     //Creates a ghost avatar... eventually have them choose an avatar and pass it...
-    public void addGhost(UUID ghostID, Vector3f pos, Matrix3f rotation) throws IOException
+    public void addGhost(UUID ghostID, Vector3f pos, Matrix3f rotation, Texture texture) throws IOException
     {
         //Create entity (cube for now)
         SkeletalEntity ghostE = sm.createSkeletalEntity("ghostEntity" + ghostID.toString(), "player.rkm", "player.rks");
         TextureState tstate = (TextureState) sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
-		tstate.setTexture(ghostTex);
+		tstate.setTexture(texture);
 	    ghostE.setRenderState(tstate);
 
         //Create scenenode (hanging off root for now)

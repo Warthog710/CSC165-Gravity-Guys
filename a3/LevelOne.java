@@ -6,7 +6,10 @@ import java.util.Vector;
 import myGameEngine.PhysicsManager;
 import myGameEngine.ScriptManager;
 import ray.rage.Engine;
+import ray.rage.asset.texture.Texture;
 import ray.rage.rendersystem.Renderable.Primitive;
+import ray.rage.rendersystem.states.RenderState;
+import ray.rage.rendersystem.states.TextureState;
 import ray.rage.scene.Entity;
 import ray.rage.scene.SceneManager;
 import ray.rage.scene.SceneNode;
@@ -20,6 +23,7 @@ public class LevelOne
     private ScriptManager scriptMan;
     private PhysicsManager physMan;
     private Vector<SceneNode> endPlatformPhysicsPlanes;
+    private Texture physicsPlaneTex;
 	
     public LevelOne(Engine eng, ScriptManager scriptMan, PhysicsManager physMan) 
     {
@@ -27,6 +31,15 @@ public class LevelOne
         this.scriptMan = scriptMan;
         this.physMan = physMan;
         this.endPlatformPhysicsPlanes = new Vector<>();
+
+        try
+        {
+            this.physicsPlaneTex = this.sm.getTextureManager().getAssetByPath("physicsPlatformTexture.png");            
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
 	}
 	
 	//Loads all the level objects and returns the node group containing them
@@ -122,9 +135,17 @@ public class LevelOne
 
     private void createPhysicsPlane(String name) throws IOException
     {
-        Entity physicsPlane = sm.createEntity(name, "cube.obj");
+        //Create the entity from the customCube obj
+        Entity physicsPlane = sm.createEntity(name, "customCube.obj");
         physicsPlane.setPrimitive(Primitive.TRIANGLES);
         SceneNode physicsPlaneNode = sm.getRootSceneNode().createChildSceneNode(name + "Node");
+
+        //Texture it...
+        TextureState tState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+        tState.setTexture(physicsPlaneTex);
+        physicsPlane.setRenderState(tState);
+
+        //Size and physics
         physicsPlaneNode.attachObject(physicsPlane);
         physicsPlaneNode.setLocalPosition((Vector3f)scriptMan.getValue(name + "Pos"));
         physicsPlaneNode.setLocalScale((Vector3f)scriptMan.getValue(name + "Scale"));

@@ -7,6 +7,10 @@ import java.util.UUID;
 
 import a3.MyGame;
 import ray.networking.client.GameConnectionClient;
+import ray.rage.asset.texture.Texture;
+import ray.rage.rendersystem.states.RenderState;
+import ray.rage.rendersystem.states.TextureState;
+import ray.rage.scene.Entity;
 import ray.rage.scene.SceneManager;
 import ray.rml.Matrix3f;
 import ray.rml.Vector3f;
@@ -18,17 +22,15 @@ public class NetworkedClient extends GameConnectionClient
     private MyGame myGame;
     private UUID id;
     private float timeSinceLastKeepAlive, timeSinceLastJoin;
-    private HashMap<UUID, Long> lastUpdate;
+    private HashMap<String, Texture> playerTex;
+    private Entity avatarEntity;
 
     //Public boolean to determine whether we are connected to a server
     public boolean isConnected;
-
-    //These variables are set to determine what updates need to be sent to the server
-    public boolean updatePositionOnServer = false;  
-    public boolean updateOrientationOnServer = false;
+    public boolean playerWon;
 
     //Creates a UDP client
-    public NetworkedClient(InetAddress remoteAddr, int remotePort, GhostAvatars ghosts, ScriptManager scriptMan, MyGame myGame) throws IOException 
+    public NetworkedClient(InetAddress remoteAddr, int remotePort, GhostAvatars ghosts, ScriptManager scriptMan, MyGame myGame, Entity avatarE) throws IOException 
     {
         super(remoteAddr, remotePort, ProtocolType.UDP);
 
@@ -39,13 +41,55 @@ public class NetworkedClient extends GameConnectionClient
         this.isConnected = false; 
         this.timeSinceLastKeepAlive = 0.0f; 
         this.timeSinceLastJoin = 10000f; 
-        this.lastUpdate = new HashMap<>();  
+        this.playerWon = false;
+        this.avatarEntity = avatarE;
+
+        //Setup textures
+        setupTextureMap();
 
         //Send a join
         sendJOIN(scriptMan.getValue("avatarName").toString() + "Node");
 
         //Setup shutdown hook
         Runtime.getRuntime().addShutdownHook(new NetworkShutdownHook());
+    }
+
+    //Sets up all the possible player textures
+    private void setupTextureMap()
+    {
+        playerTex = new HashMap<>();
+
+        try
+        {
+            Texture temp = myGame.getEngine().getTextureManager().getAssetByPath("greenPlayer.png");
+            playerTex.put("greenPlayer.png", temp);
+
+            temp = myGame.getEngine().getTextureManager().getAssetByPath("orangePlayer.png");
+            playerTex.put("orangePlayer.png", temp);
+
+            temp = myGame.getEngine().getTextureManager().getAssetByPath("redPlayer.png");
+            playerTex.put("redPlayer.png", temp);
+
+            temp = myGame.getEngine().getTextureManager().getAssetByPath("pinkPlayer.png");
+            playerTex.put("pinkPlayer.png", temp);
+
+            temp = myGame.getEngine().getTextureManager().getAssetByPath("bluePlayer.png");
+            playerTex.put("bluePlayer.png", temp);
+
+            temp = myGame.getEngine().getTextureManager().getAssetByPath("brownPlayer.png");
+            playerTex.put("brownPlayer.png", temp);
+
+            temp = myGame.getEngine().getTextureManager().getAssetByPath("yellowPlayer.png");
+            playerTex.put("yellowPlayer.png", temp);
+
+            temp = myGame.getEngine().getTextureManager().getAssetByPath("purplePlayer.png");
+            playerTex.put("purplePlayer.png", temp);
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     //Overloaded version of processpackets implements additional functionality
@@ -82,6 +126,13 @@ public class NetworkedClient extends GameConnectionClient
             //Reset timer
             timeSinceLastKeepAlive = 0.0f;
         }
+
+        //If the player has won... send a win message
+        if (playerWon)
+        {
+            sendWinMsg();
+            playerWon = false;
+        }
     }
 
     @Override
@@ -92,11 +143,7 @@ public class NetworkedClient extends GameConnectionClient
         //! Its possible to receive a null packet??? Handle this...
         try
         {
-            //System.out.println("Received msg: " + msg);
-
             String[] msgTokens = msg.split(",");
-
-
 
             //If the the msg list contains something...
             if (msgTokens.length > 0)
@@ -144,7 +191,12 @@ public class NetworkedClient extends GameConnectionClient
                     //NOTE: Lets just ignore the others for now... ¯\_(ツ)_/¯
                     if (!isConnected)
                     {
+                        //Set the avatar texture as requested by the server
                         System.out.println("\nConfirm received... Connection successful");
+                        TextureState tState = (TextureState)myGame.getEngine().getSceneManager().getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+                        tState.setTexture(playerTex.get(msgTokens[2]));
+                        avatarEntity.setRenderState(tState);
+
                         isConnected = true;
                     }
                 }
@@ -165,6 +217,21 @@ public class NetworkedClient extends GameConnectionClient
                 if (msgTokens[0].compareTo("SYNC") == 0)
                 {
                     //Sync the walls and platforms
+                    myGame.platformWalls.resetWalls();
+                    myGame.pc.reset();
+                }
+
+                if (msgTokens[0].compareTo("FIRSTWINNER") == 0)
+                {
+                    System.out.println("Received first winner");
+                    myGame.wc.incrementScore();
+                }
+
+                if (msgTokens[0].compareTo("RESETGAME") == 0)
+                {
+                    System.out.println("Game Reset!");
+                    myGame.wc.setWinners(msgTokens[1], msgTokens[2]);
+                    myGame.wc.resetGame();
                     myGame.platformWalls.resetWalls();
                     myGame.pc.reset();
                 }
@@ -221,10 +288,10 @@ public class NetworkedClient extends GameConnectionClient
 
         try
         {
-            for (UUID wantID : lastUpdate.keySet())
+            for (UUID wantID : ghosts.activeGhosts)
             {
                 //Send last update time. Server only returns an update if something has happened
-                String msg = new String("WANTDETAILSFOR," + id.toString() + "," + wantID.toString() + "," + lastUpdate.get(wantID));            
+                String msg = new String("WANTDETAILSFOR," + id.toString() + "," + wantID.toString());            
                 sendPacket(msg);
             }
         }
@@ -240,59 +307,22 @@ public class NetworkedClient extends GameConnectionClient
         if (!isConnected)
             return;
 
-        //If no movement has taken place... don't send an update
-        if (!updatePositionOnServer && !updateOrientationOnServer)
-            return;
-
-        SceneManager sm = myGame.getEngine().getSceneManager();
         String msg;
+        SceneManager sm = myGame.getEngine().getSceneManager();
 
-        //if just no movement send just orientation
-        if (!updatePositionOnServer)
-        {
-            msg = new String("UPDATEFOR," + "ORIENT," + id.toString() + ",");
+        //Build msg
+        msg = new String("UPDATEFOR," + "BOTH," + id.toString());
+        msg += "," + sm.getSceneNode(nodeName).getLocalPosition().x();
+        msg += "," + sm.getSceneNode(nodeName).getLocalPosition().y();
+        msg += "," + sm.getSceneNode(nodeName).getLocalPosition().z();
+        msg += ",";
 
-            //Pack rotation matrix
-            float[] temp = sm.getSceneNode(nodeName).getLocalRotation().toFloatArray();
-            for (int count = 0; count < sm.getSceneNode(nodeName).getLocalRotation().toFloatArray().length; count++)
-                msg += temp[count] + ",";
-
-            msg += System.currentTimeMillis();
-
-            updateOrientationOnServer = false;;
-        }
-
-        else if (!updateOrientationOnServer)
-        {
-            //Build msg
-            msg = new String("UPDATEFOR," + "POS," + id.toString());
-            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().x();
-            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().y();
-            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().z();
-            msg += "," + System.currentTimeMillis();
-
-            updatePositionOnServer = false;
-        }
-
-        else
-        {
-            //Build msg
-            msg = new String("UPDATEFOR," + "BOTH," + id.toString());
-            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().x();
-            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().y();
-            msg += "," + sm.getSceneNode(nodeName).getLocalPosition().z();
-            msg += ",";
-
-            //Pack rotation matrix
-            float[] temp = sm.getSceneNode(nodeName).getLocalRotation().toFloatArray();
-            for (int count = 0; count < sm.getSceneNode(nodeName).getLocalRotation().toFloatArray().length; count++)
-                msg += temp[count] + ",";
+        //Pack rotation matrix
+        float[] temp = sm.getSceneNode(nodeName).getLocalRotation().toFloatArray();
+        for (int count = 0; count < sm.getSceneNode(nodeName).getLocalRotation().toFloatArray().length; count++)
+            msg += temp[count] + ",";
             
-            msg += System.currentTimeMillis();
-
-            updatePositionOnServer = false;
-            updateOrientationOnServer = false;
-        }
+        msg += System.currentTimeMillis();
 
         //Attempt to send the update
         try
@@ -303,9 +333,6 @@ public class NetworkedClient extends GameConnectionClient
         {
             e.printStackTrace();
         }
-
-        //Update has been sent
-        updatePositionOnServer = false;
     }
 
     public void sendBYE()
@@ -364,6 +391,21 @@ public class NetworkedClient extends GameConnectionClient
         }
     }
 
+    //Sends a msg to the server saying a player won
+    public void sendWinMsg()
+    {
+        String msg = "WIN," + this.id;
+
+        try
+        {
+            sendPacket(msg);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     private void processCREATE(String[] msgTokens)
     {
         //Fixes a weird networking bug where multiple ghosts with the same ID were being added...
@@ -384,15 +426,12 @@ public class NetworkedClient extends GameConnectionClient
         //Attempt to create a new ghost
         try
         {
-            ghosts.addGhost(UUID.fromString(msgTokens[1]), ghostPos, rotation); 
+            ghosts.addGhost(UUID.fromString(msgTokens[1]), ghostPos, rotation, playerTex.get(msgTokens[15])); 
         }
         catch (IOException e)
         {
             e.printStackTrace();
-        }  
-
-        //Record ghost with new update time
-        lastUpdate.put(UUID.fromString(msgTokens[1]), System.currentTimeMillis());
+        }
     }
 
     //? Processes both position and rotation
@@ -414,10 +453,6 @@ public class NetworkedClient extends GameConnectionClient
         //If the ghost exists... update it
         if (ghosts.activeGhosts.contains(detailsFor))
             ghosts.updateGhostPosition(detailsFor, ghostPos, rotation);
-
-        //Update last update time
-        if (lastUpdate.containsKey(detailsFor))
-            lastUpdate.put(detailsFor, System.currentTimeMillis());
     }
 
     private void processBYE(UUID leavingID)
@@ -425,10 +460,6 @@ public class NetworkedClient extends GameConnectionClient
         //If the ghost exists remove the ghost
         if (ghosts.activeGhosts.contains(leavingID))
             ghosts.removeGhost(leavingID);
-
-        //Also remove if it exists from the update tracker
-        if (lastUpdate.containsKey(leavingID))
-            lastUpdate.remove(leavingID);
     }
 
     private void processFORCEDBYE()
@@ -437,9 +468,6 @@ public class NetworkedClient extends GameConnectionClient
         {
             ghosts.removeGhost(ghosts.activeGhosts.get(count));
         }
-
-        //Empty last update
-        lastUpdate.clear();
     }
 
     private void processNEWBALL(String[] msgTokens)

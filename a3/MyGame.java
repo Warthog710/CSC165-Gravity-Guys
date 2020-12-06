@@ -11,7 +11,6 @@ import ray.rage.*;
 import ray.rage.asset.texture.Texture;
 import ray.rage.game.*;
 import ray.rage.rendersystem.*;
-import ray.rage.rendersystem.Renderable.*;
 import ray.rage.scene.*;
 import ray.rage.scene.Camera.Frustum.*;
 import ray.rml.Vector3;
@@ -41,6 +40,7 @@ public class MyGame extends VariableFrameRateGame
         private AnimationManager animMan;
         private SoundManager soundMan;
 
+        public WinCondition wc;
         public PlatformController pc;
         public DetectWallCollision collision;
         public BouncyBalls bouncyBalls;
@@ -94,7 +94,7 @@ public class MyGame extends VariableFrameRateGame
                 scriptMan.loadScript("movementInfo.js");
 
                 //Setup physics manager
-                physMan = new PhysicsManager(-60f, scriptMan);
+                physMan = new PhysicsManager(-60f);
                 physMan.createStaticGroundPlane(0f, .5f, .9f);
         }
 
@@ -137,7 +137,7 @@ public class MyGame extends VariableFrameRateGame
                 //Load player mesh, skeleton, and texture
                 //scriptMan.getValue("avatarName").toString()
                 SkeletalEntity avatarE = sm.createSkeletalEntity(scriptMan.getValue("avatarName").toString(), "player.rkm", "player.rks");
-		Texture tex = sm.getTextureManager().getAssetByPath("newPlayer.png");
+		Texture tex = sm.getTextureManager().getAssetByPath("greenPlayer.png");
 		TextureState tstate = (TextureState) sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
 		tstate.setTexture(tex);
 	        avatarE.setRenderState(tstate);
@@ -160,24 +160,8 @@ public class MyGame extends VariableFrameRateGame
                 
                 soundMan = new SoundManager(sm, scriptMan);
                 // have to create this animation manager after loading animations
-                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan, soundMan);
-                
-                //! Temp physics sphere
-                Entity cubeE = sm.createEntity("cube", "sphere.obj");
-                cubeE.setPrimitive(Primitive.TRIANGLES);
+                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan, soundMan);                 
 
-                SceneNode cubeN = sm.getRootSceneNode().createChildSceneNode(cubeE.getName() + "Node");
-                cubeN.attachObject(cubeE);
-                
-                cubeN.setLocalPosition(5f, 20f, 0f);
-                cubeN.setLocalScale(2f, 2f, 2f);
-                physMan.createSpherePhysicsObject(cubeN, 5f, 0f, .4f, .9f);
-                
-                Texture sphereTex = eng.getTextureManager().getAssetByPath("hexagons.jpeg");
-                TextureState sphereTexState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
-                sphereTexState.setTexture(sphereTex);
-                cubeE.setRenderState(sphereTexState);
-          
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));
 
@@ -231,7 +215,7 @@ public class MyGame extends VariableFrameRateGame
                 updateVerticalPosition();
 
                 //Setup networking
-                setupNetworking();
+                setupNetworking(avatarE);
 
                 //Setup the bouncy balls
                 bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);
@@ -249,8 +233,12 @@ public class MyGame extends VariableFrameRateGame
                 gVars = new UpdateGameVariables(sm, scriptMan, physMan, platformWalls);
 
                 //Setup moving platforms
-                pc = new PlatformController(physMan, scriptMan, networkedClient, sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"));
+                pc = new PlatformController(physMan, scriptMan, sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"));
                 pc.addNodeList(level.getEndPlatformPhysicsPlanes());
+
+                //Setup win condition
+                wc = new WinCondition(sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node"), scriptMan, networkedClient, physMan);
+
         }
 
         protected void setupOrbitCamera(SceneManager sm) 
@@ -262,13 +250,13 @@ public class MyGame extends VariableFrameRateGame
                                 sm.getSceneNode(avatarName), im, scriptMan);
         }
 
-        protected void setupNetworking()
+        protected void setupNetworking(Entity avatarE)
         {
                 try
                 {
                         networkedClient = new NetworkedClient(
                                 InetAddress.getByName(scriptMan.getValue("serverAddress").toString()),
-                                Integer.parseInt(scriptMan.getValue("serverPort").toString()), ghosts, scriptMan, this);
+                                Integer.parseInt(scriptMan.getValue("serverPort").toString()), ghosts, scriptMan, this, avatarE);
                 }
                 catch (Exception e)
                 {
@@ -284,26 +272,10 @@ public class MyGame extends VariableFrameRateGame
                 elapsTime += engine.getElapsedTimeMillis();
 
                 //Update game variables
-                gVars.update();              
-
-                //Get avatar positions
-                String playerOnePos = "("
-                        + Integer.toString(Math.round(engine.getSceneManager()
-                        .getSceneNode(scriptMan.getValue("avatarName").toString() + "Node")
-                        .getLocalPosition().x()))
-                        + ", "
-                        + Integer.toString(Math.round(engine.getSceneManager()
-                        .getSceneNode(scriptMan.getValue("avatarName").toString() + "Node")
-                        .getLocalPosition().y()))
-                        + ", "
-                        + Integer.toString(Math.round(engine.getSceneManager()
-                        .getSceneNode(scriptMan.getValue("avatarName").toString() + "Node")
-                        .getLocalPosition().z()))
-                        + ")";         
+                gVars.update();           
 
                 //Set hud
-                rs.setHUD("Avatar Position: " + playerOnePos, (Integer) scriptMan.getValue("hudX"),
-                                (Integer) scriptMan.getValue("hudY"));
+                rs.setHUD(wc.getHudString());
 
                 //Process inputs
                 im.update(elapsTime - lastUpdateTime);
@@ -325,6 +297,7 @@ public class MyGame extends VariableFrameRateGame
                 }
 
                 //Update platform controller
+                //!This update must occur after the physics engine update
                 pc.update(elapsTime - lastUpdateTime);
 
                 //Update network info
@@ -339,6 +312,7 @@ public class MyGame extends VariableFrameRateGame
                 animMan.checkAnimations();
                 bouncyBalls.update(elapsTime - lastUpdateTime);
                 npc.update(elapsTime - lastUpdateTime);
+                wc.update(elapsTime - lastUpdateTime);
 
                 //Record last update in MS
                 lastUpdateTime = elapsTime;
@@ -350,11 +324,11 @@ public class MyGame extends VariableFrameRateGame
                 String target = scriptMan.getValue("avatarName").toString() + "Node";
 
                 //Setup actions
-                moveYawAction = new MoveYawAction(orbitCamera, sm.getSceneNode(target), scriptMan, networkedClient);
-                moveRightAction = new MoveRightAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
-                moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this);
-                jumpAction = new JumpAction(sm.getSceneNode(target), networkedClient, scriptMan, animMan, this, physMan);
-                resetAction = new ResetPlayerAction(sm.getSceneNode(target), networkedClient, scriptMan, physMan);
+                moveYawAction = new MoveYawAction(orbitCamera, sm.getSceneNode(target), scriptMan);
+                moveRightAction = new MoveRightAction(sm.getSceneNode(target), scriptMan, animMan, this);
+                moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), scriptMan, animMan, this);
+                jumpAction = new JumpAction(sm.getSceneNode(target), scriptMan, animMan, this, physMan);
+                resetAction = new ResetPlayerAction(sm.getSceneNode(target), scriptMan, physMan);
 
                 // Iterate over all input devices
                 for (int index = 0; index < controllerList.size(); index++) 

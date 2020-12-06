@@ -12,14 +12,12 @@ public class MoveYawAction extends AbstractInputAction
     private ScriptManager scriptMan;
     private SceneNode target;
     private float avatarYawSpeed;
-    private NetworkedClient nc;
 
-    public MoveYawAction(OrbitCameraController oc, SceneNode target, ScriptManager scriptMan, NetworkedClient nc) 
+    public MoveYawAction(OrbitCameraController oc, SceneNode target, ScriptManager scriptMan) 
     {
         this.oc = oc;
         this.scriptMan = scriptMan;
         this.target = target;
-        this.nc = nc;
         this.avatarYawSpeed = Float.parseFloat(scriptMan.getValue("avatarYawSpeed").toString());  
     }
 
@@ -41,8 +39,5 @@ public class MoveYawAction extends AbstractInputAction
 
         //Update orbit azimuth
         oc.updateAzimoth(e.getValue() * avatarYawSpeed * time);
-
-        //Tell the networked client to send an orientation update
-        nc.updateOrientationOnServer = true;
     }
 }

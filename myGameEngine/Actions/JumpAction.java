@@ -10,17 +10,15 @@ import net.java.games.input.Event;
 public class JumpAction extends AbstractInputAction 
 {
     private SceneNode target;
-    private NetworkedClient nc;
     private ScriptManager scriptMan;
     private AnimationManager animMan;
     private MyGame game;
     private float movementMult;
     private PhysicsManager physMan;
 
-    public JumpAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, AnimationManager animMan, MyGame game, PhysicsManager physMan) 
+    public JumpAction(SceneNode target, ScriptManager scriptMan, AnimationManager animMan, MyGame game, PhysicsManager physMan) 
     {
         this.target = target;
-        this.nc = nc;
         this.scriptMan = scriptMan;
         this.game = game;
         this.animMan = animMan;
@@ -59,6 +57,5 @@ public class JumpAction extends AbstractInputAction
 
         //Update height
         game.updateVerticalPosition();        
-        nc.updatePositionOnServer = true;
     }
 }

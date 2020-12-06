@@ -11,20 +11,18 @@ public class PlatformController
     private PhysicsManager physMan;
     private ScriptManager scriptMan;
     private SceneNode avatarNode;
-    private NetworkedClient nc;
     private Vector<SceneNode> controlledNodesList;
     private float cycleTime, totalTime = 0, speed;
     private int moveDir = 1, direction = 0, valueDir = 0, value = 0;
 
     public MovingWithPlatforms movingWithPlatforms;
 
-    public PlatformController(PhysicsManager physMan, ScriptManager scriptMan, NetworkedClient nc, SceneNode avatarNode)
+    public PlatformController(PhysicsManager physMan, ScriptManager scriptMan, SceneNode avatarNode)
     {
         this.physMan = physMan;
         this.scriptMan = scriptMan; 
         this.avatarNode = avatarNode;
-        this.nc = nc;
-        this.movingWithPlatforms = new MovingWithPlatforms(physMan, nc, avatarNode);
+        this.movingWithPlatforms = new MovingWithPlatforms(physMan, avatarNode);
         
         //Get initial cycle and speed values
         cycleTime = Float.parseFloat(scriptMan.getValue("platformCycleTime").toString());
@@ -95,7 +93,6 @@ public class PlatformController
                     {   
                         avatarNode.setLocalPosition(avatarNode.getLocalPosition().x() + speed * elapsedTimeMillis * moveDir, avatarNode.getLocalPosition().y(), avatarNode.getLocalPosition().z());
                         physMan.updatePhysicsPosition(avatarNode);
-                        nc.updatePositionOnServer = true;
                     }
                 }
             }
@@ -113,7 +110,6 @@ public class PlatformController
                     {  
                         avatarNode.setLocalPosition(avatarNode.getLocalPosition().x() + speed * elapsedTimeMillis * -moveDir, avatarNode.getLocalPosition().y(), avatarNode.getLocalPosition().z());
                         physMan.updatePhysicsPosition(avatarNode);
-                        nc.updatePositionOnServer = true;
                     }
                 }
             }           

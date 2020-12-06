@@ -12,16 +12,14 @@ import net.java.games.input.Event;
 public class MoveFwdAction extends AbstractInputAction 
 {
     private SceneNode target;
-    private NetworkedClient nc;
     private ScriptManager scriptMan;
     private AnimationManager animMan;
     private MyGame game;
     private float movementMult;
 
-    public MoveFwdAction(SceneNode target, NetworkedClient nc, ScriptManager scriptMan, AnimationManager animMan, MyGame game) 
+    public MoveFwdAction(SceneNode target, ScriptManager scriptMan, AnimationManager animMan, MyGame game) 
     {
         this.target = target;
-        this.nc = nc;
         this.scriptMan = scriptMan;
         this.animMan = animMan;
         this.game = game;
@@ -55,6 +53,5 @@ public class MoveFwdAction extends AbstractInputAction
         
         //Update height
         game.updateVerticalPosition();        
-        nc.updatePositionOnServer = true;
     }
 }

@@ -113,7 +113,6 @@ public class NPC
 
         //Apply physics force
         playerNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0f, 0f, 0f);
-        nc.updatePositionOnServer = true;
     }
 
     //Used by networked client to update orientation and position of the NPC
@@ -185,7 +184,6 @@ public class NPC
 
             //Apply physics force
             playerNode.getPhysicsObject().applyForce(fwd.x(), fwd.y(), fwd.z(), 0f, 0f, 0f);
-            nc.updatePositionOnServer = true;
             
             //Play wind sound effect
             soundMan.playWind();

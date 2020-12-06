@@ -12,22 +12,17 @@ import ray.rml.Matrix3;
 import ray.rml.Matrix3f;
 import ray.rml.Matrix4;
 import ray.rml.Matrix4f;
-import ray.rml.Vector3;
-import ray.rml.Vector3f;
 
 public class PhysicsManager 
 {
     private PhysicsEngine physicsEng;
-    private ScriptManager scriptMan;
 
-    public PhysicsManager(float gravity, ScriptManager scriptMan)
+    public PhysicsManager(float gravity)
     {
         float[] grav = {0, gravity, 0};
         physicsEng = PhysicsEngineFactory.createPhysicsEngine("ray.physics.JBullet.JBulletPhysicsEngine");
         physicsEng.initSystem();
         physicsEng.setGravity(grav);
-
-        this.scriptMan = scriptMan;
     }
     
     //Creates a sphere in the physics world 
@@ -156,11 +151,6 @@ public class PhysicsManager
         node.setPhysicsObject(physObj);
     }
 
-    public void createHingeConstraint(SceneNode pillar, SceneNode flail)
-    {
-        physicsEng.addHingeConstraint(physicsEng.nextUID(), pillar.getPhysicsObject(), flail.getPhysicsObject(), 0, 0, -1);
-    }
-
     public void createAvatarSphere(SceneNode  node, float mass, float bounciness, float friction, float damping)
     {
         double[] temp = toDoubleArray(node.getLocalTransform().toFloatArray());
@@ -207,11 +197,7 @@ public class PhysicsManager
                 //Else, it must be the avatar... check to see if it has moved
                 //Tells the client to send an update since it is still sliding around
                 else
-                {
-                    Vector3 temp = Vector3f.createFrom(mat.value(0, 3), mat.value(1, 3), mat.value(2, 3));
-                    if (node.getLocalPosition().compareTo(temp) != 0)
-                        nc.updatePositionOnServer = true;
-                        
+                {                        
                     //Update position
                     node.setLocalPosition(mat.value(0, 3), mat.value(1, 3) - 1, mat.value(2, 3));
                     game.updateVerticalPosition();

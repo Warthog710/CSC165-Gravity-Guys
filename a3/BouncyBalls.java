@@ -38,7 +38,7 @@ public class BouncyBalls
         //Preload texture
         try
         {
-            sphereTex = eng.getTextureManager().getAssetByPath("waterHeight2.png");
+            sphereTex = eng.getTextureManager().getAssetByPath("ball.jpg");
         }
         catch (IOException e)
         {
@@ -82,7 +82,7 @@ public class BouncyBalls
             totalTime += elapsedTime;
 
             //If 5sec has passed
-            if (totalTime >= 5000f)
+            if (totalTime >= 3000f)
             {
                 //Random number between 0 and 8;
                 double rand = Math.random() * 8;
