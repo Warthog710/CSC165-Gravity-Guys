@@ -12,7 +12,7 @@
 * [x] Platforms before finish line need to move back and forth
 * [ ] Add keyboard controls **(Anyone)**
 * [x] Have orbit camera focus be higher on the avatar **(Anyone)**
-* [ ] Do something with the ground so it does not look like it ends... **(Anyone)**
+* [x] Do something with the ground so it does not look like it ends... **(Anyone)**
 * [ ] When the NPC performs a *lookat()* at the player, make it not affect the rotations around the X-axis **(Anyone)**
 * [ ] Uncomment code for Full-Screen-Dialog-Box **(Anyone)**
 * [ ] Make player guide document **(Quinn & Josh)**
