@@ -288,13 +288,16 @@ public class MyGame extends VariableFrameRateGame
                 
                 //Setup animation and sound
                 soundMan = new SoundManager(sm, scriptMan);
-                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan, soundMan, networkedClient);   
+                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), avatarN, scriptMan, soundMan, networkedClient);   
 
                 //Setup NPC
                 npc = new NPC(eng, scriptMan, networkedClient, soundMan, physMan);   
 
-                //Intilize audio
+                //Initialize audio
                 soundMan.initAudio();
+                
+                //Pass sound manager into GhostAvatar so it can play sounds for ghosts
+                ghosts.addSoundManager(soundMan);
 
                 //Configure controller(s)
                 setupInputs(sm.getCamera(scriptMan.getValue("cameraName").toString()), sm, eng.getRenderSystem().getRenderWindow());

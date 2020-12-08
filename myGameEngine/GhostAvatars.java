@@ -21,6 +21,7 @@ public class GhostAvatars
     protected HashMap<UUID, Vector3f> previousPos;
     protected HashMap<UUID, GhostAvatarAnimationManager> ghostAnim;
     private SceneManager sm;
+    private SoundManager soundMan;
     
     //Class constructor
     public GhostAvatars(SceneManager sm)
@@ -28,6 +29,11 @@ public class GhostAvatars
         this.sm = sm;
         this.activeGhosts = new Vector<>();
         this.ghostAnim = new HashMap<>();
+    }
+    
+    //Add the sound manager to be passed to the GhostAvatarAnimationManager
+    public void addSoundManager(SoundManager soundMan) {
+    	this.soundMan = soundMan;
     }
 
     //Creates a ghost avatar... eventually have them choose an avatar and pass it...
@@ -40,10 +46,7 @@ public class GhostAvatars
         ghostE.setRenderState(tstate);
         
         ghostE.loadAnimation("ghostJump" + ghostID.toString(), "jump.rka");
-        ghostE.loadAnimation("ghostWalk" + ghostID.toString(), "newWalk.rka");
-
-        //Setup animation manager for that specific ghost
-        ghostAnim.put(ghostID, new GhostAvatarAnimationManager(ghostE, ghostID));        
+        ghostE.loadAnimation("ghostWalk" + ghostID.toString(), "newWalk.rka");   
 
         //Create scenenode (hanging off root for now)
         SceneNode ghostN = sm.getRootSceneNode().createChildSceneNode("ghostNode" + ghostID.toString());
@@ -53,6 +56,9 @@ public class GhostAvatars
         //Set position & rotation
         ghostN.setLocalPosition(pos);
         ghostN.setLocalRotation(rotation);
+        
+        //Setup animation manager for that specific ghost
+        ghostAnim.put(ghostID, new GhostAvatarAnimationManager(ghostE, ghostN, ghostID, soundMan));  
 
         //Add to active ghosts
         activeGhosts.add(ghostID);
@@ -61,12 +67,14 @@ public class GhostAvatars
     //Removes a ghost from the world
     public void removeGhost(UUID ghostID)
     {
+    	//Remove sound object
+        soundMan.removeGhost(sm.getSceneNode("ghostNode" + ghostID.toString()));
+        
         sm.destroySceneNode("ghostNode" + ghostID.toString());
-        sm.destroyEntity("ghostEntity" + ghostID.toString());
 
         //Delete from active ghosts
         activeGhosts.remove(ghostID);
-
+        
         System.out.println("Deleted ghost avatar " + ghostID);
     }
 
@@ -78,13 +86,16 @@ public class GhostAvatars
         float verticalSpeed = pos.y() - sm.getSceneNode("ghostNode" + ghostID.toString()).getLocalPosition().y();
 
         //If not enough change stop the walking animation
-        if (Math.abs(distance) < .05f || verticalSpeed < -.2f)
+        if (Math.abs(distance) < .03f || verticalSpeed < -.2f)
         {
             ghostAnim.get(ghostID).isWalking = false;
 
-            //If not jumping... stop animation
-            if (!ghostAnim.get(ghostID).isJumping)
-                ghostAnim.get(ghostID).ghost.stopAnimation();
+            //If not jumping... stop animation and walking noise
+            if (!ghostAnim.get(ghostID).isJumping) {
+            	ghostAnim.get(ghostID).ghost.stopAnimation();
+            	soundMan.stopWalk(sm.getSceneNode("ghostNode" + ghostID.toString()));
+            }
+                
         }
         //Play the walk animation if the change is big enough
         else
