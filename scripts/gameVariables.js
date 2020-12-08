@@ -35,11 +35,11 @@ with (JavaPackages)
 
     //Tessellation values (int, float, 3x vector3f)
     var tessQuality = 7;
-    var tessSubdivisions = 64.0;
-	var terrainTessScale = Vector3f.createFrom(800, 100, 800);
-	var heightTiling = 64;
-	var normalTiling = 64;
-	var textureTiling = 64;
+    var tessSubdivisions = 16.0;
+	var terrainTessScale = Vector3f.createFrom(200, 100, 200);
+	var heightTiling = 16;
+	var normalTiling = 16;
+	var textureTiling = 16;
 	
 	//Level values (2x vector3f)
 	var levelScale = Vector3f.createFrom(1.4, 1.4, 1.4);
