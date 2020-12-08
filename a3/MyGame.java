@@ -242,14 +242,16 @@ public class MyGame extends VariableFrameRateGame
                 setupNetworking(avatarE);
 
                 //Setup the bouncy balls
-                bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);
-
-                //Setup NPC
-                npc = new NPC(eng, scriptMan, networkedClient, soundMan, physMan);       
+                bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);    
                 
                 //Setup animation and sound
                 soundMan = new SoundManager(sm, scriptMan);
                 animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan, soundMan, networkedClient);   
+
+                //Setup NPC
+                npc = new NPC(eng, scriptMan, networkedClient, soundMan, physMan);   
+
+                //Intilize audio
                 soundMan.initAudio();
 
                 //Configure controller(s)

@@ -11,10 +11,10 @@ with (JavaPackages)
 	var updateAvatarPos = true;
 
 	//Start
-	//var avatarPos = Vector3f.createFrom(0, 12, 0);
+	var avatarPos = Vector3f.createFrom(0, 12, 0);
 
 	//Top of wedge
-	var avatarPos = Vector3f.createFrom(0, 27, 72);
+	//var avatarPos = Vector3f.createFrom(0, 27, 72);
 
 	//Below wedge
 	//var avatarPos = Vector3f.createFrom(0, 15, 50);
