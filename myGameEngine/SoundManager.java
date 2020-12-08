@@ -23,7 +23,10 @@ public class SoundManager {
     {
     	this.sm = sm;
     	this.scriptMan = scriptMan;
-    	playerN = sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
+		playerN = sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
+		
+		//Create a shutdown hook
+		Runtime.getRuntime().addShutdownHook(new SoundShutdownHook());
     }
 	
 	
@@ -95,5 +98,14 @@ public class SoundManager {
 	public IAudioManager getSoundManager()
 	{
 		return audioMgr;
+	}
+
+	//Runs when the game shutdowns to properly close out audio sources
+	private class SoundShutdownHook extends Thread
+	{
+		public void run()
+		{
+			audioMgr.shutdown();
+		}
 	}
 }

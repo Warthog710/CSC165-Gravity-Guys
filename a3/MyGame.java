@@ -3,6 +3,7 @@ package a3;
 import java.awt.*;
 import java.io.*;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.awt.geom.*;
 
@@ -41,6 +42,8 @@ public class MyGame extends VariableFrameRateGame
         private Action moveRightAction, moveFwdAction, moveYawAction, jumpAction, resetAction, toggleLightAction;
         private AnimationManager animMan;
         private SoundManager soundMan;
+        private InetAddress ip;
+        private int port;
 
         public WinCondition wc;
         public PlatformController pc;
@@ -52,8 +55,7 @@ public class MyGame extends VariableFrameRateGame
 
         public static void main(String[] args) 
         {
-                //? Server parameters are now saved in gameVariables.js
-                Game game = new MyGame();
+                Game game = new MyGame(args);
 
                 try 
                 {
@@ -97,10 +99,50 @@ public class MyGame extends VariableFrameRateGame
                 }
         }
 
-        public MyGame()
+        public MyGame(String[] args)
         {
                 //Call parent constructor
                 super();
+                
+                //Get IP and Port passed by cmd line
+                if (args.length == 2)
+                {
+                        try
+                        {
+                                ip = InetAddress.getByName(args[0]);
+                                port = Integer.parseInt(args[1]);
+                        }
+                        catch (Exception e)
+                        {
+                                System.out.println("Failed to read server info from the command line");
+                                System.out.println("Your local IP and port 89 will be used...");
+
+                                try
+                                {
+                                        port = 89;
+                                        ip  = InetAddress.getLocalHost();
+                                }
+                                catch (UnknownHostException a)
+                                {
+                                        a.printStackTrace();
+                                }
+                        }
+                }
+                else
+                {
+                        System.out.println("Please only pass 2 parameters in the form: <IP> <PORT#>");
+                        System.out.println("Your local IP and port 89 will be used...");
+
+                        try
+                        {
+                                port = 89;
+                                ip  = InetAddress.getLocalHost();
+                        }
+                        catch (UnknownHostException a)
+                        {
+                                a.printStackTrace();
+                        }
+                }
 
                 //Setup script manager and load initial script files    
                 scriptMan = new ScriptManager();  
@@ -282,9 +324,7 @@ public class MyGame extends VariableFrameRateGame
         {
                 try
                 {
-                        networkedClient = new NetworkedClient(
-                                InetAddress.getByName(scriptMan.getValue("serverAddress").toString()),
-                                Integer.parseInt(scriptMan.getValue("serverPort").toString()), ghosts, scriptMan, this, avatarE);
+                        networkedClient = new NetworkedClient(ip, port, ghosts, scriptMan, this, avatarE);
                 }
                 catch (Exception e)
                 {
