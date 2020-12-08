@@ -3,19 +3,19 @@ var cameraName = "avatarCamera";
 
 //Variables unique to avatar movement
 var avatarYawSpeed = .072;
-var horizontalMovementMultiplier = 1;
-var forwardMovementMultiplier = 1;
+var horizontalMovementMultiplier = 0.8;
+var forwardMovementMultiplier = 0.8;
 var jumpMultiplier = 1500;
 
 //Variables unique to camera movement
 var orbitStartingAzimuth = 180;
 var orbitStartingElevation = 20;
-var orbitStartingRadius = 5;
+var orbitStartingRadius = 6;
 
 var cameraAzimuthSpeed = .072;
 var cameraElevationSpeed = .072;
 var cameraRadiusSpeed = .004;
-var zoomMax = 10;
+var zoomMax = 15;
 var zoomMin = 1; 
 
 //Variables unique to wall movement
