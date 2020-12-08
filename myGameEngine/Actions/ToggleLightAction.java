@@ -28,7 +28,6 @@ public class ToggleLightAction extends AbstractInputAction
     	Light light = game.getEngine().getSceneManager().getLight(scriptMan.getValue("lampLightName").toString());
     	SceneNode lightN = game.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("lampLightName").toString() + "Node");
     	// check if the player is close to the light
-    	System.out.println(target.getWorldPosition().sub(lightN.getWorldPosition()).length());
         if (target.getWorldPosition().sub(lightN.getWorldPosition()).length() < 8.0f) {
         	//Flip the boolean and set light visibility to new value
         	lightEnabled = !lightEnabled;
