@@ -16,6 +16,7 @@
 * [ ] When the NPC performs a *lookat()* at the player, make it not affect the rotations around the X-axis **(Anyone)**
 * [ ] Uncomment code for Full-Screen-Dialog-Box **(Anyone)**
 * [ ] Make player guide document **(Quinn & Josh)**
+* [ ] Add shutdown hook to sound manager **(Quinn)**
 
 #### How to compile/run:
 

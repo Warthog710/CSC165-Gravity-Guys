@@ -87,10 +87,11 @@ public class PlatformController
           
                 if (movingWithPlatforms.getIsChild())
                 {
-                    avatarNode.getPhysicsObject().applyForce(0, 12, 0, 0, 0, 0);
-
                     if (node.getName() == movingWithPlatforms.getParentName())
-                    {   
+                    {
+                        //Apply a force to counter gravity
+                        avatarNode.getPhysicsObject().applyForce(0, 60, 0, 0, 0, 0);   
+
                         avatarNode.setLocalPosition(avatarNode.getLocalPosition().x() + speed * elapsedTimeMillis * moveDir, avatarNode.getLocalPosition().y(), avatarNode.getLocalPosition().z());
                         physMan.updatePhysicsPosition(avatarNode);
                     }
@@ -104,10 +105,11 @@ public class PlatformController
          
                 if (movingWithPlatforms.getIsChild())
                 {
-                    avatarNode.getPhysicsObject().applyForce(0, 12, 0, 0, 0, 0);
-
                     if (node.getName() == movingWithPlatforms.getParentName())
                     {  
+                        //Apply a force to counter gravity
+                        avatarNode.getPhysicsObject().applyForce(0, 60, 0, 0, 0, 0);   
+
                         avatarNode.setLocalPosition(avatarNode.getLocalPosition().x() + speed * elapsedTimeMillis * -moveDir, avatarNode.getLocalPosition().y(), avatarNode.getLocalPosition().z());
                         physMan.updatePhysicsPosition(avatarNode);
                     }

@@ -11,13 +11,15 @@ public class AnimationManager
 	private boolean isWalking, isJumping, goingDown;
 	private PhysicsObject PObject;
 	private SoundManager soundMan;
+	private NetworkedClient nc;
 
-    public AnimationManager(SkeletalEntity SEntity, PhysicsObject PObject, ScriptManager scriptMan, SoundManager soundMan)
+    public AnimationManager(SkeletalEntity SEntity, PhysicsObject PObject, ScriptManager scriptMan, SoundManager soundMan, NetworkedClient nc)
     {
     	this.PObject = PObject;
     	this.SEntity = SEntity;
         this.scriptMan = scriptMan;
-        this.soundMan = soundMan;
+		this.soundMan = soundMan;
+		this.nc = nc;
         isWalking = false;
         isJumping = false;
         goingDown = false;
@@ -33,7 +35,8 @@ public class AnimationManager
     	}
     	SEntity.playAnimation(scriptMan.getValue("jumpAnimation").toString(), 0.7f, EndType.PAUSE, 0);
     	soundMan.playJump();
-    	soundMan.stopWalk();
+		soundMan.stopWalk();
+		nc.isJumping = true;
     	isJumping = true;
     }
     
@@ -43,7 +46,7 @@ public class AnimationManager
     	else if (!isWalking) {
     		//System.out.println(isWalking);
     		SEntity.playAnimation(scriptMan.getValue("walkAnimation").toString(), 0.9f, EndType.LOOP, 0);
-    		soundMan.playWalk();
+			soundMan.playWalk();
     		isWalking = true;
     	}
     }
@@ -59,7 +62,8 @@ public class AnimationManager
     		goingDown = true;
     	}
     	else if (goingDown && Math.abs(PObject.getLinearVelocity()[1]) < 0.3f) {
-    		SEntity.stopAnimation();
+			SEntity.stopAnimation();
+			nc.stopJump = true;
     		goingDown = false;
     		isJumping = false;
     		isWalking = false;
