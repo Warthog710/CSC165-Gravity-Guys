@@ -411,8 +411,28 @@ public class MyGame extends VariableFrameRateGame
                         // If keyboard, attach inputs...
                         if (controllerList.get(index).getType() == Controller.Type.KEYBOARD) 
                         {
-                                //Setup keyboard input here
-
+                            //Setup keyboard input here
+                        	im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.W, 
+                        			moveFwdAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.S, 
+                					moveFwdAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.A, 
+                					moveRightAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.D, 
+                					moveRightAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.LEFT, 
+                					moveYawAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.RIGHT, 
+                					moveYawAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.SPACE, 
+                					jumpAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.R, 
+                					resetAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.E, 
+                					toggleLightAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                			
+                			//Setup orbit camera keyboard inputs
+                            orbitCamera.setupInputs(im, controllerList.get(index)); 
                         }
 
                         // If gamepad, attach inputs...
@@ -420,25 +440,25 @@ public class MyGame extends VariableFrameRateGame
                         {
                                 if (controllerList.get(index).getName().contains("Wireless Controller")) 
                                 {
-                			im.associateAction(controllerList.get(index), 
-                				net.java.games.input.Component.Identifier.Axis.Y, moveFwdAction, 
-                				InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), 
-                				net.java.games.input.Component.Identifier.Axis.X, moveRightAction, 
-        					InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), 
-                				net.java.games.input.Component.Identifier.Axis.Z, moveYawAction, 
-        					InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), 
-                    			        net.java.games.input.Component.Identifier.Button._1, jumpAction, 
-                                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-                                        im.associateAction(controllerList.get(index), 
-                                                net.java.games.input.Component.Identifier.Button._6, resetAction, 
-                                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-                                        im.associateAction(controllerList.get(index), 
-                                                net.java.games.input.Component.Identifier.Button._2, toggleLightAction, 
-                                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-                		}
+		                			im.associateAction(controllerList.get(index), 
+		                				net.java.games.input.Component.Identifier.Axis.Y, moveFwdAction, 
+		                				InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+		                			im.associateAction(controllerList.get(index), 
+		                				net.java.games.input.Component.Identifier.Axis.X, moveRightAction, 
+		                				InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+		                			im.associateAction(controllerList.get(index), 
+		                				net.java.games.input.Component.Identifier.Axis.Z, moveYawAction, 
+		                				InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+		                			im.associateAction(controllerList.get(index), 
+		                    			net.java.games.input.Component.Identifier.Button._1, jumpAction, 
+		                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+		                            im.associateAction(controllerList.get(index), 
+		                                 net.java.games.input.Component.Identifier.Button._6, resetAction, 
+		                                 InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+		                            im.associateAction(controllerList.get(index), 
+		                                 net.java.games.input.Component.Identifier.Button._2, toggleLightAction, 
+		                                 InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                }
                                 else 
                                 {
                                         im.associateAction(controllerList.get(index),

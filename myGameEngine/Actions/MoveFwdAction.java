@@ -29,10 +29,14 @@ public class MoveFwdAction extends AbstractInputAction
     // Move forward or backwards 5.0f every 1000ms or 1 second (assuming axis value = 1)
     public void performAction(float time, Event e) 
     {        
+    	float keyValue = e.getValue();
         // Deadzone
-        if (e.getValue() > -.2 && e.getValue() < .2) {
+        if (keyValue > -.2 && keyValue < .2) {
         	return;
-        }  
+        }
+        if (e.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.W) {
+        	keyValue = -keyValue;
+		}
 
         //Updates forward speed, if a script update occured
         if (scriptMan.scriptUpdate("movementInfo.js"))
@@ -40,7 +44,7 @@ public class MoveFwdAction extends AbstractInputAction
         
         //Get the physics object of the node and apply a forward/backward force
         PhysicsObject targ = target.getPhysicsObject();
-        Vector3 forward = target.getLocalForwardAxis().mult(-time * e.getValue() * movementMult);
+        Vector3 forward = target.getLocalForwardAxis().mult(-time * keyValue * movementMult);
         //Vector3 pos = target.getLocalPosition();
 
         //If the new vector collides with a wall don't move

@@ -24,9 +24,14 @@ public class MoveYawAction extends AbstractInputAction
     // A full rotation takes 5 sec
     public void performAction(float time, Event e) 
     {
+    	float keyValue = e.getValue();
         // Deadzone
-        if (e.getValue() > -.2 && e.getValue() < .2)
-            return;
+        if (keyValue > -.2 && keyValue < .2) {
+        	return;
+        }
+        if (e.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.RIGHT) {
+        	keyValue = -keyValue;
+		}
 
         //Updates yaw speed, if a script update occured
         if (scriptMan.scriptUpdate("movementInfo.js"))
@@ -34,10 +39,10 @@ public class MoveYawAction extends AbstractInputAction
 
         //Global Yaw
         Vector3 worldUp = Vector3f.createFrom(0.0f, 1.0f, 0.0f);
-        Matrix3 matRot = Matrix3f.createRotationFrom(Degreef.createFrom(e.getValue() * avatarYawSpeed * time), worldUp);
+        Matrix3 matRot = Matrix3f.createRotationFrom(Degreef.createFrom(keyValue * avatarYawSpeed * time), worldUp);
         target.setLocalRotation(matRot.mult(target.getWorldRotation()));
 
         //Update orbit azimuth
-        oc.updateAzimoth(e.getValue() * avatarYawSpeed * time);
+        oc.updateAzimoth(keyValue * avatarYawSpeed * time);
     }
 }
