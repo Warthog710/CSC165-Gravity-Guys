@@ -24,11 +24,6 @@ with (JavaPackages)
 	var windowWidth = 1400;
 	var windowHeight = 900;
 
-    //Server info (string, int)
-	//var serverAddress = "172.17.50.17";
-	var serverAddress = "192.168.68.106";
-    var serverPort = 89;
-
     //Hud position (int, int)
     var hudX = 15;
     var hudY = 15;
