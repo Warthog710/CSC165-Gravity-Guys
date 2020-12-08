@@ -44,8 +44,8 @@ public class OrbitCameraController
         double x = radius * Math.cos(phi) * Math.sin(theta);
         double y = radius * Math.sin(phi);
         double z = radius * Math.cos(phi) * Math.cos(theta);
-        cameraN.setLocalPosition(Vector3f.createFrom((float)x, (float)y, (float)z).add(target.getWorldPosition()));
-        cameraN.lookAt(target, Vector3f.createFrom(0.0f, 1.0f, 0.0f));
+        cameraN.setLocalPosition(Vector3f.createFrom((float)x, (float)y, (float)z).add(target.getWorldPosition().add(0.0f, 1.0f, 0.0f)));
+        cameraN.lookAt(target.getWorldPosition().add(0.0f, 1.0f, 0.0f), Vector3f.createFrom(0.0f, 1.0f, 0.0f));
 
         //If the camera is pitched, pitch it...
         cameraN.pitch(Degreef.createFrom(-currentPitch));

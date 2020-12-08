@@ -2,7 +2,7 @@
 
 ### Objectives Due by 12/12 (Project Submission):
 
-* [ ] Add two different types of light in addition to ambient light, allowing the player to turn one on and off. **(Josh)**
+* [x] Add two different types of light in addition to ambient light, allowing the player to turn one on and off. **(Josh)**
 * [x] Update the HUD information (possibly allow the user to toggle the HUD display). **(Quinn)**
 * [ ] Get server IP information via command line, or prompt the user for it interactively. **(Quinn)**
 * [ ] Make avatar texture better **(Josh)**
@@ -11,8 +11,8 @@
 * [ ] Ghost avatars need animation and sound **(Josh)**
 * [x] Platforms before finish line need to move back and forth
 * [ ] Add keyboard controls **(Anyone)**
-* [ ] Have orbit camera focus be higher on the avatar **(Anyone)**
-* [ ] Do something with the ground so it does not look like it ends... **(Anyone)**
+* [x] Have orbit camera focus be higher on the avatar **(Anyone)**
+* [x] Do something with the ground so it does not look like it ends... **(Anyone)**
 * [ ] When the NPC performs a *lookat()* at the player, make it not affect the rotations around the X-axis **(Anyone)**
 * [ ] Uncomment code for Full-Screen-Dialog-Box **(Anyone)**
 * [ ] Make player guide document **(Quinn & Josh)**

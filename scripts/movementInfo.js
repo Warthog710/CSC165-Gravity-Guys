@@ -10,7 +10,7 @@ var jumpMultiplier = 1500;
 //Variables unique to camera movement
 var orbitStartingAzimuth = 180;
 var orbitStartingElevation = 20;
-var orbitStartingRadius = 2;
+var orbitStartingRadius = 5;
 
 var cameraAzimuthSpeed = .072;
 var cameraElevationSpeed = .072;

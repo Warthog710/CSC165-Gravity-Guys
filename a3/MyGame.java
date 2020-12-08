@@ -11,8 +11,10 @@ import ray.rage.*;
 import ray.rage.asset.texture.Texture;
 import ray.rage.game.*;
 import ray.rage.rendersystem.*;
+import ray.rage.rendersystem.Renderable.Primitive;
 import ray.rage.scene.*;
 import ray.rage.scene.Camera.Frustum.*;
+import ray.rml.Degreef;
 import ray.rml.Vector3;
 import ray.rml.Vector3f;
 import ray.rage.rendersystem.gl4.GL4RenderSystem;
@@ -36,7 +38,7 @@ public class MyGame extends VariableFrameRateGame
         private OrbitCameraController orbitCamera;
         private GhostAvatars ghosts;
         private float lastUpdateTime = 0.0f, elapsTime = 0.0f;
-        private Action moveRightAction, moveFwdAction, moveYawAction, jumpAction, resetAction;
+        private Action moveRightAction, moveFwdAction, moveYawAction, jumpAction, resetAction, toggleLightAction;
         private AnimationManager animMan;
         private SoundManager soundMan;
 
@@ -137,13 +139,13 @@ public class MyGame extends VariableFrameRateGame
                 //Load player mesh, skeleton, and texture
                 //scriptMan.getValue("avatarName").toString()
                 SkeletalEntity avatarE = sm.createSkeletalEntity(scriptMan.getValue("avatarName").toString(), "player.rkm", "player.rks");
-		Texture tex = sm.getTextureManager().getAssetByPath("greenPlayer.png");
-		TextureState tstate = (TextureState) sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
-		tstate.setTexture(tex);
-	        avatarE.setRenderState(tstate);
-		//load animations
-		avatarE.loadAnimation(scriptMan.getValue("walkAnimation").toString(), "newWalk.rka");
-		avatarE.loadAnimation(scriptMan.getValue("jumpAnimation").toString(), "jump.rka");
+                Texture tex = sm.getTextureManager().getAssetByPath("greenPlayer.png");
+                TextureState tstate = (TextureState) sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+                tstate.setTexture(tex);
+                avatarE.setRenderState(tstate);
+                //load animations
+                avatarE.loadAnimation(scriptMan.getValue("walkAnimation").toString(), "newWalk.rka");
+                avatarE.loadAnimation(scriptMan.getValue("jumpAnimation").toString(), "jump.rka");
 
                 SceneNode avatarN = sm.getRootSceneNode().createChildSceneNode(avatarE.getName() + "Node");
                 avatarN.attachObject(avatarE);
@@ -165,7 +167,7 @@ public class MyGame extends VariableFrameRateGame
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));
 
-                //Set up point light
+                //Set up directional light
                 Light dlight = (Light)scriptMan.getValue("dLight");      
                 SceneNode dlightNode = sm.getRootSceneNode().createChildSceneNode(scriptMan.getValue("lightName").toString());
                 dlightNode.attachObject(dlight);
@@ -195,8 +197,22 @@ public class MyGame extends VariableFrameRateGame
                 
                 //Load level one
                 LevelOne level = new LevelOne(eng, scriptMan, physMan);
-                level.loadLevelObjects();
+                SceneNode levelN = level.loadLevelObjects();
 
+                //Setup lamp
+                Entity lampE = sm.createEntity("lamp", "lamp.obj");
+                lampE.setPrimitive(Primitive.TRIANGLES);
+                SceneNode lampN = sm.getRootSceneNode().createChildSceneNode(lampE.getName() + "Node");
+                lampN.attachObject(lampE);
+                lampN.rotate(Degreef.createFrom(-90), Vector3f.createFrom(0.0f, 1.0f, 0.0f));
+                lampN.setLocalPosition(levelN.getChild("finishPlatformNode").getWorldPosition().add(2, 3, 2));
+                
+                //Set up lamp light
+                Light lampLight = (Light)scriptMan.getValue("lampLight");
+                SceneNode lampLightNode = lampN.createChildSceneNode(scriptMan.getValue("lampLightName").toString() + "Node");
+                lampLightNode.attachObject(lampLight);
+                lampLight.setVisible(false);
+                
                 //Setup walls & flails
                 platformWalls = new Walls(scriptMan, physMan, eng);
                 flails = new Flails(eng, physMan, scriptMan);   
@@ -329,6 +345,7 @@ public class MyGame extends VariableFrameRateGame
                 moveFwdAction = new MoveFwdAction(sm.getSceneNode(target), scriptMan, animMan, this);
                 jumpAction = new JumpAction(sm.getSceneNode(target), scriptMan, animMan, this, physMan);
                 resetAction = new ResetPlayerAction(sm.getSceneNode(target), scriptMan, physMan);
+                toggleLightAction = new ToggleLightAction(sm.getSceneNode(target), scriptMan, this);
 
                 // Iterate over all input devices
                 for (int index = 0; index < controllerList.size(); index++) 
@@ -363,6 +380,9 @@ public class MyGame extends VariableFrameRateGame
                                         im.associateAction(controllerList.get(index), 
                                                 net.java.games.input.Component.Identifier.Button._6, resetAction, 
                                                 InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                        im.associateAction(controllerList.get(index), 
+                                                net.java.games.input.Component.Identifier.Button._2, toggleLightAction, 
+                                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
                 		}
                                 else 
                                 {
@@ -376,11 +396,14 @@ public class MyGame extends VariableFrameRateGame
                                                 net.java.games.input.Component.Identifier.Axis.X, moveRightAction,
                                                 InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
                                         im.associateAction(controllerList.get(index), 
-                                    		net.java.games.input.Component.Identifier.Button._0, jumpAction, 
+                                        		net.java.games.input.Component.Identifier.Button._0, jumpAction, 
                                                 InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);                                                            
                                         im.associateAction(controllerList.get(index), 
-                                    		net.java.games.input.Component.Identifier.Button._5, resetAction, 
-                            			InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                        		net.java.games.input.Component.Identifier.Button._5, resetAction, 
+                                        		InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                        im.associateAction(controllerList.get(index), 
+                                                net.java.games.input.Component.Identifier.Button._1, toggleLightAction, 
+                                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
                                 }
                                 
                                 //Setup orbit camera controller inputs
