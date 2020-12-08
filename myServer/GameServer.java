@@ -102,6 +102,17 @@ public class GameServer extends GameConnectionServer<UUID>
                 processNPCRot(msgTokens);
             }
 
+            //Check for JUMP msg
+            if (msgTokens[0].compareTo("JUMP") == 0)
+            {
+                forwardToClients("JUMPFOR," + msgTokens[1], UUID.fromString(msgTokens[1]));
+            }
+
+            if (msgTokens[0].compareTo("STOPJUMP") == 0)
+            {
+                forwardToClients("STOPJUMPFOR," + msgTokens[1], UUID.fromString(msgTokens[1]));
+            }
+
             //Check for KEEPALIVE msg
             if (msgTokens[0].compareTo("KEEPALIVE") == 0)
             {

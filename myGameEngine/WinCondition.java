@@ -51,7 +51,6 @@ public class WinCondition
 
             if (pos.x() >= minX && pos.x() <= maxX && pos.y() >= minY && pos.y() <= maxY && pos.z() >= minZ && pos.z() <= maxZ)
             {
-                System.out.println("Player reached finish");
                 playerAtFinish = true;
                 score++;
                 

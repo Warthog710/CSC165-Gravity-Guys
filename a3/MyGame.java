@@ -76,12 +76,24 @@ public class MyGame extends VariableFrameRateGame
         {
                 try
                 {
-                        soundMan.getSoundManager().shutdown();
                         super.shutdown();
                 }
                 catch (Exception e)
                 {
                         this.exit();
+                }
+        }
+
+        @Override
+        public void exit()
+        {
+                try
+                {
+                        super.exit();
+                }
+                catch (Exception e)
+                {
+                        exit();
                 }
         }
 
@@ -113,7 +125,7 @@ public class MyGame extends VariableFrameRateGame
                 rs.createRenderWindow(new DisplayMode(Integer.parseInt(scriptMan.getValue("windowWidth").toString()),
                                 Integer.parseInt(scriptMan.getValue("windowHeight").toString()), 24, 60), false);
                                 
-                rs.getRenderWindow().setTitle("Final Project (NAME TBD)");
+                rs.getRenderWindow().setTitle("Plummet Parkour");
         }
 
         @Override
@@ -158,11 +170,7 @@ public class MyGame extends VariableFrameRateGame
                 physMan.createAvatarSphere(avatarN, 1f, playerBounciness, playerFriction, playerDamping);
                 
                 //? Fixes a movement bug
-                avatarN.getPhysicsObject().setSleepThresholds(0f, 0f);
-                
-                soundMan = new SoundManager(sm, scriptMan);
-                // have to create this animation manager after loading animations
-                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan, soundMan);                 
+                avatarN.getPhysicsObject().setSleepThresholds(0f, 0f);                             
 
                 //Set up ambient light
                 sm.getAmbientLight().setIntensity((Color)scriptMan.getValue("ambColor"));
@@ -237,10 +245,12 @@ public class MyGame extends VariableFrameRateGame
                 bouncyBalls = new BouncyBalls(physMan, eng, networkedClient);
 
                 //Setup NPC
-                npc = new NPC(eng, scriptMan, networkedClient, soundMan, physMan);
-
-                //Initialize sound
-                soundMan.initAudio();                
+                npc = new NPC(eng, scriptMan, networkedClient, soundMan, physMan);       
+                
+                //Setup animation and sound
+                soundMan = new SoundManager(sm, scriptMan);
+                animMan = new AnimationManager(avatarE, avatarN.getPhysicsObject(), scriptMan, soundMan, networkedClient);   
+                soundMan.initAudio();
 
                 //Configure controller(s)
                 setupInputs(sm.getCamera(scriptMan.getValue("cameraName").toString()), sm, eng.getRenderSystem().getRenderWindow());

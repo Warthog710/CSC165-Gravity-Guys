@@ -26,8 +26,10 @@ public class NetworkedClient extends GameConnectionClient
     private Entity avatarEntity;
 
     //Public boolean to determine whether we are connected to a server
+    public boolean isJumping;
     public boolean isConnected;
     public boolean playerWon;
+    public boolean stopJump;
 
     //Creates a UDP client
     public NetworkedClient(InetAddress remoteAddr, int remotePort, GhostAvatars ghosts, ScriptManager scriptMan, MyGame myGame, Entity avatarE) throws IOException 
@@ -42,6 +44,7 @@ public class NetworkedClient extends GameConnectionClient
         this.timeSinceLastKeepAlive = 0.0f; 
         this.timeSinceLastJoin = 10000f; 
         this.playerWon = false;
+        this.isJumping = false;
         this.avatarEntity = avatarE;
 
         //Setup textures
@@ -127,12 +130,29 @@ public class NetworkedClient extends GameConnectionClient
             timeSinceLastKeepAlive = 0.0f;
         }
 
+        //If the player is jumping send a msg
+        if (isJumping)
+        {
+            sendJump();
+            isJumping = false;
+        }
+
+        //If the player stopped jumping send a msg
+        if (stopJump)
+        {
+            sendStopJump();
+            stopJump = false;
+        }
+
         //If the player has won... send a win message
         if (playerWon)
         {
             sendWinMsg();
             playerWon = false;
         }
+
+        //Tell ghosts to update
+        ghosts.update();
     }
 
     @Override
@@ -169,6 +189,16 @@ public class NetworkedClient extends GameConnectionClient
                     myGame.npc.rotateFan();
                 }
 
+                if (msgTokens[0].compareTo("JUMPFOR") == 0)
+                {
+                    ghosts.jumpGhost(UUID.fromString(msgTokens[1]));
+                }
+
+                if (msgTokens[0].compareTo("STOPJUMPFOR") == 0)
+                {
+                    ghosts.stopGhostJump(UUID.fromString(msgTokens[1]));
+                }
+
                 //Check for NEWBALL msg
                 if (msgTokens[0].compareTo("NEWBALL") == 0)
                 {
@@ -192,7 +222,7 @@ public class NetworkedClient extends GameConnectionClient
                     if (!isConnected)
                     {
                         //Set the avatar texture as requested by the server
-                        System.out.println("\nConfirm received... Connection successful");
+                        System.out.println("\nConfirm received, Connection successful");
                         TextureState tState = (TextureState)myGame.getEngine().getSceneManager().getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
                         tState.setTexture(playerTex.get(msgTokens[2]));
                         avatarEntity.setRenderState(tState);
@@ -223,7 +253,6 @@ public class NetworkedClient extends GameConnectionClient
 
                 if (msgTokens[0].compareTo("FIRSTWINNER") == 0)
                 {
-                    System.out.println("Received first winner");
                     myGame.wc.incrementScore();
                 }
 
@@ -395,6 +424,34 @@ public class NetworkedClient extends GameConnectionClient
     public void sendWinMsg()
     {
         String msg = "WIN," + this.id;
+
+        try
+        {
+            sendPacket(msg);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendJump()
+    {
+        String msg = "JUMP," + this.id;
+
+        try
+        {
+            sendPacket(msg);
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendStopJump()
+    {
+        String msg = "STOPJUMP," + this.id;
 
         try
         {
