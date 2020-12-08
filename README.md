@@ -2,7 +2,7 @@
 
 ### Objectives Due by 12/12 (Project Submission):
 
-* [ ] Add two different types of light in addition to ambient light, allowing the player to turn one on and off. **(Josh)**
+* [x] Add two different types of light in addition to ambient light, allowing the player to turn one on and off. **(Josh)**
 * [x] Update the HUD information (possibly allow the user to toggle the HUD display). **(Quinn)**
 * [ ] Get server IP information via command line, or prompt the user for it interactively. **(Quinn)**
 * [ ] Make avatar texture better **(Josh)**
