@@ -1,6 +1,7 @@
 package myGameEngine;
 
 import ray.physics.PhysicsObject;
+import ray.rage.scene.SceneNode;
 import ray.rage.scene.SkeletalEntity;
 import ray.rage.scene.SkeletalEntity.EndType;
 
@@ -10,16 +11,18 @@ public class AnimationManager
 	private ScriptManager scriptMan;
 	private boolean isWalking, isJumping, goingDown;
 	private PhysicsObject PObject;
+	private SceneNode node;
 	private SoundManager soundMan;
 	private NetworkedClient nc;
 
-    public AnimationManager(SkeletalEntity SEntity, PhysicsObject PObject, ScriptManager scriptMan, SoundManager soundMan, NetworkedClient nc)
+    public AnimationManager(SkeletalEntity SEntity, PhysicsObject PObject, SceneNode node, ScriptManager scriptMan, SoundManager soundMan, NetworkedClient nc)
     {
     	this.PObject = PObject;
     	this.SEntity = SEntity;
         this.scriptMan = scriptMan;
 		this.soundMan = soundMan;
 		this.nc = nc;
+		this.node = node;
         isWalking = false;
         isJumping = false;
         goingDown = false;
@@ -34,8 +37,8 @@ public class AnimationManager
     		isWalking = false;
     	}
     	SEntity.playAnimation(scriptMan.getValue("jumpAnimation").toString(), 0.7f, EndType.PAUSE, 0);
-    	soundMan.playJump();
-		soundMan.stopWalk();
+    	soundMan.playJump(node);
+		soundMan.stopWalk(node);
 		nc.isJumping = true;
     	isJumping = true;
     }
@@ -44,9 +47,8 @@ public class AnimationManager
     	if (isJumping || isWalking)
     		return;
     	else if (!isWalking) {
-    		//System.out.println(isWalking);
     		SEntity.playAnimation(scriptMan.getValue("walkAnimation").toString(), 0.9f, EndType.LOOP, 0);
-			soundMan.playWalk();
+			soundMan.playWalk(node);
     		isWalking = true;
     	}
     }
@@ -77,7 +79,7 @@ public class AnimationManager
     	//Else, if the player is not moving fast enough along the ground or is falling, then stop the walk animation
     	else if ((Math.abs(PObject.getLinearVelocity()[0]) < 0.1f && Math.abs(PObject.getLinearVelocity()[2]) < 0.1f) || PObject.getLinearVelocity()[1] < -2f) {
     		SEntity.stopAnimation();
-    		soundMan.stopWalk();
+    		soundMan.stopWalk(node);
     		isWalking = false;
     	}
     	else

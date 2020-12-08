@@ -85,6 +85,20 @@ public class OrbitCameraController
 	            im.associateAction(controller, net.java.games.input.Component.Identifier.Axis.POV, orbitRadiusAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
         	}
         }
+        else if(controller.getType() == Controller.Type.KEYBOARD) {
+        	im.associateAction(controller, net.java.games.input.Component.Identifier.Key.I, 
+        			orbitRadiusAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+			im.associateAction(controller, net.java.games.input.Component.Identifier.Key.K, 
+					orbitRadiusAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+			im.associateAction(controller, net.java.games.input.Component.Identifier.Key.UP, 
+					orbitElevationAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+			im.associateAction(controller, net.java.games.input.Component.Identifier.Key.DOWN, 
+					orbitElevationAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+			im.associateAction(controller, net.java.games.input.Component.Identifier.Key.J, 
+					orbitAroundAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+			im.associateAction(controller, net.java.games.input.Component.Identifier.Key.L, 
+					orbitAroundAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+        }
     }
     
     private class OrbitAroundAction extends AbstractInputAction
@@ -99,17 +113,23 @@ public class OrbitCameraController
         public void performAction(float time, net.java.games.input.Event evt)
         {
             float rotateAmount = 0.0f;
-
+            
+            float keyValue = evt.getValue();
             //Deadzone
-            if (evt.getValue() > -.2 && evt.getValue() < .2)
+            if (keyValue > -.2 && keyValue < .2)
                 return;
-
+            if (evt.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.J ||
+        			evt.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Button._5)
+            {
+        		keyValue = -keyValue;
+        	} 
+            
             //Updates azimuth speed, if a script update occured
             if (scriptMan.scriptUpdate("movementInfo.js"))
                 azimuthSpeed = Float.parseFloat(scriptMan.getValue("cameraAzimuthSpeed").toString());
 
 
-            rotateAmount = evt.getValue() * azimuthSpeed * time;
+            rotateAmount = keyValue * azimuthSpeed * time;
 
             azimuth += rotateAmount;
             azimuth = azimuth % 360;
@@ -128,9 +148,13 @@ public class OrbitCameraController
 
         public void performAction(float time, net.java.games.input.Event evt)
         {
-            //Deazone
-            if (evt.getValue() > -.2 && evt.getValue() < .2)
+        	float keyValue = evt.getValue();
+            //Deadzone
+            if (keyValue > -.2 && keyValue < .2)
                 return;
+            if (evt.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.UP) {
+        		keyValue = -keyValue;
+        	} 
 
             //Updates elevation speed, if a script update occured
             if (scriptMan.scriptUpdate("movementInfo.js"))
@@ -139,7 +163,7 @@ public class OrbitCameraController
             //If camera is not pitched, move the elevation
             if (!isPitched)
             {
-                float elevationAmount = evt.getValue() * elevationSpeed * time;
+                float elevationAmount = keyValue * elevationSpeed * time;
 
                 //If move would make the dolphin go above 90 degrees, don't make the move
                 if ((elevation - elevationAmount) > 90)
@@ -162,7 +186,7 @@ public class OrbitCameraController
             //Else the camera must be pitched... adjust that
             else
             {
-                float pitchAmount = -evt.getValue() * elevationSpeed * time;
+                float pitchAmount = -keyValue * elevationSpeed * time;
 
                 //If pitch would be less than 1 degree reset pitch state and pitch
                 if ((currentPitch - pitchAmount) < 1)
@@ -211,15 +235,15 @@ public class OrbitCameraController
                 ZOOM_MIN = Float.parseFloat(scriptMan.getValue("zoomMin").toString());
                 radiusSpeed = Float.parseFloat(scriptMan.getValue("cameraRadiusSpeed").toString());
             }
-
-            //POV hat forward button is pressed
-            if (evt.getValue() == .25)
+            
+            //POV hat forward button or keyboard key is pressed
+            if (evt.getValue() == .25 || evt.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.I)
             {
                 radiusAmount = -radiusSpeed * time;
             }
 
-            //POV hat backward button is pressed
-            else if (evt.getValue() == .75)
+            //POV hat backward button or keyboard key is pressed
+            else if (evt.getValue() == .75 || evt.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.K)
             {
                 radiusAmount = radiusSpeed * time;
             }

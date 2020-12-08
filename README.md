@@ -9,9 +9,10 @@
 * [x] Server only accepts 8 players & automatically assigns an avatar color **(Quinn)**
 * [x] Win/loss condition (win a player reaches the finish line, give them a point and start over...) **(Quinn)**
 * [x] Ghost avatars need animation **(Josh)**
-* [ ] Ghost avatars need sound **(Josh)**
+* [x] Ghost avatars need sound **(Josh)**
 * [x] Platforms before finish line need to move back and forth
-* [ ] Add keyboard controls **(Anyone)**
+* [x] Add keyboard controls **(Anyone)**
+* [ ] Add mouse controls **(Anyone)**
 * [x] Have orbit camera focus be higher on the avatar **(Anyone)**
 * [x] Do something with the ground so it does not look like it ends... **(Anyone)**
 * [ ] When the NPC performs a *lookat()* at the player, make it not affect the rotations around the X-axis **(Anyone)**

@@ -1,5 +1,8 @@
 package myGameEngine;
 
+import java.util.HashMap;
+import java.util.Vector;
+
 import ray.audio.AudioManagerFactory;
 import ray.audio.AudioResource;
 import ray.audio.AudioResourceType;
@@ -16,7 +19,9 @@ public class SoundManager {
 	private SceneManager sm;
 	private ScriptManager scriptMan;
 	private IAudioManager audioMgr;
-	private Sound walkSound, jumpSound, windSound;
+	private Sound windSound;
+	private HashMap<SceneNode, Sound> walkSound, jumpSound;
+	private Vector<SceneNode> players;
 	private SceneNode playerN, npcN;
 	
 	public SoundManager(SceneManager sm, ScriptManager scriptMan)
@@ -24,6 +29,10 @@ public class SoundManager {
     	this.sm = sm;
     	this.scriptMan = scriptMan;
 		playerN = sm.getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
+		walkSound = new HashMap<SceneNode, Sound>();
+		jumpSound = new HashMap<SceneNode, Sound>();
+		players = new Vector<SceneNode>();
+		players.add(playerN);
 		
 		//Create a shutdown hook
 		Runtime.getRuntime().addShutdownHook(new SoundShutdownHook());
@@ -41,23 +50,23 @@ public class SoundManager {
 		resource1 = audioMgr.createAudioResource("./assets/sounds/walk.wav", AudioResourceType.AUDIO_SAMPLE);
 		resource2 = audioMgr.createAudioResource("./assets/sounds/jump.wav", AudioResourceType.AUDIO_SAMPLE);
 		resource3 = audioMgr.createAudioResource("./assets/sounds/wind.wav", AudioResourceType.AUDIO_SAMPLE);
-		walkSound = new Sound(resource1, SoundType.SOUND_EFFECT, 50, true);
-		jumpSound = new Sound(resource2, SoundType.SOUND_EFFECT, 50, true);
+		walkSound.put(playerN, new Sound(resource1, SoundType.SOUND_EFFECT, 100, true));
+		jumpSound.put(playerN, new Sound(resource2, SoundType.SOUND_EFFECT, 100, false));
 		windSound = new Sound(resource3, SoundType.SOUND_EFFECT, 100, false);
-		walkSound.initialize(audioMgr);
-		jumpSound.initialize(audioMgr);
+		walkSound.get(playerN).initialize(audioMgr);
+		jumpSound.get(playerN).initialize(audioMgr);
 		windSound.initialize(audioMgr);
-		walkSound.setMaxDistance(10.0f);
-		walkSound.setMinDistance(0.5f);
-		walkSound.setRollOff(5.0f);
-		jumpSound.setMaxDistance(10.0f);
-		jumpSound.setMinDistance(0.5f);
-		jumpSound.setRollOff(5.0f);
+		walkSound.get(playerN).setMaxDistance(30.0f);
+		walkSound.get(playerN).setMinDistance(10.0f);
+		walkSound.get(playerN).setRollOff(1.0f);
+		jumpSound.get(playerN).setMaxDistance(30.0f);
+		jumpSound.get(playerN).setMinDistance(10.0f);
+		jumpSound.get(playerN).setRollOff(1.0f);
 		windSound.setMaxDistance(20.0f);
 		windSound.setMinDistance(10.0f);
 		windSound.setRollOff(1.0f);
-		walkSound.setLocation(playerN.getWorldPosition());
-		jumpSound.setLocation(playerN.getWorldPosition());
+		walkSound.get(playerN).setLocation(playerN.getWorldPosition());
+		jumpSound.get(playerN).setLocation(playerN.getWorldPosition());
 		npcN = sm.getSceneNode(scriptMan.getValue("npcName").toString() + "Node");
 		windSound.setLocation(npcN.getWorldPosition());
 		setEarParameters();
@@ -65,29 +74,66 @@ public class SoundManager {
 	
 	public void setEarParameters() {
 		SceneNode cameraN = sm.getSceneNode(scriptMan.getValue("cameraName").toString() + "Node");
-		Vector3 camDir = cameraN.getWorldForwardAxis();
+		Vector3 camDir = cameraN.getLocalForwardAxis();
 		
 		audioMgr.getEar().setLocation(cameraN.getWorldPosition());
 		audioMgr.getEar().setOrientation(camDir, Vector3f.createFrom(0, 1, 0));
 	}
 	
+	public void addGhost(SceneNode ghostN) {
+		AudioResource resource1, resource2;
+		resource1 = audioMgr.createAudioResource("./assets/sounds/walk.wav", AudioResourceType.AUDIO_SAMPLE);
+		resource2 = audioMgr.createAudioResource("./assets/sounds/jump.wav", AudioResourceType.AUDIO_SAMPLE);
+		players.add(ghostN);
+		Sound walkingSound = new Sound(resource1, SoundType.SOUND_EFFECT, 100, true);
+		Sound jumpingSound = new Sound(resource2, SoundType.SOUND_EFFECT, 100, false);
+		walkingSound.initialize(audioMgr);
+		jumpingSound.initialize(audioMgr);
+		walkingSound.setMaxDistance(30.0f);
+		walkingSound.setMinDistance(10.0f);
+		walkingSound.setRollOff(1.0f);
+		jumpingSound.setMaxDistance(30.0f);
+		jumpingSound.setMinDistance(10.0f);
+		jumpingSound.setRollOff(1.0f);
+		walkingSound.setLocation(ghostN.getWorldPosition());
+		jumpingSound.setLocation(ghostN.getWorldPosition());
+		walkSound.put(ghostN, walkingSound);
+		jumpSound.put(ghostN, jumpingSound);
+		setEarParameters();
+	}
+	
+	public boolean removeGhost(SceneNode ghostN) {
+		if (players.contains(ghostN)) {
+			players.remove(ghostN);
+			walkSound.get(ghostN).release(audioMgr);
+			walkSound.remove(ghostN);
+			jumpSound.get(ghostN).release(audioMgr);
+			jumpSound.remove(ghostN);
+			return true;
+		}
+		else
+			return false;
+	}
+	
 	public void updateSound() {
-		jumpSound.setLocation(playerN.getWorldPosition());
-		walkSound.setLocation(playerN.getWorldPosition());
+		for (SceneNode node : players) {
+				jumpSound.get(node).setLocation(node.getWorldPosition());
+				walkSound.get(node).setLocation(node.getWorldPosition());
+		}
 		windSound.setLocation(npcN.getWorldPosition());
 		setEarParameters();
 	}
 	
-	public void playJump() {
-		jumpSound.play(50, false);
+	public void playJump(SceneNode node) {
+		jumpSound.get(node).play(100, false);
 	}
 	
-	public void playWalk() {
-		walkSound.play();
+	public void playWalk(SceneNode node) {
+		walkSound.get(node).play();
 	}
 	
-	public void stopWalk() {
-		walkSound.stop();
+	public void stopWalk(SceneNode node) {
+		walkSound.get(node).stop();
 	}
 	
 	public void playWind() {
