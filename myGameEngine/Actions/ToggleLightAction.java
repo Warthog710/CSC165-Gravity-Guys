@@ -22,12 +22,12 @@ public class ToggleLightAction extends AbstractInputAction
         this.lightEnabled = false;
     }
 
-    // Move forward or backwards 5.0f every 1000ms or 1 second (assuming axis value = 1)
+    //Check if the player is close enough to the light, and if so, toggle it
     public void performAction(float time, Event e) 
     {
     	Light light = game.getEngine().getSceneManager().getLight(scriptMan.getValue("lampLightName").toString());
     	SceneNode lightN = game.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("lampLightName").toString() + "Node");
-    	// check if the player is close to the light
+    	//Check if the player is close to the light
         if (target.getWorldPosition().sub(lightN.getWorldPosition()).length() < 8.0f) {
         	//Flip the boolean and set light visibility to new value
         	lightEnabled = !lightEnabled;
