@@ -5,7 +5,7 @@
 * [x] Add two different types of light in addition to ambient light, allowing the player to turn one on and off. **(Josh)**
 * [x] Update the HUD information (possibly allow the user to toggle the HUD display). **(Quinn)**
 * [x] Get server IP information via command line, or prompt the user for it interactively. **(Quinn)**
-* [ ] Make avatar texture better **(Josh)**
+* [x] Make avatar texture better **(Josh)**
 * [x] Server only accepts 8 players & automatically assigns an avatar color **(Quinn)**
 * [x] Win/loss condition (win a player reaches the finish line, give them a point and start over...) **(Quinn)**
 * [x] Ghost avatars need animation **(Josh)**
