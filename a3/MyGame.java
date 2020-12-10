@@ -167,7 +167,7 @@ public class MyGame extends VariableFrameRateGame
                 rs.createRenderWindow(new DisplayMode(Integer.parseInt(scriptMan.getValue("windowWidth").toString()),
                                 Integer.parseInt(scriptMan.getValue("windowHeight").toString()), 24, 60), false);
                                 
-                rs.getRenderWindow().setTitle("Plummet Parkour");
+                rs.getRenderWindow().setTitle("Gravity Guys");
         }
 
         @Override
@@ -243,6 +243,7 @@ public class MyGame extends VariableFrameRateGame
 
                 SceneNode tessN = sm.getRootSceneNode().createChildSceneNode(tessE.getName() + "Node");
                 tessN.attachObject(tessE);
+                tessN.setLocalPosition(0, 0, 45);
                 tessN.scale((Vector3f)scriptMan.getValue("terrainTessScale"));
                 
                 //Load level one
