@@ -74,7 +74,8 @@ public class GhostAvatars
 
         //Delete from active ghosts
         activeGhosts.remove(ghostID);
-        
+        ghostAnim.remove(ghostID);       
+
         System.out.println("Deleted ghost avatar " + ghostID);
     }
 
