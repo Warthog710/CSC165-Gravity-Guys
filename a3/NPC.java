@@ -96,7 +96,9 @@ public class NPC
         if (scriptMan.scriptUpdate("movementInfo.js"))
             blowPower = Float.parseFloat(scriptMan.getValue("blowPower").toString());
 
-        npcNode.lookAt(playerNode);
+        //Look at player in the x and z direction, but don't pitch it up or down
+        //by having it look straight ahead at its own y value
+        npcNode.lookAt(playerNode.getWorldPosition().x(), npcNode.getWorldPosition().y(), playerNode.getWorldPosition().z());
         nc.sendNPCRot((Matrix3f)npcNode.getLocalRotation());
 
         //Get forward axis of the npc, translate to players position
@@ -170,8 +172,10 @@ public class NPC
             //If movement speed has been updated... grab the new value
             if (scriptMan.scriptUpdate("movementInfo.js"))
                 blowPower = Float.parseFloat(scriptMan.getValue("blowPower").toString());
-
-            npcNode.lookAt(playerNode);
+            
+            //Look at player in the x and z direction, but don't pitch it up or down
+            //by having it look straight ahead at its own y value
+            npcNode.lookAt(playerNode.getWorldPosition().x(), npcNode.getWorldPosition().y(), playerNode.getWorldPosition().z());
 
             //Get forward axis of the npc, translate to players position
             Vector3f temp = (Vector3f)npcNode.getLocalPosition();
