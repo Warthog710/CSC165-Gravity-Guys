@@ -18,7 +18,7 @@ with (JavaPackages)
 
 	//Below wedge
 	//var avatarPos = Vector3f.createFrom(0, 15, 50);
-	//var avatarPos = Vector3f.createFrom(0, 10, 45);
+	//var avatarPos = Vector3f.createFrom(-100, 15, -50);
 	
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
@@ -30,8 +30,8 @@ with (JavaPackages)
 
     //Tessellation values (int, float, 3x vector3f)
     var tessQuality = 7;
-    var tessSubdivisions = 16.0;
-	var terrainTessScale = Vector3f.createFrom(200, 100, 200);
+    var tessSubdivisions = 18.0;
+	var terrainTessScale = Vector3f.createFrom(205, 100, 205);
 	var heightTiling = 16;
 	var normalTiling = 16;
 	var textureTiling = 16;
@@ -178,6 +178,16 @@ with (JavaPackages)
 	var platformPos = Vector3f.createFrom(0, 9, 19);
 	var platformScale = Vector3f.createFrom(1, 1, 10);
 	var npcStartLocation = Vector3f.createFrom(0, 10, 10);
+
+	//Sandbox walls info
+	var sandBoxWallPos0 = Vector3f.createFrom(0, 4, 150);
+	var sandBoxWallScale0 = Vector3f.createFrom(100, 5, 5);
+	var sandBoxWallPos1 = Vector3f.createFrom(105, 4, 45);
+	var sandBoxWallScale1 = Vector3f.createFrom(5, 5, 110);
+	var sandBoxWallPos2 = Vector3f.createFrom(0, 4, -60);
+	var sandBoxWallScale2 = Vector3f.createFrom(100, 5, 5);
+	var sandBoxWallPos3 = Vector3f.createFrom(-105, 4, 45);
+	var sandBoxWallScale3 = Vector3f.createFrom(5, 5, 110);
 
     //! DO NOT CHANGE DURING RUNTIME
     var terrainName = "terrainTess";

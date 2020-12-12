@@ -157,16 +157,14 @@ public class MyGame extends VariableFrameRateGame
         @Override
         protected void setupWindow(RenderSystem rs, GraphicsEnvironment ge) 
         {
-                //DisplaySettingsDialog dsd = new
-                //DisplaySettingsDialog(ge.getDefaultScreenDevice());
-                //dsd.showIt();
-                //rs.createRenderWindow(dsd.getSelectedDisplayMode(),
-                //dsd.isFullScreenModeSelected());
+                DisplaySettingsDialog dsd = new DisplaySettingsDialog(ge.getDefaultScreenDevice());
+                dsd.showIt();
+                rs.createRenderWindow(dsd.getSelectedDisplayMode(),
+                dsd.isFullScreenModeSelected());
 
                 //Creates a fixed window... this is quicker for testing
-                rs.createRenderWindow(new DisplayMode(Integer.parseInt(scriptMan.getValue("windowWidth").toString()),
-                                Integer.parseInt(scriptMan.getValue("windowHeight").toString()), 24, 60), false);
-                                
+                //rs.createRenderWindow(new DisplayMode(Integer.parseInt(scriptMan.getValue("windowWidth").toString()),
+                //Integer.parseInt(scriptMan.getValue("windowHeight").toString()), 24, 60), false);                                
                 rs.getRenderWindow().setTitle("Gravity Guys");
         }
 
@@ -235,7 +233,7 @@ public class MyGame extends VariableFrameRateGame
                 tessE.setSubdivisions(tessSubdivisions);
                 tessE.setHeightMap(eng, "tileableHeightMap.png");
                 tessE.setNormalMap(eng, "tileableNormal.png");
-                tessE.setTexture(eng, "rock.jpg");
+                tessE.setTexture(eng, "sand.jpg");
                 tessE.getTextureState().setWrapMode(TextureState.WrapMode.REPEAT);
                 tessE.setHeightMapTiling(Integer.parseInt(scriptMan.getValue("heightTiling").toString()));
                 tessE.setNormalMapTiling(Integer.parseInt(scriptMan.getValue("normalTiling").toString()));
@@ -320,7 +318,7 @@ public class MyGame extends VariableFrameRateGame
                 String avatarName = scriptMan.getValue("avatarName").toString() + "Node";
                 String cameraName = scriptMan.getValue("cameraName").toString() + "Node";
 
-                orbitCamera = new OrbitCameraController(sm.getSceneNode(cameraName),
+                orbitCamera = new OrbitCameraController(this.getEngine(), sm.getSceneNode(cameraName),
                                 sm.getSceneNode(avatarName), im, scriptMan);
         }
 
@@ -412,28 +410,26 @@ public class MyGame extends VariableFrameRateGame
                         // If keyboard, attach inputs...
                         if (controllerList.get(index).getType() == Controller.Type.KEYBOARD) 
                         {
-                            //Setup keyboard input here
-                        	im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.W, 
-                        			moveFwdAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.S, 
-                					moveFwdAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.A, 
-                					moveRightAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.D, 
-                					moveRightAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.LEFT, 
-                					moveYawAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.RIGHT, 
-                					moveYawAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.SPACE, 
-                					jumpAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.R, 
-                					resetAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-                			im.associateAction(controllerList.get(index), net.java.games.input.Component.Identifier.Key.E, 
-                					toggleLightAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                //Setup keyboard input here
+                                im.associateAction(controllerList.get(index), 
+                                        net.java.games.input.Component.Identifier.Key.W, moveFwdAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                                im.associateAction(controllerList.get(index), 
+                                        net.java.games.input.Component.Identifier.Key.S, moveFwdAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                                im.associateAction(controllerList.get(index), 
+                                        net.java.games.input.Component.Identifier.Key.A, moveRightAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                                im.associateAction(controllerList.get(index), 
+                                        net.java.games.input.Component.Identifier.Key.D, moveRightAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                                im.associateAction(controllerList.get(index), 
+                                        net.java.games.input.Component.Identifier.Key.Q, moveYawAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                                im.associateAction(controllerList.get(index), 
+                                        net.java.games.input.Component.Identifier.Key.E, moveYawAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+                                im.associateAction(controllerList.get(index),
+                                        net.java.games.input.Component.Identifier.Key.SPACE, jumpAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                im.associateAction(controllerList.get(index), 
+                                        net.java.games.input.Component.Identifier.Key.R, resetAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                im.associateAction(controllerList.get(index), 
+                                        net.java.games.input.Component.Identifier.Key.F, toggleLightAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
                 			
-                			//Setup orbit camera keyboard inputs
-                            orbitCamera.setupInputs(im, controllerList.get(index)); 
                         }
 
                         // If gamepad, attach inputs...
@@ -441,17 +437,17 @@ public class MyGame extends VariableFrameRateGame
                         {
                                 if (controllerList.get(index).getName().contains("Wireless Controller")) 
                                 {
-		                			im.associateAction(controllerList.get(index), 
-		                				net.java.games.input.Component.Identifier.Axis.Y, moveFwdAction, 
-		                				InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-		                			im.associateAction(controllerList.get(index), 
-		                				net.java.games.input.Component.Identifier.Axis.X, moveRightAction, 
-		                				InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-		                			im.associateAction(controllerList.get(index), 
-		                				net.java.games.input.Component.Identifier.Axis.Z, moveYawAction, 
-		                				InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-		                			im.associateAction(controllerList.get(index), 
-		                    			net.java.games.input.Component.Identifier.Button._1, jumpAction, 
+		                	im.associateAction(controllerList.get(index), 
+		                		net.java.games.input.Component.Identifier.Axis.Y, moveFwdAction, 
+		                		InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+		                	im.associateAction(controllerList.get(index), 
+		                		net.java.games.input.Component.Identifier.Axis.X, moveRightAction, 
+		                		InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+		                	im.associateAction(controllerList.get(index), 
+		                		net.java.games.input.Component.Identifier.Axis.Z, moveYawAction, 
+		                		InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+		                        im.associateAction(controllerList.get(index), 
+		                    		net.java.games.input.Component.Identifier.Button._1, jumpAction, 
 		                                InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 		                            im.associateAction(controllerList.get(index), 
 		                                 net.java.games.input.Component.Identifier.Button._6, resetAction, 
@@ -472,11 +468,11 @@ public class MyGame extends VariableFrameRateGame
                                                 net.java.games.input.Component.Identifier.Axis.X, moveRightAction,
                                                 InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
                                         im.associateAction(controllerList.get(index), 
-                                        		net.java.games.input.Component.Identifier.Button._0, jumpAction, 
+                                        	net.java.games.input.Component.Identifier.Button._0, jumpAction, 
                                                 InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);                                                            
                                         im.associateAction(controllerList.get(index), 
-                                        		net.java.games.input.Component.Identifier.Button._5, resetAction, 
-                                        		InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+                                        	net.java.games.input.Component.Identifier.Button._5, resetAction, 
+                                        	InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
                                         im.associateAction(controllerList.get(index), 
                                                 net.java.games.input.Component.Identifier.Button._1, toggleLightAction, 
                                                 InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
@@ -489,8 +485,7 @@ public class MyGame extends VariableFrameRateGame
                         //If mouse, attach inputs...
                         else if (controllerList.get(index).getType() == Controller.Type.MOUSE)
                         {
-                                //Attach mouse inputs here
-
+                                orbitCamera.setupInputs(im, controllerList.get(index));
                         }
                 }
         }
@@ -501,7 +496,7 @@ public class MyGame extends VariableFrameRateGame
         	SceneNode avatarN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("avatarName").toString() + "Node");
                 
                 //Only execute if the avatar is close to ground zero
-                if (avatarN.getLocalPosition().y() > 2.0f)
+                if (avatarN.getLocalPosition().y() > 1.0f)
                         return;
                 
                 SceneNode tessN = this.getEngine().getSceneManager().getSceneNode(scriptMan.getValue("terrainName").toString() + "Node");

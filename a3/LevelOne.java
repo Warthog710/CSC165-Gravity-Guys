@@ -23,18 +23,19 @@ public class LevelOne
     private ScriptManager scriptMan;
     private PhysicsManager physMan;
     private Vector<SceneNode> endPlatformPhysicsPlanes;
-    private Texture physicsPlaneTex;
+    private Texture physicsPlaneTex, sandBoxWallsTex;
 	
     public LevelOne(Engine eng, ScriptManager scriptMan, PhysicsManager physMan) 
     {
-		this.sm = eng.getSceneManager();
+        this.sm = eng.getSceneManager();
         this.scriptMan = scriptMan;
         this.physMan = physMan;
         this.endPlatformPhysicsPlanes = new Vector<>();
 
         try
         {
-            this.physicsPlaneTex = this.sm.getTextureManager().getAssetByPath("physicsPlatformTexture.png");            
+            this.physicsPlaneTex = this.sm.getTextureManager().getAssetByPath("physicsPlatformTexture.png");   
+            this.sandBoxWallsTex = this.sm.getTextureManager().getAssetByPath("sandBoxWalls.png");      
         }
         catch(IOException e)
         {
@@ -129,8 +130,49 @@ public class LevelOne
         finishPlatN.scale((Vector3f)scriptMan.getValue("finishPlatScale"));
         finishPlatN.setLocalPosition((Vector3f)scriptMan.getValue("finishPlatPos"));
         createPhysicsPlane("finishPlatPhysicsPlane");
+
+        loadSandboxWalls();
         
         return levelN;
+    }
+
+    private void loadSandboxWalls() throws IOException
+    {
+        TextureState tState = (TextureState)sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
+        tState.setTexture(sandBoxWallsTex);
+
+        //Load the four walls of the sandbox
+        Entity sandBoxWallE = sm.createEntity("sandBoxWall0", "customCube.obj");
+        sandBoxWallE.setPrimitive(Primitive.TRIANGLES);
+        sandBoxWallE.setRenderState(tState);
+        SceneNode sandBoxWallN = sm.getRootSceneNode().createChildSceneNode("sandBoxWallNode0");
+        sandBoxWallN.attachObject(sandBoxWallE);
+        sandBoxWallN.setLocalPosition((Vector3f)scriptMan.getValue("sandBoxWallPos0"));
+        sandBoxWallN.setLocalScale((Vector3f)scriptMan.getValue("sandBoxWallScale0"));
+
+        sandBoxWallE = sm.createEntity("sandBoxWall1", "customCube.obj");
+        sandBoxWallE.setPrimitive(Primitive.TRIANGLES);
+        sandBoxWallE.setRenderState(tState);
+        sandBoxWallN = sm.getRootSceneNode().createChildSceneNode("sandBoxWallNode1");
+        sandBoxWallN.attachObject(sandBoxWallE);
+        sandBoxWallN.setLocalPosition((Vector3f)scriptMan.getValue("sandBoxWallPos1"));
+        sandBoxWallN.setLocalScale((Vector3f)scriptMan.getValue("sandBoxWallScale1"));
+
+        sandBoxWallE = sm.createEntity("sandBoxWall2", "customCube.obj");
+        sandBoxWallE.setPrimitive(Primitive.TRIANGLES);
+        sandBoxWallE.setRenderState(tState);
+        sandBoxWallN = sm.getRootSceneNode().createChildSceneNode("sandBoxWallNode2");
+        sandBoxWallN.attachObject(sandBoxWallE);
+        sandBoxWallN.setLocalPosition((Vector3f)scriptMan.getValue("sandBoxWallPos2"));
+        sandBoxWallN.setLocalScale((Vector3f)scriptMan.getValue("sandBoxWallScale2"));
+
+        sandBoxWallE = sm.createEntity("sandBoxWall3", "customCube.obj");
+        sandBoxWallE.setPrimitive(Primitive.TRIANGLES);
+        sandBoxWallE.setRenderState(tState);
+        sandBoxWallN = sm.getRootSceneNode().createChildSceneNode("sandBoxWallNode3");
+        sandBoxWallN.attachObject(sandBoxWallE);
+        sandBoxWallN.setLocalPosition((Vector3f)scriptMan.getValue("sandBoxWallPos3"));
+        sandBoxWallN.setLocalScale((Vector3f)scriptMan.getValue("sandBoxWallScale3"));
     }
 
     private void createPhysicsPlane(String name) throws IOException
