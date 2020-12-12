@@ -12,11 +12,11 @@
 * [x] Ghost avatars need sound **(Josh)**
 * [x] Platforms before finish line need to move back and forth
 * [x] Add keyboard controls **(Anyone)**
-* [ ] Add mouse controls **(Anyone)**
+* [x] Add mouse controls **(Anyone)**
 * [x] Have orbit camera focus be higher on the avatar **(Anyone)**
-* [ ] Do something with the ground so it does not look like it ends... **(Anyone)**
+* [x] Do something with the ground so it does not look like it ends... **(Anyone)**
 * [x] When the NPC performs a *lookat()* at the player, make it not affect the rotations around the X-axis **(Anyone)**
-* [ ] Uncomment code for Full-Screen-Dialog-Box **(Anyone)**
+* [x] Uncomment code for Full-Screen-Dialog-Box **(Anyone)**
 * [ ] Make player guide document **(Quinn & Josh)**
 * [x] Add shutdown hook to sound manager **(Quinn)**
 

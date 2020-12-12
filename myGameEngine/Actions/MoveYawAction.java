@@ -25,11 +25,15 @@ public class MoveYawAction extends AbstractInputAction
     public void performAction(float time, Event e) 
     {
     	float keyValue = e.getValue();
-        // Deadzone
-        if (keyValue > -.2 && keyValue < .2) {
+        //Deadzone
+
+        if (keyValue > -.2 && keyValue < .2) 
+        {
         	return;
         }
-        if (e.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.RIGHT) {
+        
+        if (e.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.E) 
+        {
         	keyValue = -keyValue;
 		}
 

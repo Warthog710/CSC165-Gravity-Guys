@@ -31,10 +31,13 @@ public class MoveRightAction extends AbstractInputAction
     {
     	float keyValue = e.getValue();
         // Deadzone
-        if (keyValue > -.2 && keyValue < .2) {
+        if (keyValue > -.2 && keyValue < .2) 
+        {
         	return;
         }
-        if (e.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.A) {
+
+        if (e.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.A) 
+        {
         	keyValue = -keyValue;
 		}
 

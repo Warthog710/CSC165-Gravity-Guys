@@ -74,6 +74,22 @@ public class WinCondition
                 resetGame();
             }            
         }
+
+        //If the player has moved beyond the map port them back to the start
+        if (Math.abs(avatarNode.getLocalPosition().x()) > 102.5 || avatarNode.getLocalPosition().z() > 147.5 || avatarNode.getLocalPosition().z() < -57.5)
+        {
+            System.out.println("Player out of bounds: Resetting Posistion...");
+            
+            //Reset position
+            avatarNode.setLocalPosition((Vector3f)scriptMan.getValue("avatarPos"));
+
+            //Reset orientation
+            float[] rot = { 1, 0, 0, 0, 1, 0, 0, 0, 1};
+            avatarNode.setLocalRotation(Matrix3f.createFrom(rot));
+                
+            //Update physics transforms
+            physMan.updatePhysicsTransforms(avatarNode);
+        }
     }
 
     //Increments the score, called by networked client when a "FIRSTWINNER" msg is recieved so the first winner gets two points

@@ -195,9 +195,22 @@ public class UpdateGameVariables
         updateWalls();
         updateFlails();
         updateNPC();
+        updateSandBoxWalls();
         
         //Update physics
         runPhysics = (boolean)scriptMan.getValue("runPhysSim");
+    }
+
+    private void updateSandBoxWalls()
+    {
+        sm.getSceneNode("sandBoxWallNode0").setLocalPosition((Vector3f)scriptMan.getValue("sandBoxWallPos0"));
+        sm.getSceneNode("sandBoxWallNode0").setLocalScale((Vector3f)scriptMan.getValue("sandBoxWallScale0"));
+        sm.getSceneNode("sandBoxWallNode1").setLocalPosition((Vector3f)scriptMan.getValue("sandBoxWallPos1"));
+        sm.getSceneNode("sandBoxWallNode1").setLocalScale((Vector3f)scriptMan.getValue("sandBoxWallScale1"));
+        sm.getSceneNode("sandBoxWallNode2").setLocalPosition((Vector3f)scriptMan.getValue("sandBoxWallPos2"));
+        sm.getSceneNode("sandBoxWallNode2").setLocalScale((Vector3f)scriptMan.getValue("sandBoxWallScale2"));
+        sm.getSceneNode("sandBoxWallNode3").setLocalPosition((Vector3f)scriptMan.getValue("sandBoxWallPos3"));
+        sm.getSceneNode("sandBoxWallNode3").setLocalScale((Vector3f)scriptMan.getValue("sandBoxWallScale3"));
     }
 
     //Updates the positions of the walls

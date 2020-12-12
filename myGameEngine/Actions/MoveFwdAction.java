@@ -29,12 +29,16 @@ public class MoveFwdAction extends AbstractInputAction
     // Move forward or backwards 5.0f every 1000ms or 1 second (assuming axis value = 1)
     public void performAction(float time, Event e) 
     {        
-    	float keyValue = e.getValue();
-        // Deadzone
-        if (keyValue > -.2 && keyValue < .2) {
+        float keyValue = e.getValue();
+        
+        //Deadzone
+        if (keyValue > -.2 && keyValue < .2) 
+        {
         	return;
         }
-        if (e.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.W) {
+        
+        if (e.getComponent().getIdentifier() == net.java.games.input.Component.Identifier.Key.W) 
+        {
         	keyValue = -keyValue;
 		}
 
