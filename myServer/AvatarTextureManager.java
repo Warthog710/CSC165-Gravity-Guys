@@ -19,10 +19,27 @@ public class AvatarTextureManager
         colors.add(new AvatarTexture("bluePlayer.png", "Blue"));       
     }
 
-    public AvatarTexture getRandomUnusedTexture()
+    public AvatarTexture getRandomUnusedTexture(String desiredTexture)
     {
         Random rand = new Random();
         int index;
+
+        //Check to see if the desired texture is used
+        for (AvatarTexture avTex : colors)
+        {
+            if (avTex.name.toUpperCase().compareTo(desiredTexture.toUpperCase()) == 0)
+            {
+                if (!avTex.textureUsed)
+                {
+                    avTex.textureUsed = true;
+                    return avTex;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
 
         while(true)
         {

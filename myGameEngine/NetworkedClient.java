@@ -298,7 +298,8 @@ public class NetworkedClient extends GameConnectionClient
             for (int count = 0; count < sm.getSceneNode(nodeName).getLocalRotation().toFloatArray().length; count++)
                     msg += temp[count] + ",";
 
-            msg += System.currentTimeMillis();
+            msg += (System.currentTimeMillis() + ",");
+            msg += myGame.selectedColor;
 
             sendPacket(msg);
         }
