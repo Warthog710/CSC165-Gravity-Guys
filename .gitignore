@@ -3,8 +3,3 @@
 
 # Log files
 *.log
-
-#Other stuff
-.project
-.vscode
-.classpath
