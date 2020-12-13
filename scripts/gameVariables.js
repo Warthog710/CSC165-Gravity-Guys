@@ -12,14 +12,7 @@ with (JavaPackages)
 
 	//Start
 	var avatarPos = Vector3f.createFrom(0, 12, 0);
-
-	//Top of wedge
-	//var avatarPos = Vector3f.createFrom(0, 27, 72);
-
-	//Below wedge
-	//var avatarPos = Vector3f.createFrom(0, 15, 50);
-	//var avatarPos = Vector3f.createFrom(-100, 15, -50);
-	
+		
 	//Default window size... Used only if the dialog box is not implemented
 	var windowWidth = 1400;
 	var windowHeight = 900;

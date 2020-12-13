@@ -36,14 +36,21 @@ import javax.swing.border.*;
 
 public class DisplaySettingsDialog extends JDialog implements ActionListener
 {
- 	private boolean useFullScreen = true;				//the current user FSEM selection
+ 	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private boolean useFullScreen = false; // the current user FSEM selection
 	private DisplayMode selectedDisplayMode = null;		//the current user DisplayMode selection
 	private GraphicsDevice device ;						//the current default graphics device
 
   	private JRadioButton windowedModeRadioButton;
   	private JRadioButton fullScreenModeRadioButton;
-  	private JComboBox displayModeComboBox ;
-  	private JLabel currentResolutionLabel;
+  	private JComboBox<String> displayModeComboBox ;
+	private JLabel currentResolutionLabel;
+	private ButtonGroup colorRadios;
+	private Vector<JRadioButton> myRadios;
+	  
 
 	/**
 	 * Creates a DisplaySettingsDialog for the specified GraphicsDevice and
@@ -58,12 +65,14 @@ public class DisplaySettingsDialog extends JDialog implements ActionListener
 	public DisplaySettingsDialog (GraphicsDevice theDevice)
 	{
 		setTitle("Choose Display Settings");
-		setSize( 450, 200 );
+		setSize( 560, 250 );
 
-		setLocation (200,200);
-		setResizable( true );
+		setLocation ((theDevice.getDisplayMode().getWidth() / 2) - (this.getWidth() / 2), (theDevice.getDisplayMode().getHeight() / 2) - (this.getHeight() / 2));
+		setResizable(true);
 
-		device = theDevice ;
+		device = theDevice;
+		colorRadios = new ButtonGroup();
+		myRadios = new Vector<>();
 
 		doMyLayout();
 
@@ -74,6 +83,44 @@ public class DisplaySettingsDialog extends JDialog implements ActionListener
 	private void doMyLayout()
 	{
 		setLayout (new BorderLayout());
+
+		JRadioButton radioGreen = new JRadioButton("Green", true);
+		colorRadios.add(radioGreen);
+		myRadios.add(radioGreen);
+		JRadioButton radioBrown = new JRadioButton("Brown", false);
+		colorRadios.add(radioBrown);
+		myRadios.add(radioBrown);
+		JRadioButton radioRed = new JRadioButton("Red", false);
+		colorRadios.add(radioRed);
+		myRadios.add(radioRed);
+		JRadioButton radioPurple = new JRadioButton("Purple", false);
+		colorRadios.add(radioPurple);
+		myRadios.add(radioPurple);
+		JRadioButton radioBlue = new JRadioButton("Blue", false);
+		colorRadios.add(radioBlue);
+		myRadios.add(radioBlue);
+		JRadioButton radioPink = new JRadioButton("Pink", false);
+		colorRadios.add(radioPink);
+		myRadios.add(radioPink);
+		JRadioButton radioOrange = new JRadioButton("Orange", false);
+		colorRadios.add(radioOrange);
+		myRadios.add(radioOrange);
+		JRadioButton radioYellow = new JRadioButton("Yellow", false);
+		colorRadios.add(radioYellow);
+		myRadios.add(radioYellow);
+		JLabel radioLabel = new JLabel("Select Player Color", SwingConstants.CENTER);
+
+		JPanel radioPanel = new JPanel();
+		radioPanel.add(radioLabel);
+		radioPanel.add(radioGreen);
+		radioPanel.add(radioBrown);
+		radioPanel.add(radioRed);
+		radioPanel.add(radioPurple);
+		radioPanel.add(radioBlue);
+		radioPanel.add(radioPink);
+		radioPanel.add(radioOrange);
+		radioPanel.add(radioYellow);
+		this.add(radioPanel, "Center");
 
 		//add a top panel showing the currently active screen resolution
 		JPanel topPanel = new JPanel();
@@ -121,14 +168,13 @@ public class DisplaySettingsDialog extends JDialog implements ActionListener
 			DisplayMode [] modes = device.getDisplayModes();
 
 			//build a set of strings each describing one mode
-			Vector displayModeList = getDisplayModeList(modes);
+			Vector<String> displayModeList = getDisplayModeList(modes);
 
 			//add a combo box containing the available modes
-			displayModeComboBox = new JComboBox(displayModeList);
+			displayModeComboBox = new JComboBox<>(displayModeList);
 			displayModesPanel.add (displayModeComboBox);
 
-    	this.add(displayModesPanel, "East");
-
+		this.add(displayModesPanel, "East");
 	}
 
 	private Vector<String> getDisplayModeList(DisplayMode [] modes)
@@ -338,6 +384,19 @@ public class DisplaySettingsDialog extends JDialog implements ActionListener
 	  		}
 
       		setVisible(false);
-  	}
+	}
+
+	public String getSelectedColor()
+	{
+		for (JRadioButton radio : myRadios)
+		{
+			if (radio.isSelected())
+			{
+				return radio.getText().toLowerCase();
+			}
+		}
+
+		return "green";
+	} 
 }
 

@@ -183,7 +183,7 @@ public class GameServer extends GameConnectionServer<UUID>
                 + msgTokens[13];
         
                 //Add the client to the HashMap
-                AvatarTexture temp = avatarTexMan.getRandomUnusedTexture();
+                AvatarTexture temp = avatarTexMan.getRandomUnusedTexture(msgTokens[15]);
                 clientInfo.put(clientID, new ClientInfo(clientID, pos, rotation, temp.name, temp.textureName));
         
                 //If we have more than 1 client... Inform them of the new client

@@ -44,7 +44,8 @@ public class MyGame extends VariableFrameRateGame
         private SoundManager soundMan;
         private InetAddress ip;
         private int port;
-
+        
+        public String selectedColor;
         public WinCondition wc;
         public PlatformController pc;
         public DetectWallCollision collision;
@@ -157,14 +158,24 @@ public class MyGame extends VariableFrameRateGame
         @Override
         protected void setupWindow(RenderSystem rs, GraphicsEnvironment ge) 
         {
-                DisplaySettingsDialog dsd = new DisplaySettingsDialog(ge.getDefaultScreenDevice());
-                dsd.showIt();
-                rs.createRenderWindow(dsd.getSelectedDisplayMode(),
-                dsd.isFullScreenModeSelected());
+                try
+                {
+                        DisplaySettingsDialog dsd = new DisplaySettingsDialog(ge.getDefaultScreenDevice());
+                        dsd.showIt();
+                        rs.createRenderWindow(dsd.getSelectedDisplayMode(), dsd.isFullScreenModeSelected());
+                        selectedColor = dsd.getSelectedColor();
+                }
+                //If cancel is pressed, catches the NULL exception and exits the game
+                catch (NullPointerException e)
+                {
+                        this.shutdown();
+                }
 
                 //Creates a fixed window... this is quicker for testing
                 //rs.createRenderWindow(new DisplayMode(Integer.parseInt(scriptMan.getValue("windowWidth").toString()),
-                //Integer.parseInt(scriptMan.getValue("windowHeight").toString()), 24, 60), false);                                
+                //Integer.parseInt(scriptMan.getValue("windowHeight").toString()), 24, 60), false); 
+                
+                //Set window title
                 rs.getRenderWindow().setTitle("Gravity Guys");
         }
 
@@ -191,7 +202,7 @@ public class MyGame extends VariableFrameRateGame
                 //Load player mesh, skeleton, and texture
                 //scriptMan.getValue("avatarName").toString()
                 SkeletalEntity avatarE = sm.createSkeletalEntity(scriptMan.getValue("avatarName").toString(), "player.rkm", "player.rks");
-                Texture tex = sm.getTextureManager().getAssetByPath("greenPlayer.png");
+                Texture tex = sm.getTextureManager().getAssetByPath(selectedColor + "Player.png");
                 TextureState tstate = (TextureState) sm.getRenderSystem().createRenderState(RenderState.Type.TEXTURE);
                 tstate.setTexture(tex);
                 avatarE.setRenderState(tstate);
