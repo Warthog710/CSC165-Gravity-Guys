@@ -18,7 +18,7 @@ public class ScriptManager
     {
         //Creating a Nashorn script engine... Hiding the deprecation warning
         NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
-        engine = factory.getScriptEngine("--no-deprecation-warning");
+        engine = factory.getScriptEngine();
 
         //Setup the Hashmap
         scriptMod = new HashMap<>();
