@@ -47,6 +47,10 @@ public class GameServer extends GameConnectionServer<UUID>
         System.out.println("Public: " + IP + ":" + localPort);
         System.out.println("Local: " +  InetAddress.getLocalHost().getHostAddress().trim() + ":" + localPort);
 
+        //Intilize npc rotation
+        float[] rotVal = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+        npcRot = (Matrix3f)Matrix3f.createTransposeFrom(rotVal);
+
         //Create a thread to detect clients that need to be removed
         threadRunning = true;
         Runnable runnable = new DeadClient(this);
@@ -62,10 +66,6 @@ public class GameServer extends GameConnectionServer<UUID>
         Runnable npc = new NPCController(this);
         npcControl = new Thread(npc);
         npcControl.start();
-
-        //Intilize npc rotation
-        float[] rotVal = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
-        npcRot = (Matrix3f)Matrix3f.createTransposeFrom(rotVal);
 
         //Intilize shutdown hook
         current = Runtime.getRuntime();
