@@ -47,8 +47,12 @@ public class JumpAction extends AbstractInputAction
 
         PhysicsObject targ = target.getPhysicsObject();
         
-        //Check if the player is on ground and can initiate a jump
-        if (Math.abs(targ.getLinearVelocity()[1]) <= 0.5) 
+        //Calculate distance from the wedge based on formula for distance between a point and a plane
+        double distance = Math.abs(-298.8 * target.getLocalPosition().y() + 282.2 * target.getLocalPosition().z() - 11686.4)/
+        					Math.sqrt(298.8*298.8 + 282.2*282.2);
+        
+        //Check if the player is on ground or on the wedge and can initiate a jump
+        if (Math.abs(targ.getLinearVelocity()[1]) <= 0.5 || (distance < 0.2 && target.getWorldPosition().z() < 70 && target.getWorldPosition().z() > 52)) 
         {
         	//Apply an upward force to do a jump
             animMan.playJump();

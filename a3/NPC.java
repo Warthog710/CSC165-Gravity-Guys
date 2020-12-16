@@ -128,6 +128,7 @@ public class NPC
     public void rotateFan()
     {
         npcNode.getChild("fanBladeNode").roll(Degreef.createFrom(10f));
+        soundMan.playWind();
     }
 
     private void setupBehaviorTree() 
