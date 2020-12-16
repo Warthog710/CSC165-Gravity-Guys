@@ -20,6 +20,7 @@ public class GhostAvatars
     protected Vector<UUID> activeGhosts;
     protected HashMap<UUID, Vector3f> previousPos;
     protected HashMap<UUID, GhostAvatarAnimationManager> ghostAnim;
+    protected HashMap<UUID, Integer> avatarMovement;
     private SceneManager sm;
     private SoundManager soundMan;
     
@@ -29,6 +30,7 @@ public class GhostAvatars
         this.sm = sm;
         this.activeGhosts = new Vector<>();
         this.ghostAnim = new HashMap<>();
+        this.avatarMovement = new HashMap<>();
     }
     
     //Add the sound manager to be passed to the GhostAvatarAnimationManager
@@ -62,6 +64,7 @@ public class GhostAvatars
 
         //Add to active ghosts
         activeGhosts.add(ghostID);
+        avatarMovement.put(ghostID, 0);
     }
     
     //Removes a ghost from the world
@@ -74,7 +77,8 @@ public class GhostAvatars
 
         //Delete from active ghosts
         activeGhosts.remove(ghostID);
-        ghostAnim.remove(ghostID);       
+        ghostAnim.remove(ghostID);
+        avatarMovement.remove(ghostID);       
 
         System.out.println("Deleted ghost avatar " + ghostID);
     }
@@ -89,20 +93,31 @@ public class GhostAvatars
         //If not enough change stop the walking animation
         if (Math.abs(distance) < .03f || verticalSpeed < -.2f)
         {
-            ghostAnim.get(ghostID).isWalking = false;
+            int temp = avatarMovement.get(ghostID);
+            temp += 1;
+            avatarMovement.put(ghostID, temp);
 
-            //If not jumping... stop animation and walking noise
-            if (!ghostAnim.get(ghostID).isJumping) {
-            	ghostAnim.get(ghostID).ghost.stopAnimation();
-            	soundMan.stopWalk(sm.getSceneNode("ghostNode" + ghostID.toString()));
-            }
-                
+            if (temp >= 5)
+            {
+                ghostAnim.get(ghostID).isWalking = false;
+
+                //If not jumping... stop animation and walking noise
+                if (!ghostAnim.get(ghostID).isJumping) {
+                    ghostAnim.get(ghostID).ghost.stopAnimation();
+                    soundMan.stopWalk(sm.getSceneNode("ghostNode" + ghostID.toString()));
+                }
+            }                
         }
         //Play the walk animation if the change is big enough
         else
+        {
+            int temp = avatarMovement.get(ghostID);
+            temp = 0;
+            avatarMovement.put(ghostID, temp);
+
             ghostAnim.get(ghostID).playWalk();
-
-
+        }
+        
         //Update pos and rot
         sm.getSceneNode("ghostNode" + ghostID.toString()).setLocalPosition(pos);
         sm.getSceneNode("ghostNode" + ghostID.toString()).setLocalRotation(rotation);
